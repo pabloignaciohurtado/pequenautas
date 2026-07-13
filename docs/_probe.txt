@@ -1,2 +1,0 @@
-emoji:🦊🐼⭐👩‍👧🧑‍🏫 tpl:`${p.avatar}` esc:&<>" nl-below
-line2 ¿Cuántos? ñ é í
