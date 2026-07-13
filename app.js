@@ -33,7 +33,7 @@ const UI={
     tip:'💡 AAP: acompaña a tu peque, sesiones de 10–15 min. El aprendizaje es mayor con un adulto al lado.',
     close:'Listo', switch:'Cambiar de niño', pTitle:'¿Quién juega?', pSub:'Elige tu perfil',
     newTitle:'Nuevo peque', newSub:'Elige un avatar y un nombre.', create:'¡Listo!', namePH:'Nombre', level:'Nivel', add:'Agregar',
-    stStars:'Estrellas', stRounds:'Rondas', stFirst:'Aciertos a la 1ª', stTime:'Tiempo medio', stFocus:'A reforzar', mAcc:'Aciertos', noData:'Aún no hay datos. ¡A jugar!', mSubQ:"¿Cuántos había?", mSubYes:"¡Sí! Había", mGreat:"¡Muy bien!", mLookAgain:"Mira otra vez, cuenta despacio.", mItWas:"Eran", mTapGlow:"Toca el que brilla.", mCmpQ:"¿Cuál grupo tiene más?", mCmpYes:"¡Sí! Este grupo tiene más.", mThereAre:"Hay", mCountEach:"Cuenta cada grupo, toca el que tiene más.", mMoreHere:"Aquí hay más.", introTap:"¡Toca para jugar!", sessLimitName:"Límite de sesión saludable", sessLimitDesc:"Una pausa amable para descansar (recomendado en niños de 3 a 5 años).", sessMinsName:"Duración de la sesión", sessMinsDesc:"Tiempo de juego antes de un descanso.", breakTitle:"¡Hora de descansar!", breakMsg:"Jugaste muy bien. Descansemos los ojos, estírate un poquito y volvemos pronto.", breakRest:"Ok, a descansar", breakAdult:"Un adulto continúa", breakGatePrompt:"Para continuar, resuelve la suma.", restBye:"¡Nos vemos pronto!", pwaInstall:"Instalar app", },
+    stStars:'Estrellas', stRounds:'Rondas', stFirst:'Aciertos a la 1ª', stTime:'Tiempo medio', stFocus:'A reforzar', mAcc:'Aciertos', noData:'Aún no hay datos. ¡A jugar!', mSubQ:"¿Cuántos había?", mSubYes:"¡Sí! Había", mGreat:"¡Muy bien!", mLookAgain:"Mira otra vez, cuenta despacio.", mItWas:"Eran", mTapGlow:"Toca el que brilla.", mCmpQ:"¿Cuál grupo tiene más?", mCmpYes:"¡Sí! Este grupo tiene más.", mThereAre:"Hay", mCountEach:"Cuenta cada grupo, toca el que tiene más.", mMoreHere:"Aquí hay más.", introTap:"¡Toca para jugar!", sessLimitName:"Límite de sesión saludable", sessLimitDesc:"Una pausa amable para descansar (recomendado en niños de 3 a 5 años).", sessMinsName:"Duración de la sesión", sessMinsDesc:"Tiempo de juego antes de un descanso.", breakTitle:"¡Hora de descansar!", breakMsg:"Jugaste muy bien. Descansemos los ojos, estrírate un poquito y volvemos pronto.", breakRest:"Ok, a descansar", breakAdult:"Un adulto continúa", breakGatePrompt:"Para continuar, resuelve la suma.", restBye:"¡Nos vemos pronto!", pwaInstall:"Instalar app", tabEdu:"Educador", eduTitle:"Panel del educador", eduSub:"Resumen de todos los niños de este dispositivo.", eduGlobal:"Resumen global", eduChildren:"Niños", eduPerChild:"Por niño", eduNoRounds:"Sin rondas todavía", eduExport:"Exportar CSV", },
   en:{ tagline:'Learn by playing', math:'Numbers', read:'Letters', sci:'Animals', adult:'For grown-ups',
     celTitle:'You did it!', celSub:'You earned a star!', celHome:'Home', celAgain:'Again',
     gateTitle:'Grown-ups only', gateSub:'Tap and hold the button to enter.', hold:'Press and hold', holdNum:'Press and hold 👇',
@@ -43,7 +43,7 @@ const UI={
     tip:'💡 AAP: co-play with your child, 10–15 min sessions. Learning is greater with a grown-up alongside.',
     close:'Done', switch:'Switch child', pTitle:'Who is playing?', pSub:'Choose your profile',
     newTitle:'New child', newSub:'Pick an avatar and a name.', create:'Done!', namePH:'Name', level:'Level', add:'Add',
-    stStars:'Stars', stRounds:'Rounds', stFirst:'First-try correct', stTime:'Avg time', stFocus:'To practice', mAcc:'Accuracy', noData:'No data yet. Let’s play!', mSubQ:"How many were there?", mSubYes:"Yes! There were", mGreat:"Great job!", mLookAgain:"Look again, count slowly.", mItWas:"There were", mTapGlow:"Tap the glowing one.", mCmpQ:"Which group has more?", mCmpYes:"Yes! This group has more.", mThereAre:"There are", mCountEach:"Count each group, tap the one with more.", mMoreHere:"Here there are more.", introTap:"Tap to play!", sessLimitName:"Healthy session limit", sessLimitDesc:"A gentle break to rest (recommended for ages 3 to 5).", sessMinsName:"Session length", sessMinsDesc:"Play time before a break.", breakTitle:"Time for a break!", breakMsg:"You played so well. Let's rest our eyes, stretch a little and come back soon.", breakRest:"Okay, let's rest", breakAdult:"A grown-up continues", breakGatePrompt:"To continue, solve the sum.", restBye:"See you soon!", pwaInstall:"Install app", }
+    stStars:'Stars', stRounds:'Rounds', stFirst:'First-try correct', stTime:'Avg time', stFocus:'To practice', mAcc:'Accuracy', noData:'No data yet. Let’s play!', mSubQ:"How many were there?", mSubYes:"Yes! There were", mGreat:"Great job!", mLookAgain:"Look again, count slowly.", mItWas:"There were", mTapGlow:"Tap the glowing one.", mCmpQ:"Which group has more?", mCmpYes:"Yes! This group has more.", mThereAre:"There are", mCountEach:"Count each group, tap the one with more.", mMoreHere:"Here there are more.", introTap:"Tap to play!", sessLimitName:"Healthy session limit", sessLimitDesc:"A gentle break to rest (recommended for ages 3 to 5).", sessMinsName:"Session length", sessMinsDesc:"Play time before a break.", breakTitle:"Time for a break!", breakMsg:"You played so well. Let's rest our eyes, stretch a little and come back soon.", breakRest:"Okay, let's rest", breakAdult:"A grown-up continues", breakGatePrompt:"To continue, solve the sum.", restBye:"See you soon!", pwaInstall:"Install app", tabEdu:"Educator", eduTitle:"Educator panel", eduSub:"Overview of every child on this device.", eduGlobal:"Overall summary", eduChildren:"Children", eduPerChild:"By child", eduNoRounds:"No rounds yet", eduExport:"Export CSV", }
 };
 
 /* ---------- contenido ---------- */
@@ -113,7 +113,7 @@ function renderProfiles(){
   const host=$('plist'); host.innerHTML='';
   DB.profiles.forEach((p,i)=>{
     const b=document.createElement('button'); b.className='pcard'; b.style.animationDelay=(i*70)+'ms';
-    b.innerHTML=`<span class="av">${p.avatar}</span><span class="nm">${p.name}</span><span class="st">⭐ ${p.stars||0}</span>`;
+    b.innerHTML=`<span class="av">${eduEsc(p.avatar)}</span><span class="nm">${eduEsc(p.name)}</span><span class="st">⭐ ${p.stars||0}</span>`;
     b.onclick=()=>selectProfile(p.id);
     host.appendChild(b);
   });
@@ -648,3 +648,511 @@ else { renderProfiles(); show('profiles'); }
 if(location.protocol!=='file:'){ try{ var __ml=document.createElement('link'); __ml.rel='manifest'; __ml.href='./manifest.webmanifest'; document.head.appendChild(__ml); }catch(e){} }
 try{ initSessionLimit(); }catch(e){}
 try{ registerPWA(); wirePWAInstall(); }catch(e){}
+
+/* ==================== Voces pregrabadas ES/EN (AudioBank + fallback TTS) ====================
+   Infra ADITIVA y NO invasiva. Envuelve speak()/speakSeq(): si existe un clip de voz
+   locutado para la clave dada (opts.key / part.key), reproduce audio/<lang>/<key>.mp3;
+   si no, cae al Web Speech API original. Bajo file:// el banco queda INERTE (nunca toca
+   red ni <audio>), por lo que los smoke tests en file:// se mantienen intactos y sin
+   errores de consola. Los clips reales quedan pendientes de locución: 'available' está
+   vacío hasta grabarlos; el runtime queda listo y el fallback TTS activo. */
+(function(){
+  "use strict";
+  var MANIFEST = {
+    version: 1,
+    base: 'audio',
+    ext:  'mp3',
+    langs: ['es','en'],
+    keys: {
+      intro_tap:     { es:'¡Toca para jugar!',  en:'Tap to play!' },
+      cheer_great:   { es:'¡Muy bien!',         en:'Great job!' },
+      cheer_wow:     { es:'¡Excelente!',        en:'Well done!' },
+      cheer_win:     { es:'¡Lo lograste!',      en:'You did it!' },
+      cheer_amazing: { es:'¡Eres increíble!',   en:'You are amazing!' },
+      lang_es:       { es:'Español',            en:'Español' },
+      lang_en:       { es:'English',            en:'English' },
+      break_title:   { es:'¡Hora de descansar!',en:'Time for a break!' },
+      break_bye:     { es:'¡Nos vemos pronto!', en:'See you soon!' }
+    },
+    available: []
+  };
+
+  var ENABLED = (typeof location !== 'undefined') && location.protocol !== 'file:';
+  var cache = {};
+
+  function has(key, lang){
+    if(!key) return false;
+    if(MANIFEST.available.indexOf(key) < 0) return false;
+    if(lang && MANIFEST.langs.indexOf(lang) < 0) return false;
+    return true;
+  }
+  function urlFor(key, lang){ return MANIFEST.base + '/' + lang + '/' + key + '.' + MANIFEST.ext; }
+  function el(key, lang){
+    var k = lang + '/' + key, a = cache[k];
+    if(!a){ a = new Audio(urlFor(key, lang)); a.preload = 'auto'; cache[k] = a; }
+    return a;
+  }
+  function playClip(key, lang){
+    return new Promise(function(resolve){
+      lang = lang || (typeof S !== 'undefined' ? S.lang : 'es');
+      if(!ENABLED || typeof S === 'undefined' || !S.sound || !has(key, lang)) return resolve(false);
+      var a; try { a = el(key, lang); } catch(e){ return resolve(false); }
+      var done = false;
+      function fin(ok){ if(done) return; done = true; a.onended = a.onerror = null; resolve(ok); }
+      a.onended = function(){ fin(true); };
+      a.onerror = function(){ fin(false); };
+      try { a.currentTime = 0; var pr = a.play(); if(pr && pr.then) pr.catch(function(){ fin(false); }); }
+      catch(e){ fin(false); }
+    });
+  }
+
+  var _speak    = (typeof speak    === 'function') ? speak    : null;
+  var _speakSeq = (typeof speakSeq === 'function') ? speakSeq : null;
+
+  function ttsPart(p, lang, done){
+    if(typeof S === 'undefined' || !S.sound || !window.speechSynthesis || !p || !p.t){ return done(); }
+    try {
+      var u = new SpeechSynthesisUtterance(p.t);
+      u.lang = lang === 'es' ? 'es-ES' : 'en-US';
+      u.rate = p.rate || 0.9; u.pitch = p.pitch || 1.12;
+      u.onend = function(){ done(); };
+      u.onerror = function(){ done(); };
+      speechSynthesis.speak(u);
+    } catch(e){ done(); }
+  }
+
+  window.speak = function(text, opts){
+    opts = opts || {};
+    var lang = opts.lang || (typeof S !== 'undefined' ? S.lang : 'es');
+    if(ENABLED && typeof S !== 'undefined' && S.sound && opts.key && has(opts.key, lang)){
+      if(window.speechSynthesis){ try{ speechSynthesis.cancel(); }catch(e){} }
+      playClip(opts.key, lang).then(function(ok){ if(!ok && _speak) _speak(text, opts); });
+      return;
+    }
+    if(_speak) return _speak(text, opts);
+  };
+
+  window.speakSeq = function(parts){
+    parts = parts || [];
+    var useBank = ENABLED && typeof S !== 'undefined' && S.sound &&
+      parts.some(function(p){ return p && p.key && has(p.key, (p.lang || S.lang)); });
+    if(!useBank){ if(_speakSeq) return _speakSeq(parts); return; }
+    if(window.speechSynthesis){ try{ speechSynthesis.cancel(); }catch(e){} }
+    var i = 0;
+    (function next(){
+      if(i >= parts.length) return;
+      var p = parts[i++]; if(!p || !p.t){ return next(); }
+      var lang = p.lang || S.lang;
+      if(p.key && has(p.key, lang)){
+        playClip(p.key, lang).then(function(ok){ if(ok) next(); else ttsPart(p, lang, next); });
+      } else { ttsPart(p, lang, next); }
+    })();
+  };
+
+  function preload(lang){
+    if(!ENABLED) return;
+    lang = lang || (typeof S !== 'undefined' ? S.lang : 'es');
+    MANIFEST.available.forEach(function(key){ if(has(key, lang)){ try{ el(key, lang); }catch(e){} } });
+  }
+
+  window.AudioBank = {
+    enabled: ENABLED,
+    manifest: MANIFEST,
+    has: has,
+    url: urlFor,
+    play: playClip,
+    preload: preload,
+    keys: function(){ return Object.keys(MANIFEST.keys); },
+    available: function(){ return MANIFEST.available.slice(); },
+    missing: function(){ return Object.keys(MANIFEST.keys).filter(function(k){ return MANIFEST.available.indexOf(k) < 0; }); }
+  };
+})();
+
+
+/* ==================== Estrategia bilingüe deliberada ====================
+   Modo de idioma POR PERFIL (profile.langMode):
+     - 'immersion' (por defecto): una sola lengua por sesión (sin conmutación
+        automática). Reduce la carga cognitiva; el niño se sumerge en un código.
+     - 'alternate' : alterna ES/EN por RONDA (nunca dos lenguas a la vez dentro
+        de una ronda). Fomenta la transferencia translingüística sin sobrecargar.
+     - 'mirror'    : al ACERTAR, refleja la palabra-clave del concepto en ambas
+        lenguas (ES→EN). El etiquetado bilingüe queda anclado al momento de éxito.
+   Infra 100% ADITIVA: envuelve afterCorrect()/nextRound() por reasignación de la
+   propiedad global (mismo mecanismo que AudioBank usa con speak/speakSeq). No
+   redefine helpers existentes. Bajo file:// no toca red; los smoke tests siguen
+   verdes porque el modo por defecto ('immersion') no altera el flujo original.
+   Evidencia: Cummins (transferencia translingüística) · García & Wei
+   (translanguaging) · Bialystok (control ejecutivo) · carga cognitiva (Sweller). */
+(function(){
+  "use strict";
+  var MODES=['immersion','alternate','mirror'];
+  function bilMode(){ var p=(typeof currentProfile==='function')?currentProfile():null; var m=p&&p.langMode; return MODES.indexOf(m)>=0?m:'immersion'; }
+  function other(l){ return l==='es'?'en':'es'; }
+
+  function bilSyncChrome(){ try{ document.documentElement.lang=S.lang; var es=$('lgES'),en=$('lgEN'); if(es)es.className=S.lang==='es'?'on':'off'; if(en)en.className=S.lang==='en'?'on':'off'; }catch(e){} }
+
+  function bilMirrorEcho(key){
+    if(!key) return;
+    var es=null,en=null,n;
+    if(key.indexOf('math-sub-')===0){ n=parseInt(key.slice(9),10); es=NUM_ES[n]; en=NUM_EN[n]; }
+    else if(key.indexOf('math-cmp')===0){ es='más'; en='more'; }
+    else if(key.indexOf('math-')===0){ n=parseInt(key.slice(5),10); es=NUM_ES[n]; en=NUM_EN[n]; }
+    else if(key.indexOf('read-')===0){ var L=key.slice(5); es=L; en=L; }
+    else if(key.indexOf('sci-diet-')===0){ var d=key.slice(9); if(DIET_CAT[d]){ es=DIET_CAT[d].es; en=DIET_CAT[d].en; } }
+    else if(key.indexOf('sci-')===0){ var h=key.slice(4); if(HAB[h]){ es=HAB[h].es; en=HAB[h].en; } }
+    if(es==null||en==null) return;
+    try{ speakSeq([{t:es,lang:'es',rate:0.85},{t:en,lang:'en',rate:0.85}]); }catch(e){}
+  }
+
+  function bilSync(){
+    var box=$('bilModeChoices'); if(!box) return; var m=bilMode();
+    box.querySelectorAll('button[data-mode]').forEach(function(b){
+      var sel=b.dataset.mode===m; b.classList.toggle('ghost',!sel); b.setAttribute('aria-pressed',String(sel));
+    });
+  }
+
+  window.applyBilingualLang=function(){
+    var t=UI[S.lang]; if(!t) return;
+    var set=function(id,txt){ var el=$(id); if(el&&txt!=null) el.textContent=txt; };
+    set('bilModeName',t.bilModeName); set('bilModeDesc',t.bilModeDesc);
+    var box=$('bilModeChoices');
+    if(box){ var map={immersion:t.bilImmersion,alternate:t.bilAlternate,mirror:t.bilMirror};
+      box.querySelectorAll('span[data-bil]').forEach(function(s){ var k=s.getAttribute('data-bil'); if(map[k]!=null) s.textContent=map[k]; }); }
+    bilSync();
+  };
+
+  function initBilingual(){
+    Object.assign(UI.es,{bilModeName:'Modo de idioma',bilModeDesc:'Cómo se combinan español e inglés',bilImmersion:'Inmersión',bilAlternate:'Alternado',bilMirror:'Espejo'});
+    Object.assign(UI.en,{bilModeName:'Language mode',bilModeDesc:'How Spanish and English blend',bilImmersion:'Immersion',bilAlternate:'Alternate',bilMirror:'Mirror'});
+
+    if(!window.__bilWrapped){ window.__bilWrapped=true;
+      var _afterCorrect=window.afterCorrect;
+      window.afterCorrect=function(key){ _afterCorrect(key); try{ if(bilMode()==='mirror') bilMirrorEcho(key); }catch(e){} };
+      var _nextRound=window.nextRound;
+      window.nextRound=function(){
+        try{
+          if(S.round===0) S.bilBase=S.lang;
+          if(bilMode()==='alternate'){
+            if(S.round>=S.totalRounds){
+              if(S.bilBase&&S.lang!==S.bilBase){ S.lang=S.bilBase; bilSyncChrome(); }
+            } else {
+              var tgt=(S.round%2===0)?S.bilBase:other(S.bilBase);
+              if(S.lang!==tgt){ S.lang=tgt; bilSyncChrome(); }
+            }
+          }
+        }catch(e){}
+        return _nextRound();
+      };
+    }
+
+    var box=$('bilModeChoices');
+    if(box&&!box._bilWired){ box._bilWired=true;
+      box.addEventListener('click',function(e){
+        var b=e.target.closest('button[data-mode]'); if(!b) return;
+        var p=currentProfile(); if(!p) return;
+        p.langMode=b.dataset.mode; saveDB(); bilSync();
+        var t=UI[S.lang]; var nm={immersion:t.bilImmersion,alternate:t.bilAlternate,mirror:t.bilMirror}[b.dataset.mode];
+        if(typeof speak==='function'&&nm) speak(nm);
+      });
+    }
+    var lb=$('langBtn'); if(lb&&!lb._bilWired){ lb._bilWired=true; lb.addEventListener('click',function(){ if(window.applyBilingualLang) applyBilingualLang(); }); }
+    var ts=$('tabSet'); if(ts&&!ts._bilWired){ ts._bilWired=true; ts.addEventListener('click',function(){ if(window.applyBilingualLang) applyBilingualLang(); }); }
+    applyBilingualLang();
+  }
+
+  window.initBilingual=initBilingual;
+  window.bilMode=bilMode;
+  try{ initBilingual(); }catch(e){}
+})();
+
+
+/* ==================== Panel educador (local) + flag de backend ====================
+   Vista agregada de TODOS los perfiles (por niño + global), tras el parent gate,
+   como 3ª pestaña del área de adultos. 100% offline sobre DB.profiles[].ev.
+   Reutiliza aggregate() y el estilo de renderProgress2. Aditivo: no redefine
+   showTab/passGate/applyLang; re-cablea los onclick de pestañas al final. */
+
+window.PEQUE_FLAGS = Object.assign({ backendSync:false }, window.PEQUE_FLAGS||{});
+
+function eduEsc(s){ return String(s==null?'':s).replace(/[&<>"]/g,function(c){ return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]; }); }
+
+function eduFaceOf(k){
+  if(k.indexOf('math-')===0){ var rest=k.slice(5); if(rest==='cmp') return '🔢 ⚖️'; if(rest.indexOf('sub-')===0) return '🔢 '+rest.slice(4); return '🔢 '+rest; }
+  if(k.indexOf('read-')===0) return '🔤 '+k.split('-')[1];
+  if(k.indexOf('sci-diet-')===0){ var d=k.split('-')[2]; return (typeof DIET_CAT!=='undefined'&&DIET_CAT[d])?DIET_CAT[d].emoji+' '+DIET_CAT[d][S.lang]:k; }
+  if(k.indexOf('sci-')===0){ var h=k.split('-')[1]; return HAB[h]?HAB[h].emoji+' '+HAB[h][S.lang]:k; }
+  return k;
+}
+
+function eduSpark(ev){
+  var n=ev.length; if(!n) return '';
+  var B=Math.min(8,n), per=n/B, out=[];
+  for(var i=0;i<B;i++){
+    var s=Math.floor(i*per), e=Math.floor((i+1)*per); if(e<=s) e=s+1;
+    var slice=ev.slice(s,e), ft=slice.filter(function(x){return x.ft;}).length/(slice.length||1);
+    var cls=ft>=0.7?'hi':ft>=0.4?'mid':'lo', hgt=6+Math.round(ft*22);
+    out.push('<span class="sparkbar '+cls+'" style="height:'+hgt+'px"></span>');
+  }
+  return '<div class="spark" aria-hidden="true">'+out.join('')+'</div>';
+}
+
+function renderEducator(){
+  var t=UI[S.lang], host=$('eduBody'); if(!host) return;
+  var te=$('eduTitle'); if(te) te.textContent=t.eduTitle;
+  var se=$('eduSub'); if(se) se.textContent=t.eduSub;
+  var xb=$('eduExportBtn'); if(xb){ xb.textContent=t.eduExport; xb.onclick=eduExportCSV; }
+  var profs=DB.profiles||[], allEv=[];
+  profs.forEach(function(p){ (p.ev||[]).forEach(function(ev){ allEv.push(ev); }); });
+  if(!profs.length || !allEv.length){ host.innerHTML='<div class="empty">'+t.noData+'</div>'; return; }
+  var g=aggregate({ev:allEv});
+  var secs=(g.avg/1000).toFixed(1);
+  var gname={math:t.math,reading:t.read,science:t.sci};
+  var html='<div class="eduHead">'+t.eduGlobal+'</div>';
+  html+='<div class="statgrid">'
+    +'<div class="stat"><div class="n">'+profs.length+'</div><div class="l">'+t.eduChildren+'</div></div>'
+    +'<div class="stat"><div class="n">'+g.rounds+'</div><div class="l">'+t.stRounds+'</div></div>'
+    +'<div class="stat"><div class="n">'+Math.round(g.firstRate*100)+'%</div><div class="l">'+t.stFirst+'</div></div>'
+    +'<div class="stat"><div class="n">'+secs+'s</div><div class="l">'+t.stTime+'</div></div>'
+  +'</div>';
+  ['math','reading','science'].forEach(function(gk){
+    var gg=g.byGame[gk]; if(gg && gg.r>0){
+      var acc=Math.round((1-gg.err/gg.r)*100);
+      var col=gk==='math'?'var(--math)':gk==='reading'?'var(--read)':'var(--sci)';
+      html+='<div class="bar"><div class="lab"><span>'+gname[gk]+'</span><span>'+acc+'% '+t.mAcc.toLowerCase()+'</span></div><div class="track"><div class="fillb" style="width:'+acc+'%;background:'+col+'"></div></div></div>';
+    }
+  });
+  if(g.topFails.length){
+    html+='<div class="eduHead">'+t.stFocus+'</div>';
+    g.topFails.forEach(function(f){ var face=eduFaceOf(f.k), em=face.split(' ')[0], rest=face.split(' ').slice(1).join(' ');
+      html+='<div class="failitem"><span class="fx">'+em+'</span><span>'+rest+'</span><span class="fc">'+f.c+' ✗</span></div>'; });
+  }
+  html+='<div class="eduHead">'+t.eduPerChild+'</div>';
+  profs.forEach(function(p){
+    var a=aggregate(p), ev=p.ev||[];
+    var sub=ev.length?(a.rounds+' '+t.stRounds.toLowerCase()+' · '+Math.round(a.firstRate*100)+'% '+t.stFirst.toLowerCase()):t.eduNoRounds;
+    html+='<div class="eduChild">'
+      +'<span class="eduAv">'+eduEsc(p.avatar)+'</span>'
+      +'<div class="eduMeta"><div class="eduName">'+eduEsc(p.name)+'</div><div class="eduChildSub">'+sub+'</div></div>'
+      +(ev.length?eduSpark(ev):'')
+      +'</div>';
+  });
+  host.innerHTML=html;
+}
+
+function eduExportCSV(){
+  var rows=[['child','avatar','game','item','first_try','attempts','ms','assisted']];
+  (DB.profiles||[]).forEach(function(p){ (p.ev||[]).forEach(function(e){ rows.push([p.name,p.avatar,e.g,e.k,e.ft,e.at,e.ms,e.as]); }); });
+  var csv=rows.map(function(r){ return r.map(function(c){ var s=String(c==null?'':c); if(/^[=+\-@]/.test(s)) s="'"+s; return /[",\n]/.test(s)?'"'+s.replace(/"/g,'""')+'"':s; }).join(','); }).join('\n');
+  try{
+    var blob=new Blob([csv],{type:'text/csv;charset=utf-8'}), url=URL.createObjectURL(blob);
+    var a=document.createElement('a'); a.href=url; a.download='pequenautas-educador.csv';
+    document.body.appendChild(a); a.click(); a.remove();
+    setTimeout(function(){ URL.revokeObjectURL(url); },1000);
+  }catch(e){}
+}
+
+function eduHide(){ var e=$('eduView'); if(e) e.style.display='none'; var t=$('tabEdu'); if(t) t.classList.remove('on'); }
+function showEducator(){
+  var tp=$('tabProg'),ts=$('tabSet'),te=$('tabEdu');
+  if(tp) tp.classList.remove('on'); if(ts) ts.classList.remove('on'); if(te) te.classList.add('on');
+  var pv=$('progView'),sv=$('setView'),ev=$('eduView');
+  if(pv) pv.style.display='none'; if(sv) sv.style.display='none'; if(ev) ev.style.display='block';
+  renderEducator();
+}
+function eduApplyChrome(){ var e=$('tabEduTxt'); if(e && UI[S.lang]) e.textContent=UI[S.lang].tabEdu; }
+
+(function(){
+  var tp=$('tabProg'); if(tp) tp.onclick=function(){ eduHide(); showTab('prog'); };
+  var ts=$('tabSet'); if(ts) ts.onclick=function(){ eduHide(); showTab('set'); };
+  var te=$('tabEdu'); if(te) te.onclick=showEducator;
+  var cs=$('closeSheet'); if(cs) cs.addEventListener('click', eduHide);
+  var sh=$('sheet'); if(sh) sh.addEventListener('click', function(e){ if(e.target===sh) eduHide(); });
+  var lb=$('langBtn'); if(lb) lb.addEventListener('click', function(){ eduApplyChrome(); var ev=$('eduView'); if(ev && ev.style.display!=='none') renderEducator(); });
+  eduApplyChrome();
+})();
+
+
+/* ==================== Modo guiado padre-hijo (co-juego / NAEYC) ====================
+   Toggle en Ajustes (persistido en DB.settings.coplay, OFF por defecto). Cuando está
+   activo, muestra al ADULTO una tarjeta discreta con una pregunta indagatoria en
+   momentos oportunos: al iniciar una materia (ronda 0) y a mitad del juego (ronda 2).
+   NO quita agencia al niño: la tarjeta no bloquea la pantalla, es cerrable y se retira
+   sola al avanzar de ronda. 100% offline y aditivo: no redefine funciones existentes;
+   detecta cambios de ronda observando #stage. Bilingüe ES/EN. Inerte hasta activarse,
+   así que no altera los smoke tests con el modo apagado (default). */
+(function(){
+  "use strict";
+
+  var COPLAY_Q = {
+    math: {
+      start: [
+        { es:'Cuenta en voz alta junto a tu peque y señala cada objeto.', en:'Count out loud together and point to each object.' },
+        { es:'Pregúntale cuántos ve antes de tocar, y luego cuenten juntos.', en:'Ask how many they see before tapping, then count together.' }
+      ],
+      mid: [
+        { es:'Pregúntale: ¿cuántos habría si añadimos uno más?', en:'Ask: how many would there be if we add one more?' },
+        { es:'Muestren ese mismo número con los dedos de las manos.', en:'Show that same number using your fingers together.' },
+        { es:'Pregúntale: ¿y si quitamos uno, cuántos quedan?', en:'Ask: if we take one away, how many are left?' }
+      ]
+    },
+    reading: {
+      start: [
+        { es:'Di el sonido de la letra y pídele que lo repita contigo.', en:'Say the letter’s sound and ask them to repeat it with you.' },
+        { es:'Pregúntale cómo suena esta letra antes de elegir.', en:'Ask how this letter sounds before choosing.' }
+      ],
+      mid: [
+        { es:'Pregúntale: ¿qué otra cosa empieza con esta letra?', en:'Ask: what else starts with this letter?' },
+        { es:'Busquen en la sala algo cuyo nombre empiece igual.', en:'Look around the room for something that starts the same way.' },
+        { es:'Pregúntale por el nombre de alguien que empiece con esta letra.', en:'Ask for someone’s name that starts with this letter.' }
+      ]
+    },
+    science: {
+      start: [
+        { es:'Pregúntale por qué cree que el animal vive en ese lugar.', en:'Ask why they think the animal lives in that place.' },
+        { es:'Pregúntale qué sabe de este animal antes de responder.', en:'Ask what they already know about this animal before answering.' }
+      ],
+      mid: [
+        { es:'Pregúntale: ¿qué otros animales viven en el agua, la tierra o el cielo?', en:'Ask: what other animals live in the water, on land, or in the sky?' },
+        { es:'Pregúntale qué crees que come este animal y por qué.', en:'Ask what they think this animal eats, and why.' },
+        { es:'Pregúntale en qué se parece a otro animal que conozca.', en:'Ask how it is similar to another animal they know.' }
+      ]
+    }
+  };
+
+  if (typeof UI === 'object' && UI.es && UI.en){
+    Object.assign(UI.es, {
+      cpKicker:'Momento en familia',
+      setCoplayN:'Modo guiado con adulto',
+      setCoplayD:'Muestra preguntas para acompañar a tu peque'
+    });
+    Object.assign(UI.en, {
+      cpKicker:'Together moment',
+      setCoplayN:'Guided grown-up mode',
+      setCoplayD:'Shows prompts to explore alongside your child'
+    });
+  }
+
+  var card=null, closeBtn=null, qEl=null, kickEl=null;
+  var currentQ=null, visible=false, lastKey=null, pending=false;
+
+  function cfg(){
+    if(typeof DB!=='object'||!DB) return { coplay:false };
+    if(!DB.settings) DB.settings={};
+    if(typeof DB.settings.coplay!=='boolean') DB.settings.coplay=false;
+    return DB.settings;
+  }
+  function isOn(){ return !!cfg().coplay; }
+
+  function L(){ var l=(typeof S==='object'&&S)?S.lang:'es'; return (typeof UI==='object'&&UI[l])?UI[l]:null; }
+
+  function buildCard(){
+    if(card) return card;
+    card=document.createElement('div');
+    card.id='coplayCard'; card.className='coplayCard';
+    card.setAttribute('role','note'); card.setAttribute('aria-live','polite');
+    card.innerHTML='<span class="cpIcon" aria-hidden="true">👩‍👧</span>'
+      +'<div class="cpBody"><div class="cpKicker" id="cpKicker"></div><div class="cpQ" id="coplayQ"></div></div>'
+      +'<button class="cpClose" id="coplayClose" type="button">✕</button>';
+    var host=$('app')||document.body; host.appendChild(card);
+    qEl=$('coplayQ'); kickEl=$('cpKicker'); closeBtn=$('coplayClose');
+    if(closeBtn){ closeBtn.setAttribute('aria-label', L()&&L().close ? L().close : 'Cerrar'); closeBtn.addEventListener('click', hideCard); }
+    return card;
+  }
+
+  function paint(){
+    if(!qEl||!currentQ) return;
+    var l=(typeof S==='object'&&S)?S.lang:'es';
+    qEl.textContent=currentQ[l]||currentQ.es;
+    if(kickEl){ var t=L(); kickEl.textContent=(t&&t.cpKicker)||(l==='en'?'Together moment':'Momento en familia'); }
+    if(closeBtn){ var tt=L(); closeBtn.setAttribute('aria-label',(tt&&tt.close)||'Cerrar'); }
+  }
+
+  function showQ(game, moment){
+    var pack=COPLAY_Q[game]; if(!pack||!pack[moment]||!pack[moment].length) return;
+    buildCard();
+    currentQ=pack[moment][ rnd(pack[moment].length) ];
+    paint();
+    card.style.display='flex';
+    void card.offsetWidth;
+    card.classList.add('show');
+    visible=true;
+  }
+
+  function hideCard(){
+    if(!card) return;
+    card.classList.remove('show');
+    card.style.display='none';
+    visible=false; currentQ=null;
+  }
+
+  function evaluate(){
+    pending=false;
+    if(typeof S!=='object'||!S) return;
+    if(S.screen!=='game' || !isOn()){ hideCard(); lastKey=null; return; }
+    var g=S.game, r=S.round;
+    var key=g+':'+r;
+    if(key===lastKey){ if(visible) paint(); return; }
+    lastKey=key;
+    hideCard();
+    var moment = (r===0) ? 'start' : (r===2 ? 'mid' : null);
+    if(moment) showQ(g, moment);
+  }
+  function scheduleEval(){ if(pending) return; pending=true; requestAnimationFrame(evaluate); }
+
+  function ensureSettingRow(){
+    var set=$('setView'); if(!set) return;
+    var row=$('setCoplay');
+    if(!row){
+      row=document.createElement('div'); row.className='setting'; row.id='setCoplay';
+      row.innerHTML='<div><div class="name" id="setCoplayN"></div><div class="desc" id="setCoplayD"></div></div>'
+        +'<button class="toggle" id="tgCoplay" role="switch"><span class="knob"></span></button>';
+      var anchor=$('setSessLimit');
+      if(anchor && anchor.parentNode===set) set.insertBefore(row, anchor);
+      else set.appendChild(row);
+    }
+    var tg=$('tgCoplay');
+    if(tg && !tg._cpWired){ tg._cpWired=true;
+      tg.addEventListener('click', function(){
+        var c=cfg(); c.coplay=!c.coplay; if(typeof saveDB==='function') saveDB();
+        syncRow();
+        if(!c.coplay) hideCard(); else { lastKey=null; scheduleEval(); }
+      });
+    }
+    applyLangRow(); syncRow();
+  }
+  function syncRow(){ var tg=$('tgCoplay'); if(tg){ tg.classList.toggle('on', isOn()); tg.setAttribute('aria-checked', String(isOn())); } }
+  function applyLangRow(){
+    var t=L(); if(!t) return;
+    var n=$('setCoplayN'), d=$('setCoplayD');
+    if(n) n.textContent=t.setCoplayN||'Modo guiado con adulto';
+    if(d) d.textContent=t.setCoplayD||'';
+  }
+
+  function initCoplay(){
+    cfg();
+    buildCard();
+    ensureSettingRow();
+    var stage=$('stage');
+    if(stage && !stage._cpObs){
+      stage._cpObs=true;
+      var obs=new MutationObserver(scheduleEval);
+      obs.observe(stage, { childList:true });
+    }
+    var ts=$('tabSet'); if(ts && !ts._cpWired){ ts._cpWired=true; ts.addEventListener('click', function(){ ensureSettingRow(); }); }
+    var lb=$('langBtn'); if(lb && !lb._cpWired){ lb._cpWired=true; lb.addEventListener('click', function(){ applyLangRow(); if(visible) paint(); }); }
+    var hb=$('homeBtn'); if(hb) hb.addEventListener('click', hideCard);
+    var bb=$('backBtn'); if(bb) bb.addEventListener('click', hideCard);
+  }
+
+  window.__coplay = {
+    enable:  function(){ cfg().coplay=true;  if(typeof saveDB==='function') saveDB(); syncRow(); lastKey=null; scheduleEval(); },
+    disable: function(){ cfg().coplay=false; if(typeof saveDB==='function') saveDB(); syncRow(); hideCard(); },
+    isOn: isOn,
+    isVisible: function(){ return visible; },
+    refresh: scheduleEval,
+    init: initCoplay
+  };
+
+  if(document.readyState==='loading') document.addEventListener('DOMContentLoaded', function(){ try{ initCoplay(); }catch(e){} });
+  else { try{ initCoplay(); }catch(e){} }
+})();
