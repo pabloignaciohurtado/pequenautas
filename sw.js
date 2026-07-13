@@ -22,19 +22,19 @@ self.addEventListener('fetch',(e)=>{
   if(req.method!=='GET') return;
   const url=new URL(req.url);
   const sameOrigin=url.origin===self.location.origin;
-  const isFont=FONT_HOSTS.indexOf(url.hostname)!==-1;
-  if(!sameOrigin && !isFont) return;
+  const isFont=FONT_HOSTS.indexOf(url.hostname)!==-1; // Fredoka (CSS + woff2) para uso offline
+  if(!sameOrigin && !isFont) return;                 // el resto va directo a la red
   e.respondWith(
     caches.match(req).then(cached=>{
-      if(cached) return cached;
+      if(cached) return cached;                        // cache-first
       return fetch(req).then(res=>{
-        if(res && (res.ok || res.type==='opaque')){
+        if(res && (res.ok || res.type==='opaque')){    // opaque = respuesta CORS de fuentes
           const copy=res.clone();
           caches.open(CACHE).then(c=>c.put(req,copy)).catch(()=>{});
         }
         return res;
       }).catch(()=>{
-        if(req.mode==='navigate') return caches.match('./index.html');
+        if(req.mode==='navigate') return caches.match('./index.html'); // fallback offline
         return cached;
       });
     })

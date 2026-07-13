@@ -1,13 +1,8 @@
 {
   "name": "pequenautas",
-  "version": "0.1.0",
+  "version": "0.4.0",
   "private": true,
-  "description": "Pequenautas - prototipo de app educativa interactiva para preescolares (3-5), bilingue ES/EN",
-  "scripts": {
-    "test": "playwright test",
-    "start": "npx serve ."
-  },
-  "devDependencies": {
-    "@playwright/test": "^1.47.0"
-  }
+  "description": "Pequenautas - app educativa preescolar (3-5), bilingue ES/EN",
+  "scripts": { "test": "playwright test", "start": "npx serve ." },
+  "devDependencies": { "@playwright/test": "^1.47.0" }
 }

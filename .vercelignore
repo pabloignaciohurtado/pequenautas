@@ -1,0 +1,8 @@
+node_modules
+tests
+tools
+test-results
+playwright.config.js
+package.json
+package-lock.json
+.github
