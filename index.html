@@ -48,13 +48,17 @@
   .pchip:active{transform:scale(.94);}
   .pchip .av{font-size:30px;line-height:1;} .pchip .nm{font-weight:600;font-size:17px;max-width:120px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
   .pchip[hidden]{display:none;}
+
   .screen{position:absolute;inset:0;top:88px;display:none;flex-direction:column;padding:0 26px 26px;overflow:hidden;}
   .screen.active{display:flex;}
   .screen.enter{animation:screenIn 420ms var(--ease-out) both;}
   @keyframes screenIn{from{opacity:0;transform:translateY(14px) scale(.98);}to{opacity:1;transform:none;}}
+
   .hero{text-align:center;margin:4px 0 14px;}
   .hero h1{font-size:clamp(30px,6vw,52px);font-weight:700;margin:0;letter-spacing:.5px;background:linear-gradient(120deg,var(--read),var(--sun) 45%,var(--sci));-webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent;}
   .hero p{margin:4px 0 0;color:var(--ink-soft);font-size:clamp(15px,2.4vw,22px);font-weight:500;}
+
+  /* PROFILES */
   .plist{flex:1 1 auto;display:flex;flex-wrap:wrap;gap:20px;align-content:center;justify-content:center;max-width:820px;margin:0 auto;width:100%;overflow:auto;}
   .pcard{position:relative;border:none;cursor:pointer;background:var(--card);box-shadow:var(--shadow-lg);border-radius:28px;width:180px;min-height:190px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:10px;padding:20px;color:var(--ink);transition:transform 200ms var(--ease-out);opacity:0;transform:translateY(16px);animation:cardIn 460ms var(--ease-out) forwards;}
   .pcard:active{transform:scale(.95);}
@@ -65,6 +69,7 @@
   .pcard.add{border:3px dashed #E1DCEF;background:#FCFAFF;box-shadow:none;color:var(--ink-soft);}
   .pcard.add .av{font-size:60px;}
   @keyframes cardIn{to{opacity:1;transform:none;}}
+
   .cards{flex:1 1 auto;display:grid;grid-template-columns:repeat(3,1fr);gap:20px;align-content:center;max-width:960px;margin:0 auto;width:100%;}
   .subject{position:relative;border:none;cursor:pointer;color:#fff;border-radius:var(--radius);padding:26px 18px;min-height:220px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:14px;box-shadow:var(--shadow-lg);overflow:hidden;transition:transform 200ms var(--ease-out), box-shadow 200ms var(--ease-out);opacity:0;transform:translateY(18px);}
   .screen.active .subject{animation:cardIn 520ms var(--ease-out) forwards;}
@@ -81,6 +86,7 @@
   .subject .blob{position:absolute;width:180px;height:180px;border-radius:50%;background:rgba(255,255,255,.18);top:-70px;right:-50px;}
   .adultbtn{margin:16px auto 2px;display:flex;align-items:center;gap:8px;background:none;border:none;color:var(--ink-soft);font-family:inherit;font-size:15px;font-weight:500;cursor:pointer;opacity:.85;}
   .adultbtn:active{transform:scale(.96);}
+
   .prompt{display:flex;align-items:center;justify-content:center;gap:14px;background:var(--card);box-shadow:var(--shadow);border-radius:26px;padding:16px 26px;margin:0 auto 18px;max-width:760px;width:100%;min-height:78px;text-align:center;}
   .prompt .speak{width:52px;height:52px;flex:0 0 auto;border:none;border-radius:16px;cursor:pointer;background:#F3EEFB;color:var(--ink);font-size:24px;display:flex;align-items:center;justify-content:center;transition:transform 150ms var(--ease-out);}
   .prompt .speak:active{transform:scale(.88);}
@@ -155,6 +161,7 @@
   .toggle.on .knob{transform:translateX(28px);}
   .panel .close{margin-top:20px;width:100%;}
   .tip{background:#FFF7E8;border-radius:16px;padding:12px 14px;font-size:13.5px;color:#8a6d2e;margin-top:16px;line-height:1.5;}
+  /* progreso panel */
   .statgrid{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:6px;}
   .stat{background:#F8F6FD;border-radius:16px;padding:14px;}
   .stat .n{font-size:26px;font-weight:700;line-height:1.1;}
@@ -166,6 +173,7 @@
   .failitem{display:flex;align-items:center;gap:10px;padding:8px 0;font-size:15px;border-top:1px solid #F0ECF6;}
   .failitem .fx{font-size:26px;} .failitem .fc{margin-left:auto;color:var(--no);font-weight:600;font-size:14px;}
   .empty{color:var(--ink-soft);font-size:14px;text-align:center;padding:20px;}
+  /* new profile */
   .avpick{display:flex;flex-wrap:wrap;gap:10px;justify-content:center;margin:6px 0 16px;}
   .avopt{width:60px;height:60px;border:none;border-radius:18px;background:#F5F2FC;font-size:34px;cursor:pointer;display:flex;align-items:center;justify-content:center;transition:transform 150ms var(--ease-out), box-shadow 150ms var(--ease-out);}
   .avopt:active{transform:scale(.9);}
@@ -177,60 +185,116 @@
     .subject{min-height:140px;flex-direction:row;justify-content:flex-start;padding:20px 26px;gap:22px;}
     .subject .emoji{font-size:58px;} .subject .label{font-size:24px;} .subject .lv{top:auto;bottom:14px;left:auto;right:14px;}
     .screen{top:80px;padding:0 16px 16px;}
-    .habitat{width:150px;} .diet{width:150px;} .pchip .nm{max-width:80px;}
+    .habitat{width:150px;} .pchip .nm{max-width:80px;}
   }
   @media (prefers-reduced-motion: reduce){
     *{animation-duration:.001ms !important;animation-iteration-count:1 !important;}
     .subject,.obj,.lettertile,.pcard{opacity:1 !important;transform:none !important;}
   }
-  /* FASE 2: Matematicas ampliadas */
-  .subitizeWrap{position:relative;display:inline-flex;align-items:center;justify-content:center;}
-  .subitizeWrap .veil{position:absolute;inset:-10px;border-radius:26px;background:var(--card);box-shadow:var(--shadow);display:flex;align-items:center;justify-content:center;font-size:clamp(40px,7vw,64px);opacity:0;pointer-events:none;cursor:pointer;transition:opacity 260ms var(--ease-out);}
-  .subitizeWrap.veiled .veil{opacity:1;pointer-events:auto;}
-  .choices.compare{gap:26px;align-items:stretch;}
-  .choice.groupChoice{min-width:150px;padding:22px 24px;}
-  .choice.groupChoice .countbox{gap:10px;max-width:260px;}
-  .choice.groupChoice .obj{font-size:clamp(30px,5vw,46px);cursor:default;}
-  @media (prefers-reduced-motion: reduce){ .subitizeWrap .veil{transition:none;} }
-  /* FASE 2: Ciencias dieta */
-  .diets{display:flex;gap:18px;justify-content:center;flex-wrap:wrap;}
-  .diet{width:180px;min-height:150px;border-radius:26px;color:#fff;}
-  .diet.herb{background:linear-gradient(160deg,#8EE3B8,#57C596);}
-  .diet.carn{background:linear-gradient(160deg,#F6A57E,#E8734D);}
-  .diet .clabel{color:rgba(255,255,255,.95);font-size:18px;}
-  /* Limite de sesion */
-  .breakOverlay{position:fixed;inset:0;display:flex;align-items:center;justify-content:center;background:rgba(20,24,40,.55);z-index:80;padding:24px;opacity:0;transition:opacity .25s var(--ease-out);}
-  .breakOverlay.show{opacity:1;}
-  .breakOverlay[hidden]{display:none;}
-  .breakPanel{max-width:520px;width:100%;text-align:center;display:flex;flex-direction:column;gap:16px;align-items:center;transform:translateY(12px);transition:transform .3s var(--ease-out);}
-  .breakOverlay.show .breakPanel{transform:translateY(0);}
-  .breakEmoji{font-size:72px;line-height:1;}
-  .breakMsg{font-size:20px;line-height:1.4;}
-  .breakPanel .btn{min-width:220px;}
-  .breakGate{display:flex;flex-direction:column;gap:12px;align-items:center;margin-top:4px;}
-  .breakGateQ{font-size:28px;font-weight:700;}
-  .choices.sessMins.disabled{opacity:.45;}
-  .shakeNo{animation:sessShake .3s var(--ease-in-out);}
-  @keyframes sessShake{0%,100%{transform:translateX(0)}25%{transform:translateX(-6px)}75%{transform:translateX(6px)}}
-  @media (prefers-reduced-motion: reduce){ .breakOverlay,.breakPanel{transition:none;} .breakPanel{transform:none;} .shakeNo{animation:none;} }
-  /* Onboarding coach mark */
-  .coach{position:absolute;inset:0;z-index:50;pointer-events:none;display:none;}
-  .coach.show{display:block;animation:fadeIn 240ms var(--ease-out);}
-  .coachRing{position:absolute;transform:translate(-50%,-50%);border-radius:50%;border:5px solid var(--sun);box-shadow:0 0 0 6px rgba(253,186,77,.25);animation:coachPulse 1.2s var(--ease-in-out) infinite;}
-  @keyframes coachPulse{0%,100%{transform:translate(-50%,-50%) scale(1);opacity:.95;}50%{transform:translate(-50%,-50%) scale(1.12);opacity:.55;}}
-  .coachHand{position:absolute;transform:translate(-50%,-4px);font-size:52px;line-height:1;filter:drop-shadow(0 4px 6px rgba(0,0,0,.22));animation:coachTap 1.2s var(--ease-in-out) infinite;}
-  @keyframes coachTap{0%,100%{transform:translate(-50%,-4px);}50%{transform:translate(-50%,12px);}}
-  .coachBubble{position:absolute;left:50%;bottom:26px;transform:translateX(-50%);display:flex;align-items:center;gap:12px;background:var(--card);box-shadow:var(--shadow-lg);border-radius:26px;padding:14px 22px;max-width:88%;animation:coachRise 420ms var(--ease-out);}
-  @keyframes coachRise{from{opacity:0;transform:translateX(-50%) translateY(16px);}to{opacity:1;transform:translateX(-50%) translateY(0);}}
-  .coachMascot{font-size:44px;line-height:1;animation:bob 2.6s var(--ease-in-out) infinite;}
-  .coachTxt{font-size:20px;font-weight:600;color:var(--ink);}
-  @media (prefers-reduced-motion: reduce){.coachRing,.coachHand,.coachMascot{animation:none !important;}}
-  /* PWA install pill */
+/* ===== FASE 2: Matemáticas ampliadas ===== */
+/* ===== Matemáticas ampliadas ===== */
+/* Subitización: grupo que se cubre con un velo (solo opacity animada) */
+.subitizeWrap{position:relative;display:inline-flex;align-items:center;justify-content:center;}
+.subitizeWrap .veil{position:absolute;inset:-10px;border-radius:26px;background:var(--card);box-shadow:var(--shadow);display:flex;align-items:center;justify-content:center;font-size:clamp(40px,7vw,64px);opacity:0;pointer-events:none;cursor:pointer;transition:opacity 260ms var(--ease-out);}
+.subitizeWrap.veiled .veil{opacity:1;pointer-events:auto;}
+/* Comparación: dos grupos como botones .choice grandes */
+.choices.compare{gap:26px;align-items:stretch;}
+.choice.groupChoice{min-width:150px;padding:22px 24px;}
+.choice.groupChoice .countbox{gap:10px;max-width:260px;}
+.choice.groupChoice .obj{font-size:clamp(30px,5vw,46px);cursor:default;}
+@media (prefers-reduced-motion: reduce){
+  .subitizeWrap .veil{transition:none;}
+}
+/* ===== FASE 2: Ciencias ampliada ===== */
+/* Tarjetas de dieta (mismo patrón que .habitat, reutiliza .choice) */
+.diets{display:flex;gap:18px;justify-content:center;flex-wrap:wrap;}
+.diet{width:180px;min-height:150px;border-radius:26px;color:#fff;}
+.diet.herb{background:linear-gradient(160deg,#8EE3B8,#57C596);}
+.diet.carn{background:linear-gradient(160deg,#F6A57E,#E8734D);}
+.diet .clabel{color:rgba(255,255,255,.95);font-size:18px;}
+/* dentro del @media (max-width:...) que ya reduce .habitat, añade: */
+/* .diet{width:150px;} */
+/* ===== Límite de sesión saludable ===== */
+/* ===== Límite de sesión saludable ===== */
+.breakOverlay{position:fixed;inset:0;display:flex;align-items:center;justify-content:center;
+  background:rgba(20,24,40,.55);z-index:80;padding:24px;opacity:0;transition:opacity .25s var(--ease-out);}
+.breakOverlay.show{opacity:1;}
+.breakOverlay[hidden]{display:none;}
+.breakPanel{max-width:520px;width:100%;text-align:center;display:flex;flex-direction:column;gap:16px;
+  align-items:center;transform:translateY(12px);transition:transform .3s var(--ease-out);}
+.breakOverlay.show .breakPanel{transform:translateY(0);}
+.breakEmoji{font-size:72px;line-height:1;}
+.breakMsg{font-size:20px;line-height:1.4;}
+.breakPanel .btn{min-width:220px;}
+.breakGate{display:flex;flex-direction:column;gap:12px;align-items:center;margin-top:4px;}
+.breakGateQ{font-size:28px;font-weight:700;}
+.choices.sessMins.disabled{opacity:.45;}
+.shakeNo{animation:sessShake .3s var(--ease-in-out);}
+@keyframes sessShake{0%,100%{transform:translateX(0)}25%{transform:translateX(-6px)}75%{transform:translateX(6px)}}
+@media (prefers-reduced-motion: reduce){
+  .breakOverlay,.breakPanel{transition:none;}
+  .breakPanel{transform:none;}
+  .shakeNo{animation:none;}
+}
+/* ===== Onboarding sin texto ===== */
+/* ===== Onboarding sin texto (coach mark) — pegar al final del <style>, tras el bloque @media prefers-reduced-motion ===== */
+.coach{position:absolute;inset:0;z-index:50;pointer-events:none;display:none;}
+.coach.show{display:block;animation:fadeIn 240ms var(--ease-out);}
+.coachRing{position:absolute;transform:translate(-50%,-50%);border-radius:50%;border:5px solid var(--sun);box-shadow:0 0 0 6px rgba(253,186,77,.25);animation:coachPulse 1.2s var(--ease-in-out) infinite;}
+@keyframes coachPulse{0%,100%{transform:translate(-50%,-50%) scale(1);opacity:.95;}50%{transform:translate(-50%,-50%) scale(1.12);opacity:.55;}}
+.coachHand{position:absolute;transform:translate(-50%,-4px);font-size:52px;line-height:1;filter:drop-shadow(0 4px 6px rgba(0,0,0,.22));animation:coachTap 1.2s var(--ease-in-out) infinite;}
+@keyframes coachTap{0%,100%{transform:translate(-50%,-4px);}50%{transform:translate(-50%,12px);}}
+.coachBubble{position:absolute;left:50%;bottom:26px;transform:translateX(-50%);display:flex;align-items:center;gap:12px;background:var(--card);box-shadow:var(--shadow-lg);border-radius:26px;padding:14px 22px;max-width:88%;animation:coachRise 420ms var(--ease-out);}
+@keyframes coachRise{from{opacity:0;transform:translateX(-50%) translateY(16px);}to{opacity:1;transform:translateX(-50%) translateY(0);}}
+.coachMascot{font-size:44px;line-height:1;animation:bob 2.6s var(--ease-in-out) infinite;}
+.coachTxt{font-size:20px;font-weight:600;color:var(--ink);}
+@media (prefers-reduced-motion: reduce){.coachRing,.coachHand,.coachMascot{animation:none !important;}}
+/* ===== PWA ===== */
+  /* ===== PWA install pill ===== */
   .installPill{position:fixed;right:18px;bottom:18px;z-index:60;display:none;align-items:center;gap:8px;border:none;border-radius:22px;background:var(--card);box-shadow:var(--shadow-lg);color:var(--ink);font-family:inherit;font-weight:600;font-size:18px;padding:12px 18px;cursor:pointer;opacity:0;transform:translateY(10px);transition:opacity 240ms var(--ease-out),transform 240ms var(--ease-out);}
   .installPill.show{display:flex;opacity:1;transform:none;}
   .installPill:active{transform:scale(.94);}
   .installPill .ip-ico{font-size:22px;line-height:1;}
   @media (prefers-reduced-motion: reduce){.installPill{transition:none;transform:none;}}
+/* ===== Estrategia bilingüe deliberada (Modo de idioma por perfil) ===== */
+#setBilMode{flex-direction:column;align-items:stretch;gap:10px;}
+#setBilMode .txt{width:100%;}
+.choices.bilMode{display:flex;gap:8px;width:100%;}
+.choices.bilMode .btn{flex:1 1 0;min-width:0;padding:12px 6px;font-size:15px;border-radius:16px;font-weight:600;}
+.choices.bilMode .btn.ghost{background:var(--card);color:var(--ink);}
+/* ===== Panel educador (local) ===== */
+.eduHead{font-size:13px;font-weight:600;color:var(--ink-soft);margin:18px 0 6px;}
+.eduHead:first-child{margin-top:2px;}
+.eduChild{display:flex;align-items:center;gap:12px;padding:10px 2px;border-top:1px solid #F0ECF6;}
+.eduChild:first-of-type{border-top:none;}
+.eduAv{font-size:30px;line-height:1;flex:0 0 auto;}
+.eduMeta{flex:1 1 auto;min-width:0;}
+.eduName{font-weight:600;font-size:16px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
+.eduChildSub{font-size:12.5px;color:var(--ink-soft);}
+.spark{display:flex;align-items:flex-end;gap:3px;height:30px;flex:0 0 auto;}
+.sparkbar{width:7px;border-radius:3px;background:#E7E1F0;}
+.sparkbar.hi{background:var(--sci);}
+.sparkbar.mid{background:var(--sun);}
+.sparkbar.lo{background:var(--read);}
+
+/* ===== Modo guiado padre-hijo (co-juego) — tarjeta discreta para el adulto ===== */
+.coplayCard{position:absolute;left:50%;bottom:16px;transform:translateX(-50%);z-index:45;
+  display:none;align-items:center;gap:12px;width:max-content;max-width:min(92%,560px);
+  background:var(--card,#fff);box-shadow:var(--shadow-lg,0 12px 34px rgba(60,40,10,.22));
+  border-radius:22px;padding:12px 14px 12px 16px;opacity:1;pointer-events:auto;
+  border:2px solid rgba(253,186,77,.45);text-align:left;}
+.coplayCard.show{display:flex;animation:cpRise 360ms var(--ease-out) both;}
+@keyframes cpRise{from{opacity:0;transform:translateX(-50%) translateY(14px);}to{opacity:1;transform:translateX(-50%) translateY(0);}}
+.cpIcon{font-size:34px;line-height:1;flex:0 0 auto;}
+.cpBody{flex:1 1 auto;min-width:0;}
+.cpKicker{font-size:12px;font-weight:700;letter-spacing:.04em;text-transform:uppercase;color:var(--sun,#E0952B);margin-bottom:2px;}
+.cpQ{font-size:17px;font-weight:600;color:var(--ink,#2b2b2b);line-height:1.28;}
+.cpClose{flex:0 0 auto;width:40px;height:40px;border-radius:50%;border:none;cursor:pointer;
+  background:rgba(0,0,0,.06);color:var(--ink,#333);font-size:18px;font-weight:700;line-height:1;
+  transition:transform 140ms var(--ease-out,ease),background 140ms;}
+.cpClose:hover{background:rgba(0,0,0,.12);}
+.cpClose:active{transform:scale(.88);}
+@media (prefers-reduced-motion: reduce){.coplayCard.show{animation:none !important;}}
 </style>
 <meta name="theme-color" content="#FDF6EC">
 <meta name="mobile-web-app-capable" content="yes">
@@ -240,6 +304,7 @@
 </head>
 <body>
 <div id="app">
+
   <div class="topbar">
     <button class="iconbtn" id="homeBtn" aria-label="Inicio" hidden>🏠</button>
     <button class="iconbtn" id="backBtn" aria-label="Atrás" hidden>⬅️</button>
@@ -251,10 +316,14 @@
       <span class="on" id="lgES">ES</span><span class="sep">·</span><span class="off" id="lgEN">EN</span>
     </button>
   </div>
+
+  <!-- PROFILES -->
   <section class="screen active" id="profiles">
     <div class="hero"><h1 id="pTitle">¿Quién juega?</h1><p id="pSub">Elige tu perfil</p></div>
     <div class="plist" id="plist"></div>
   </section>
+
+  <!-- HOME -->
   <section class="screen" id="home">
     <div class="hero"><h1>Pequeñautas</h1><p id="tagline">Aprende jugando</p></div>
     <div class="cards">
@@ -264,6 +333,8 @@
     </div>
     <button class="adultbtn" id="adultBtn">⚙️ <span id="lblAdult">Para grandes</span></button>
   </section>
+
+  <!-- GAME -->
   <section class="screen" id="game">
     <div class="prompt">
       <button class="speak" id="replayBtn" aria-label="Escuchar">🔊</button>
@@ -272,6 +343,8 @@
     <div class="stage" id="stage"></div>
     <div class="progress" id="progress"></div>
   </section>
+
+  <!-- CELEBRATION -->
   <div class="celebrate" id="celebrate">
     <div class="trophy" id="trophyEmoji">🏆</div>
     <h2 id="celTitle">¡Lo lograste!</h2>
@@ -281,34 +354,76 @@
       <button class="btn" id="celAgain"><span id="celAgainTxt">Otra vez</span></button>
     </div>
   </div>
+
+  <!-- SHEET: gate + settings + progress + new profile -->
   <div class="sheet" id="sheet">
     <div class="panel" id="panel">
+      <!-- gate -->
       <div id="gateView">
         <h3 id="gateTitle">Solo para grandes</h3>
         <p class="sub" id="gateSub">Mantén presionado el botón para entrar.</p>
         <div class="gate-visual" id="gateNum">Mantén presionado 👇</div>
         <button class="holdbtn" id="holdBtn"><span class="fill"></span><span class="txt" id="holdTxt">Mantén presionado</span></button>
       </div>
+      <!-- adult area (tabs) -->
       <div id="adultView" style="display:none">
         <div class="tabs">
           <button class="tab on" id="tabProg">📊 <span id="tabProgTxt">Progreso</span></button>
           <button class="tab" id="tabSet">⚙️ <span id="tabSetTxt">Ajustes</span></button>
+          <button class="tab" id="tabEdu">🧑‍🏫 <span id="tabEduTxt">Educador</span></button>
         </div>
+        <!-- progress -->
         <div id="progView">
           <h3 id="progTitle">Progreso</h3>
           <p class="sub" id="progSub">Cómo va tu peque.</p>
           <div id="progBody"></div>
         </div>
+        <!-- settings -->
         <div id="setView" style="display:none">
           <div class="setting"><div><div class="name" id="setSoundN">Voz y sonidos</div><div class="desc" id="setSoundD">Narración y efectos</div></div><button class="toggle on" id="tgSound"><span class="knob"></span></button></div>
           <div class="setting"><div><div class="name" id="setAnimN">Animaciones extra</div><div class="desc" id="setAnimD">Confeti y celebraciones</div></div><button class="toggle on" id="tgAnim"><span class="knob"></span></button></div>
           <div class="setting"><div><div class="name" id="setGuideN">Pistas guiadas</div><div class="desc" id="setGuideD">Ayuda progresiva al fallar</div></div><button class="toggle on" id="tgGuide"><span class="knob"></span></button></div>
-          <div class="setting" id="setSessLimit"><div class="txt"><div class="name" id="sessLimitName"></div><div class="desc" id="sessLimitDesc"></div></div><button class="toggle" id="sessLimitToggle" role="switch" aria-checked="true"><span class="knob"></span></button></div>
-          <div class="setting" id="setSessMins"><div class="txt"><div class="name" id="sessMinsName"></div><div class="desc" id="sessMinsDesc"></div></div><div class="choices sessMins" id="sessMinsChoices"><button class="btn ghost" data-mins="10" aria-pressed="false">10</button><button class="btn ghost" data-mins="15" aria-pressed="true">15</button><button class="btn ghost" data-mins="20" aria-pressed="false">20</button></div></div>
+          <div class="setting" id="setSessLimit">
+  <div class="txt">
+    <div class="name" id="sessLimitName"></div>
+    <div class="desc" id="sessLimitDesc"></div>
+  </div>
+  <button class="toggle" id="sessLimitToggle" role="switch" aria-checked="true"><span class="knob"></span></button>
+</div>
+<div class="setting" id="setSessMins">
+  <div class="txt">
+    <div class="name" id="sessMinsName"></div>
+    <div class="desc" id="sessMinsDesc"></div>
+  </div>
+  <div class="choices sessMins" id="sessMinsChoices">
+    <button class="btn ghost" data-mins="10" aria-pressed="false">10</button>
+    <button class="btn ghost" data-mins="15" aria-pressed="true">15</button>
+    <button class="btn ghost" data-mins="20" aria-pressed="false">20</button>
+  </div>
+</div>
+          <div class="setting" id="setBilMode">
+  <div class="txt">
+    <div class="name" id="bilModeName"></div>
+    <div class="desc" id="bilModeDesc"></div>
+  </div>
+  <div class="choices bilMode" id="bilModeChoices">
+    <button class="btn ghost" data-mode="immersion" aria-pressed="true"><span data-bil="immersion"></span></button>
+    <button class="btn ghost" data-mode="alternate" aria-pressed="false"><span data-bil="alternate"></span></button>
+    <button class="btn ghost" data-mode="mirror" aria-pressed="false"><span data-bil="mirror"></span></button>
+  </div>
+</div>
           <div class="tip" id="tipText">💡 AAP: acompaña a tu peque, sesiones de 10–15 min. El aprendizaje es mayor con un adulto al lado.</div>
           <button class="btn ghost" id="switchProfile" style="width:100%;margin-top:14px"><span id="switchTxt">Cambiar de niño</span></button>
         </div>
       </div>
+      <!-- educator panel (local, all profiles) -->
+      <div id="eduView" style="display:none">
+        <h3 id="eduTitle">Panel del educador</h3>
+        <p class="sub" id="eduSub">Resumen de todos los niños de este dispositivo.</p>
+        <div id="eduBody"></div>
+        <button class="btn ghost" id="eduExportBtn" style="width:100%;margin-top:14px">Exportar CSV</button>
+      </div>
+      <!-- new profile -->
       <div id="newView" style="display:none">
         <h3 id="newTitle">Nuevo peque</h3>
         <p class="sub" id="newSub">Elige un avatar y un nombre.</p>
@@ -319,8 +434,10 @@
       <button class="btn close" id="closeSheet"><span id="closeTxt">Listo</span></button>
     </div>
   </div>
-  <div class="coach" id="coach" aria-hidden="true"><div class="coachRing" id="coachRing"></div><div class="coachHand" id="coachHand">👆</div><div class="coachBubble"><span class="coachMascot">🦉</span><span class="coachTxt" id="coachTxt">¡Toca para jugar!</span></div></div>
+
+  <!-- COACH MARK: textless onboarding --><div class="coach" id="coach" aria-hidden="true"><div class="coachRing" id="coachRing"></div><div class="coachHand" id="coachHand">👆</div><div class="coachBubble"><span class="coachMascot">🦉</span><span class="coachTxt" id="coachTxt">¡Toca para jugar!</span></div></div>
 </div>
+
 <script src="app.js"></script>
 </body>
 </html>

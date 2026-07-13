@@ -1,45 +1,37 @@
 # 🚀 Pequeñautas
 
-Prototipo de **app educativa interactiva para preescolares (3–5 años)**, **bilingüe español/inglés**, con tres mini-juegos: **Números**, **Letras** y **Animales**.
+App educativa interactiva para **preescolares (3–5 años)**, **bilingüe español/inglés**, construida con evidencia y sin dependencias en tiempo de ejecución. Un solo `index.html` + `app.js` (offline-first, instalable como PWA).
 
-> Prototipo jugable: `index.html` + `app.js` (sin dependencias en tiempo de ejecución). Ábrelo en el navegador de una tablet o celular.
+**Demo:** ver despliegue en Vercel (link en el PR / releases).
 
-## 🆕 Novedades — Sprint 1
+## 🎮 Qué hace
 
-- **Perfiles por niño + persistencia:** cada peque tiene su avatar, sus estrellas y su nivel; el progreso se guarda localmente y sobrevive al cierre.
-- **Analítica de aprendizaje:** panel "Progreso" (tras el *parent gate*) con estrellas, rondas, aciertos a la primera, tiempo medio, precisión por materia e ítems a reforzar.
-- **Pistas progresivas:** feedback andamiado por intento — la 1ª falla orienta, la 2ª refuerza y revela/explica la respuesta correcta.
+Tres mini-juegos con audio bilingüe, botones grandes y navegación audio-first:
 
-## 🎮 Mini-juegos
-
-| Mini-juego | Aprende | Mecánica |
+| Materia | Aprende | Mecánicas |
 |---|---|---|
-| 🔢 Números | Conteo y correspondencia número–cantidad | Toca los objetos para contarlos en voz alta, luego elige el número |
-| 🔤 Letras | Fonética: letra + sonido inicial | Escucha la letra y su sonido, elige el dibujo que empieza igual |
-| 🐢 Animales | Clasificación por hábitat | Ubica al animal en agua, tierra o cielo |
+| 🔢 Números | Conteo, correspondencia número-cantidad, **subitización**, **comparar (más/menos)** | tocar para contar, elegir número, reconocer cantidad, comparar grupos |
+| 🔤 Letras | Fonética (letra + sonido inicial) | elegir el dibujo que empieza con la letra |
+| 🐢 Animales | Clasificación por **hábitat** y por **dieta** (herbívoro/carnívoro) | ubicar al animal donde vive / según qué come |
 
-Audio bilingüe (Web Speech API), botones grandes, iconos siempre visibles, y un **panel para grandes** (con *parent gate* de mantener-presionado).
+Además: **perfiles por niño** con progreso persistente, **analítica de aprendizaje** + **panel educador** local, **pistas progresivas**, **límite de sesión saludable (AAP)**, **onboarding sin texto**, **modo de idioma** (inmersión/alternado/espejo), **modo guiado padre-hijo**, y **PWA offline**.
 
 ## 🧪 Base de evidencia
+Hirsh-Pasek et al. 2015 (Cuatro Pilares) · Callaghan et al. 2021 (andamiaje + feedback) · NAEYC 2022 (juego guiado) · Wildgruber et al. 2024 · Google/NN-g (UX pre-lectores) · AAP (tiempo de pantalla) · Lepper et al. 1973 (anti-sobrejustificación). Ver `docs/`.
 
-- **Cuatro Pilares** (Hirsh-Pasek et al., 2015): aprendizaje activo, comprometido, significativo y social.
-- **Andamiaje** (Callaghan et al., 2021, *BJET*, n=240): dificultad gradual + **feedback verbal nombrado y explicativo**.
-- **Juego guiado** (NAEYC, 2022): las pistas *preguntan y orientan*.
-- **UX para pre-lectores** (Google for Developers; NN/g): sin botones solo-texto, objetivos táctiles grandes, instrucción multimodal.
-- **Evitar recompensa extrínseca como meta** (Lepper, Greene & Nisbett, 1973).
+## ▶️ Cómo probar
+Abre `index.html` en un navegador (tablet/celular ideal). Activa el sonido con 🔊. Crea un perfil, juega, y abre "Para grandes" para Progreso / Ajustes / Educador.
 
-## ▶️ Cómo probarlo
-
-Abre `index.html` en cualquier navegador moderno. Activa el sonido con 🔊. Crea un perfil, juega, y abre "Para grandes" para ver el panel de progreso.
-
-## 🔧 Desarrollo
-
+## 🔧 Desarrollo y tests
 ```bash
 npm install
 npx playwright install --with-deps chromium
-npm test   # test de humo headless
+npm test   # 19 smoke/feature tests (Playwright)
 ```
 
-## 📌 Estado
-
-Prototipo v0.2 (Sprint 1 completo). Próximos pasos: contenido ampliado (mates/ciencias), voces pregrabadas, gestos de arrastrar/trazar, PWA + offline.
+## 📚 Documentación
+- `ARCHITECTURE.md` — estructura del código y decisiones.
+- `ROADMAP.md` — horizonte de 30 mejoras con estado.
+- `docs/CONTEXT.md` — **memoria del proyecto** (estado, decisiones, cómo continuar).
+- `docs/bilingue.md` — estrategia bilingüe.
+- `docs/backend-supabase.md` — diseño de backend (feature-flag OFF).
