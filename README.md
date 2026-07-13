@@ -4,7 +4,13 @@ Prototipo de **app educativa interactiva para preescolares (3–5 años)**, **bi
 
 > Prototipo jugable en un solo archivo `index.html` (sin dependencias en tiempo de ejecución). Ábrelo en el navegador de una tablet o celular.
 
-## 🎮 Qué incluye
+## 🆕 Novedades — Sprint 1
+
+- **Perfiles por niño + persistencia:** cada peque tiene su avatar, sus estrellas y su nivel; el progreso se guarda localmente y sobrevive al cierre.
+- **Analítica de aprendizaje:** panel "Progreso" (tras el *parent gate*) con estrellas, rondas, aciertos a la primera, tiempo medio, precisión por materia e ítems a reforzar.
+- **Pistas progresivas:** feedback andamiado por intento — la 1ª falla orienta, la 2ª refuerza y revela/explica la respuesta correcta.
+
+## 🎮 Mini-juegos
 
 | Mini-juego | Aprende | Mecánica |
 |---|---|---|
@@ -12,21 +18,19 @@ Prototipo de **app educativa interactiva para preescolares (3–5 años)**, **bi
 | 🔤 Letras | Fonética: letra + sonido inicial | Escucha la letra y su sonido, elige el dibujo que empieza igual |
 | 🐢 Animales | Clasificación por hábitat | Ubica al animal en agua, tierra o cielo |
 
-Audio bilingüe (Web Speech API), botones grandes, iconos siempre visibles, y un **panel para grandes** (con *parent gate* de mantener-presionado) para controlar voz, animaciones y modo guiado.
+Audio bilingüe (Web Speech API), botones grandes, iconos siempre visibles, y un **panel para grandes** (con *parent gate* de mantener-presionado).
 
 ## 🧪 Base de evidencia
 
-El diseño se apoya en investigación revisada por pares:
-
-- **Cuatro Pilares** de aprendizaje (Hirsh-Pasek et al., 2015): activo, comprometido, significativo, socialmente interactivo — cada ronda exige una decisión cognitiva, no un toque reflejo.
-- **Andamiaje** (Callaghan et al., 2021, *BJET*, n=240): dificultad gradual (no aleatoria) + **feedback verbal nombrado y explicativo** ("¡Sí! Hay tres.").
-- **Juego guiado** (NAEYC, 2022): las pistas *preguntan y orientan*, no dan la respuesta.
-- **UX para pre-lectores** (Google for Developers; NN/g): evitar botones solo-texto, objetivos táctiles grandes, instrucción multimodal (sonido + visual + texto), gestos simples.
-- **Evitar recompensa extrínseca como meta** (Lepper, Greene & Nisbett, 1973): sin presión de tiempo ni economías de fichas agresivas; las estrellas celebran el logro, no son el objetivo explícito.
+- **Cuatro Pilares** (Hirsh-Pasek et al., 2015): aprendizaje activo, comprometido, significativo y social.
+- **Andamiaje** (Callaghan et al., 2021, *BJET*, n=240): dificultad gradual + **feedback verbal nombrado y explicativo**.
+- **Juego guiado** (NAEYC, 2022): las pistas *preguntan y orientan*.
+- **UX para pre-lectores** (Google for Developers; NN/g): sin botones solo-texto, objetivos táctiles grandes, instrucción multimodal.
+- **Evitar recompensa extrínseca como meta** (Lepper, Greene & Nisbett, 1973).
 
 ## ▶️ Cómo probarlo
 
-Abre `index.html` en cualquier navegador moderno. Para el audio, activa el sonido con el botón 🔊.
+Abre `index.html` en cualquier navegador moderno. Activa el sonido con 🔊. Crea un perfil, juega, y abre "Para grandes" para ver el panel de progreso.
 
 ## 🔧 Desarrollo
 
@@ -38,4 +42,4 @@ npm test   # test de humo headless
 
 ## 📌 Estado
 
-Prototipo (v0.1). Próximos pasos sugeridos: perfiles por niño, más niveles por materia, modo padre-hijo (co-juego), y contenido de ciencias ampliado.
+Prototipo v0.2 (Sprint 1 completo). Próximos pasos: contenido ampliado (mates/ciencias), voces pregrabadas, gestos de arrastrar/trazar, PWA + offline.
