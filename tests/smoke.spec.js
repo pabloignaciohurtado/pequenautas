@@ -3,17 +3,29 @@ const path = require('path');
 
 const fileUrl = 'file://' + path.resolve(__dirname, '../index.html');
 
-test('carga sin errores de consola y renderiza el hub con 3 materias', async ({ page }) => {
+async function createProfile(page, name) {
+  await page.goto(fileUrl);
+  await expect(page.locator('#profiles')).toBeVisible();
+  await page.click('.pcard.add');
+  await page.waitForTimeout(300);
+  await page.locator('.avopt').first().click();
+  await page.fill('#nameInput', name || 'Test');
+  await page.click('#createBtn');
+  await page.waitForTimeout(300);
+  await expect(page.locator('#home')).toBeVisible();
+}
+
+test('la pantalla de perfiles crea un perfil y lleva al hub con 3 materias', async ({ page }) => {
   const errors = [];
   page.on('pageerror', (e) => errors.push(e.message));
-  await page.goto(fileUrl);
-  await expect(page.locator('#home')).toBeVisible();
+  await createProfile(page, 'Sofia');
   await expect(page.locator('.subject')).toHaveCount(3);
+  await expect(page.locator('#chipNm')).toHaveText('Sofia');
   expect(errors).toEqual([]);
 });
 
-test('el juego de numeros suma una estrella al contar correctamente', async ({ page }) => {
-  await page.goto(fileUrl);
+test('el juego de numeros suma una estrella al acertar', async ({ page }) => {
+  await createProfile(page, 'Ana');
   await page.click('.subject[data-game="math"]');
   await page.waitForTimeout(500);
   const count = await page.$$eval('#stage .obj', (els) => els.length);
@@ -24,6 +36,27 @@ test('el juego de numeros suma una estrella al contar correctamente', async ({ p
   }
   await page.waitForTimeout(400);
   await expect(page.locator('#starCount')).toHaveText('1');
+});
+
+test('la pista progresiva revela la respuesta correcta tras dos fallas', async ({ page }) => {
+  await createProfile(page, 'Leo');
+  await page.click('.subject[data-game="math"]');
+  await page.waitForTimeout(500);
+  const count = await page.$$eval('#stage .obj', (els) => els.length);
+  const btns = await page.$$('#stage .choice');
+  let wrong = 0;
+  for (const b of btns) {
+    const n = await b.$eval('.cnum', (el) => parseInt(el.textContent, 10)).catch(() => null);
+    if (n !== count && wrong < 2) { await b.click(); wrong++; await page.waitForTimeout(250); }
+  }
+  await expect(page.locator('#stage .choice.reveal')).toHaveCount(1);
+});
+
+test('el progreso del perfil persiste tras recargar', async ({ page }) => {
+  await createProfile(page, 'Emma');
+  await page.reload();
+  await page.waitForTimeout(400);
+  await expect(page.locator('.pcard .nm', { hasText: 'Emma' })).toHaveCount(1);
 });
 
 test('cambia el idioma de ES a EN en la interfaz', async ({ page }) => {
