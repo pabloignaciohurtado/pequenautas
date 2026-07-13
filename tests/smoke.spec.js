@@ -64,3 +64,27 @@ test('cambia el idioma de ES a EN en la interfaz', async ({ page }) => {
   await page.click('#langBtn');
   await expect(page.locator('#lblMath')).toHaveText('Numbers');
 });
+
+test('la ronda de ciencias de dieta se renderiza con categorias herbivoro/carnivoro', async ({ page }) => {
+  await createProfile(page, 'Cora');
+  await page.click('.subject[data-game="science"]');
+  await page.waitForTimeout(400);
+  const ok = await page.evaluate(() => {
+    S.game = 'science'; S.round = 1; renderScienceRound();
+    return typeof DIET_CAT !== 'undefined' && document.querySelectorAll('#stage .choice').length >= 2;
+  });
+  expect(ok).toBe(true);
+});
+
+test('los controles de limite de sesion existen en Ajustes', async ({ page }) => {
+  await createProfile(page, 'Nico');
+  await page.click('#adultBtn');
+  await page.waitForTimeout(200);
+  const hb = await page.$('#holdBtn'); const box = await hb.boundingBox();
+  await page.mouse.move(box.x + box.width / 2, box.y + box.height / 2);
+  await page.mouse.down(); await page.waitForTimeout(1300); await page.mouse.up();
+  await page.waitForTimeout(200);
+  await page.click('#tabSet');
+  await expect(page.locator('#sessLimitToggle')).toHaveCount(1);
+  await expect(page.locator('#sessMinsChoices')).toHaveCount(1);
+});
