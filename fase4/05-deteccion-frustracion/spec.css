@@ -1,0 +1,54 @@
+/* ===== Fase 4 · #5 Detección de frustración (alerta suave al adulto) =====
+   Aditivo: nuevas clases únicamente, no se reescribe ninguna regla existente.
+   Reutiliza variables ya definidas en ship/index.html (--card,--shadow-lg,--ink,
+   --ink-soft,--sun,--ease-out) y clases ya existentes (.btn,.btn.ghost,.eduHead,
+   .toggle,.setting) para que la pieza nueva se vea nativa de la app.
+   Animación: solo transform/opacity, respeta prefers-reduced-motion. */
+
+/* Tarjeta de alerta al adulto: arriba-centro, discreta, no bloqueante.
+   Se posiciona lejos de .stage/.choices (que ocupan el centro/abajo) para
+   no interferir nunca con la jugabilidad del niño. */
+.frustCard{
+  position:absolute; left:50%; top:96px; transform:translateX(-50%);
+  z-index:55; display:none; align-items:flex-start; gap:12px;
+  width:max-content; max-width:min(92%,520px);
+  background:var(--card,#fff); box-shadow:var(--shadow-lg,0 12px 34px rgba(60,40,10,.22));
+  border-radius:22px; padding:14px 16px; opacity:1; pointer-events:auto;
+  border:2px solid rgba(224,117,43,.45); text-align:left;
+}
+.frustCard.show{ display:flex; animation:frustDrop 320ms var(--ease-out,ease) both; }
+@keyframes frustDrop{
+  from{ opacity:0; transform:translateX(-50%) translateY(-10px); }
+  to{ opacity:1; transform:translateX(-50%) translateY(0); }
+}
+.frustIcon{ font-size:28px; line-height:1; flex:0 0 auto; }
+.frustBody{ flex:1 1 auto; min-width:0; }
+.frustKicker{
+  font-size:12px; font-weight:700; letter-spacing:.04em; text-transform:uppercase;
+  color:#E0752B; margin-bottom:2px;
+}
+.frustMsg{ font-size:15.5px; font-weight:600; color:var(--ink,#2b2b2b); line-height:1.32; margin-bottom:10px; }
+.frustBtns{ display:flex; gap:8px; flex-wrap:wrap; }
+.btn.small{ font-size:14px; padding:9px 14px; border-radius:14px; box-shadow:none; }
+
+/* Insignia discreta sobre #profileChip: queda encendida hasta que el adulto
+   abre Progreso o Educador (unseen=false). Solo opacity animada. */
+.frustBadge{
+  position:absolute; top:-3px; right:-3px; width:14px; height:14px; border-radius:50%;
+  background:var(--sun,#FDBA4D); box-shadow:0 0 0 2px var(--card,#fff);
+  animation:frustPulse 1.6s var(--ease-in-out,ease) infinite;
+}
+@keyframes frustPulse{ 0%,100%{ opacity:1; } 50%{ opacity:.35; } }
+
+/* Bloque de resumen dentro de #progBody / #eduBody (reutiliza .lab/.eduHead ya existentes) */
+.frustInsight{ margin-top:14px; }
+.frustInsightRow{ font-size:14px; color:var(--ink-soft); }
+
+@media (prefers-reduced-motion: reduce){
+  .frustCard.show{ animation:none !important; }
+  .frustBadge{ animation:none !important; }
+}
+
+@media (max-width:720px){
+  .frustCard{ top:84px; max-width:94%; }
+}
