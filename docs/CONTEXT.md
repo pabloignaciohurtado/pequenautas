@@ -1,13 +1,13 @@
 # 🧠 Memoria del proyecto — Pequeñautas
 
-> Contexto para retomar el trabajo en cualquier sesión/agente futura. Última actualización: Sprint 3 (v0.4).
+> Contexto para retomar el trabajo en cualquier sesión/agente futura. Última actualización: Sprint 3 (v0.4) + despliegue.
 
 ## Qué es
 App educativa preescolar (3–5), bilingüe ES/EN, vanilla JS, offline-first, PWA. Repo: `pabloignaciohurtado/pequenautas`.
 
 ## Estado actual
 - `main` contiene v0.4: prototipo + Sprint 1 + Sprint 2 + Sprint 3 (5 features). 19 tests Playwright en verde.
-- Desplegado en Vercel (link en el PR de Sprint 3).
+- **Desplegado en producción: https://pequenautas.vercel.app** (proyecto Vercel `pequenautas`, deploys vía `deploy_to_vercel` con los 4 archivos: index.html, app.js, manifest.webmanifest, sw.js).
 - **Gestos de trazar/arrastrar quedó diferido** (falta `jsCode` integrable) — es lo primero a retomar.
 
 ## Decisiones clave
