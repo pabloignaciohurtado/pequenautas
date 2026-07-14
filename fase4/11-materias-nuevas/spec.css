@@ -1,0 +1,72 @@
+/* ==================== #11 Materias nuevas: estilos aditivos ====================
+   Solo agrega reglas NUEVAS (nuevas variables, nuevas clases :nth-child(4/5/6)
+   de .subject que ya existe en index.html, y nuevas clases de contenido para
+   Emociones/Formas y colores/Rutinas). No redeclara ninguna variable ni regla
+   existente con un valor distinto. Todo lo animado usa solo transform/opacity
+   (bob/tileIn/goodPulse/shake/hintPulse ya definidas en index.html se
+   reutilizan tal cual). La regla global de accesibilidad
+   "@media (prefers-reduced-motion: reduce){*{animation-duration:.001ms
+   !important;...}}" que ya existe en index.html cubre automáticamente
+   cualquier elemento nuevo (usa el selector universal "*"), así que no hace
+   falta declarar una excepción aparte aquí. */
+
+:root{
+  --emo:   #FF8C42; --emo-2:   #FFC08A; /* Emociones (socioemocional) */
+  --shape: #A57EDC; --shape-2: #C9AEEC; /* Formas y colores */
+  --rout:  #35B4C4; --rout-2:  #7FDCE6; /* Rutinas */
+}
+
+/* Las 3 tarjetas nuevas se inyectan por spec.js como hijas 4/5/6 de .cards
+   (después de math/reading/science), así que :nth-child(4/5/6) las alcanza
+   con el mismo mecanismo que ya usa index.html para 1/2/3. */
+.subject:nth-child(4){animation-delay:270ms;background:linear-gradient(160deg,var(--emo-2),var(--emo));}
+.subject:nth-child(5){animation-delay:340ms;background:linear-gradient(160deg,var(--shape-2),var(--shape));}
+.subject:nth-child(6){animation-delay:410ms;background:linear-gradient(160deg,var(--rout-2),var(--rout));}
+.subject:nth-child(4) .emoji{animation-delay:1.2s;}
+.subject:nth-child(5) .emoji{animation-delay:1.6s;}
+.subject:nth-child(6) .emoji{animation-delay:2s;}
+
+/* ===== Emociones: escena grande + tarjetas de emoción (mismo patrón que .habitat/.diet) ===== */
+.scenarioBig{font-size:clamp(80px,14vw,130px);line-height:1;animation:bob 2.8s var(--ease-in-out) infinite;filter:drop-shadow(0 8px 10px rgba(0,0,0,.15));}
+.choices.emos{display:flex;gap:18px;justify-content:center;flex-wrap:wrap;}
+.emoCard{width:170px;min-height:150px;border-radius:26px;color:#fff;}
+.emoCard.happy{background:linear-gradient(160deg,#FFD98A,#FFB84D);}
+.emoCard.sad{background:linear-gradient(160deg,#9FC3F5,#6FA3E0);}
+.emoCard.angry{background:linear-gradient(160deg,#FF9E9E,#E86A6A);}
+.emoCard.scared{background:linear-gradient(160deg,#C9AEEC,var(--shape));}
+.emoCard.calm{background:linear-gradient(160deg,#8EE3B8,#57C596);}
+.emoCard .clabel{color:rgba(255,255,255,.95);font-size:18px;}
+
+/* ===== Formas: figura grande en CSS puro (sin depender de que el emoji de
+   una figura se vea igual entre plataformas) + iconos pequeños en las opciones ===== */
+.shapeStage{width:clamp(120px,20vw,170px);height:clamp(120px,20vw,170px);background:linear-gradient(160deg,var(--shape-2),var(--shape));box-shadow:var(--shadow-lg);animation:tileIn 500ms var(--ease-out);}
+.shapeStage.circle{border-radius:50%;}
+.shapeStage.square{border-radius:18px;}
+.shapeStage.triangle{width:0;height:0;background:none;box-shadow:none;border-left:85px solid transparent;border-right:85px solid transparent;border-bottom:150px solid var(--shape);}
+.shapeStage.star{clip-path:polygon(50% 0%,61% 35%,98% 35%,68% 57%,79% 91%,50% 70%,21% 91%,32% 57%,2% 35%,39% 35%);}
+.choices.shapes{display:flex;gap:18px;justify-content:center;flex-wrap:wrap;}
+.choice.shapeChoice{min-width:150px;gap:10px;}
+.shapeIcon{display:block;width:56px;height:56px;background:var(--shape);}
+.shapeIcon.circle{border-radius:50%;}
+.shapeIcon.square{border-radius:10px;}
+.shapeIcon.triangle{width:0;height:0;background:none;border-left:28px solid transparent;border-right:28px solid transparent;border-bottom:48px solid var(--shape);}
+.shapeIcon.star{clip-path:polygon(50% 0%,61% 35%,98% 35%,68% 57%,79% 91%,50% 70%,21% 91%,32% 57%,2% 35%,39% 35%);}
+
+/* ===== Colores: swatch grande + chips de color en las opciones (el color
+   real se fija inline por spec.js vía style.background=hex, aquí solo forma) ===== */
+.colorSwatch{width:120px;height:120px;border-radius:26px;box-shadow:var(--shadow-lg);animation:tileIn 500ms var(--ease-out);}
+.choices.colors{display:flex;gap:18px;justify-content:center;flex-wrap:wrap;}
+.choice.colorChoice{min-width:150px;gap:10px;}
+.colorChip{display:block;width:56px;height:56px;border-radius:18px;box-shadow:inset 0 0 0 3px rgba(255,255,255,.6);}
+
+/* ===== Rutinas: tarjetas mañana/tarde/noche (mismo patrón que .habitat) ===== */
+.choices.routines{display:flex;gap:18px;justify-content:center;flex-wrap:wrap;}
+.routineCard{width:170px;min-height:150px;border-radius:26px;color:#fff;}
+.routineCard.morning{background:linear-gradient(160deg,#FFD98A,var(--sun));}
+.routineCard.afternoon{background:linear-gradient(160deg,#7ED0F5,var(--water));}
+.routineCard.night{background:linear-gradient(160deg,#8C8FE0,#5B5FB0);}
+.routineCard .clabel{color:rgba(255,255,255,.95);font-size:18px;}
+
+@media (max-width:720px){
+  .emoCard,.routineCard{width:150px;}
+}
