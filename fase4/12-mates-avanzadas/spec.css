@@ -1,0 +1,29 @@
+/* ===== Mejora #12: Mates avanzadas (sumas/restas, patrones, medición) ===== */
+/* Sumas: dos grupos .countbox reutilizados + signos */
+.opRow{display:flex;align-items:center;justify-content:center;gap:14px;flex-wrap:wrap;max-width:780px;margin:0 auto;}
+.opRow .countbox{max-width:230px;}
+.opSign{font-size:clamp(34px,6vw,50px);font-weight:700;color:var(--ink-soft);line-height:1;}
+.opQBox{width:clamp(64px,11vw,90px);height:clamp(64px,11vw,90px);border-radius:22px;background:#F3EEFB;display:flex;align-items:center;justify-content:center;font-size:clamp(30px,5vw,44px);font-weight:700;color:var(--ink-soft);}
+
+/* Restas: objetos "quitados" (sólo opacity, sin animación) */
+.obj.takenAway{opacity:.28;position:relative;}
+.obj.takenAway::after{content:'✖';position:absolute;inset:0;display:flex;align-items:center;justify-content:center;font-size:.5em;color:var(--read);}
+
+/* Patrones: fila de fichas + ficha "?" */
+.patternRow{display:flex;align-items:center;justify-content:center;gap:10px;flex-wrap:wrap;max-width:820px;margin:0 auto;}
+.patTile{width:clamp(52px,9vw,80px);height:clamp(52px,9vw,80px);border-radius:20px;background:var(--card);box-shadow:var(--shadow);display:flex;align-items:center;justify-content:center;font-size:clamp(28px,5vw,44px);line-height:1;opacity:0;transform:scale(.4);animation:pop 380ms var(--ease-out) forwards;}
+.patTile.qmark{background:#F3EEFB;color:var(--ink-soft);font-weight:700;}
+
+/* Medición: dos "cintas" de distinto largo como choice */
+.choices.measureRow{gap:26px;align-items:center;}
+.choice.measureBar{min-width:0;padding:20px 22px;display:flex;flex-direction:column;align-items:center;gap:10px;}
+.measureBar .mIcon{font-size:clamp(30px,5vw,44px);line-height:1;}
+.measureBar .lenFill{display:block;height:26px;border-radius:14px;background:linear-gradient(160deg,var(--math-2),var(--math));}
+
+@media (max-width:720px){
+  .opRow{gap:8px;} .opSign{font-size:30px;}
+  .patTile{width:48px;height:48px;font-size:26px;}
+}
+@media (prefers-reduced-motion: reduce){
+  .patTile{opacity:1 !important;transform:none !important;}
+}
