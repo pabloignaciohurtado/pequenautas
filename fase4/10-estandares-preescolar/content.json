@@ -1,0 +1,257 @@
+{
+  "$schemaVersion": 1,
+  "product": "Pequeñautas",
+  "point": 10,
+  "slug": "estandares-preescolar",
+  "ageRangeYears": "3-5",
+  "generatedFrom": "/home/claude/ship/app.js (MATH_LEVELS, LETTERS, ANIMALS, HAB, DIET_CAT) — snapshot leída el 2026-07-13",
+  "purpose_es": "Mapear cada ítem/actividad jugable de Pequeñautas a objetivos de marcos curriculares preescolares reales, para que un educador o evaluador pueda ver, por juego y por ítem, qué destreza enseña y a qué estándar se alinea. Es un documento de contenido (metadatos), no código: no se ejecuta en runtime ni se importa desde app.js.",
+  "purpose_en": "Map every playable item/activity in Pequeñautas to real preschool curriculum framework objectives, so an educator or reviewer can see, per game and per item, which skill it teaches and which standard it aligns to. This is a content (metadata) deliverable, not code: it is not executed at runtime and is not imported by app.js.",
+  "confidenceLegend": {
+    "verified": "Texto/código confirmado contra una fuente primaria u oficial (documento del organismo emisor) durante la investigación de este entregable.",
+    "pending_verification": "Código/área confirmados como existentes por al menos una fuente, pero el texto literal citado aquí no pudo confirmarse 1:1 contra la sección exacta del documento oficial en esta sesión; usar como referencia de trabajo y verificar antes de publicarlo como certificación formal."
+  },
+  "frameworks": [
+    {
+      "id": "CCSS-K",
+      "name_es": "Common Core State Standards — Kindergarten",
+      "name_en": "Common Core State Standards — Kindergarten",
+      "org": "National Governors Association Center for Best Practices & Council of Chief State School Officers (NGA/CCSSO), 2010",
+      "url": "http://www.corestandards.org/",
+      "scope_note_es": "Escrito para Kindergarten (≈5–6 años), un año por encima del rango de Pequeñautas (3–5). Se usa como objetivo de alineación 'hacia adelante' (builds toward), no como algo que un preescolar de 3–4 años deba cumplir hoy.",
+      "scope_note_en": "Written for Kindergarten (~ages 5-6), one year above Pequeñautas' 3-5 range. Used as a forward-alignment ('builds toward') target, not something a 3-4 year old is expected to meet today.",
+      "confidence": "verified"
+    },
+    {
+      "id": "HS-ELOF",
+      "name_es": "Head Start Early Learning Outcomes Framework: Ages Birth to Five — banda 'Preschooler'",
+      "name_en": "Head Start Early Learning Outcomes Framework: Ages Birth to Five — 'Preschooler' band",
+      "org": "U.S. Department of Health & Human Services, Administration for Children and Families, Office of Head Start (2015)",
+      "url": "https://headstart.gov/school-readiness/article/head-start-early-learning-outcomes-framework",
+      "scope_note_es": "Diseñado específicamente para 3–5 años; es el marco con mejor ajuste de edad para Pequeñautas. Se usa como referencia principal para 'qué debe poder hacer un preescolar hoy'.",
+      "scope_note_en": "Designed specifically for ages 3-5; the best age-fit framework for Pequeñautas. Used as the primary reference for 'what a preschooler should be able to do today'.",
+      "confidence": "verified",
+      "sourceChecked": "https://highscope.org/wp-content/uploads/2018/08/HeadStartEarlyLearning0-5toCORAdvantage1.5_2_24_17-SS.pdf"
+    },
+    {
+      "id": "NGSS-K",
+      "name_es": "Next Generation Science Standards — Kindergarten (Ciencias de la vida)",
+      "name_en": "Next Generation Science Standards — Kindergarten (Life Science)",
+      "org": "Achieve, Inc. / NGSS Lead States, 2013",
+      "url": "https://www.nextgenscience.org/",
+      "scope_note_es": "Igual que CCSS-K, escrito para Kindergarten. Se incluye porque en la práctica de alineación curricular EE. UU. CCSS y NGSS se citan juntos, y Pequeñautas no tenía ninguna referencia científica formal hasta este documento.",
+      "scope_note_en": "Like CCSS-K, written for Kindergarten. Included because in US curriculum-alignment practice CCSS and NGSS are cited together, and Pequeñautas had no formal science standards reference before this document.",
+      "confidence": "verified"
+    },
+    {
+      "id": "BCEP-CL",
+      "name_es": "Bases Curriculares de la Educación Parvularia (Chile), Nivel de Transición (NT, 4–6 años)",
+      "name_en": "Chilean Early Childhood Education Curriculum Framework, Transition Level (ages 4-6)",
+      "org": "Ministerio de Educación de Chile (MINEDUC), Subsecretaría de Educación Parvularia, 2018",
+      "url": "https://parvularia.mineduc.cl/",
+      "scope_note_es": "Marco preescolar en español, incluido porque Pequeñautas es bilingüe ES/EN: su contenido en español debe poder situarse también en un marco curricular hispanohablante, no solo en normas de EE. UU. Nivel de Transición cubre 4–6 años, ligeramente por encima del piso de 3 años de la app; incluso así, salvo el rango extremo bajo (3 años), es el marco de mejor ajuste disponible en español.",
+      "scope_note_en": "Spanish-language preschool framework, included because Pequeñautas is ES/EN bilingual: its Spanish content should be locatable in a Spanish-language framework too, not only US standards. Transition Level covers ages 4-6, slightly above the app's 3-year floor; even so, outside the very youngest band it is the best-fit Spanish-language framework available.",
+      "confidence": "verified"
+    },
+    {
+      "id": "NAEYC-DAP-2022",
+      "name_es": "Developmentally Appropriate Practice (NAEYC, 4ª ed. 2022)",
+      "name_en": "Developmentally Appropriate Practice (NAEYC, 4th ed. 2022)",
+      "org": "National Association for the Education of Young Children",
+      "url": "https://www.naeyc.org/resources/position-statements/dap",
+      "scope_note_es": "No es un estándar de contenido por materia (no da códigos de ítem). Ya se cita en app.js (cabecera del archivo y S.tip) como fundamento del diseño pedagógico general de la app (juego guiado, pistas andamiadas). Se incluye aquí solo por trazabilidad/consistencia con lo ya declarado en el código.",
+      "scope_note_en": "Not a subject-content standard (provides no item codes). Already cited in app.js (file header and S.tip) as the basis for the app's general pedagogical design (guided play, scaffolded hints). Included here only for traceability/consistency with what the code already declares.",
+      "confidence": "verified",
+      "itemLevelCodes": false
+    }
+  ],
+
+  "domains": [
+    {
+      "id": "math.count",
+      "game": "math",
+      "subtype": "count",
+      "keyPattern": "math-{n}",
+      "keyRange": "n = 1..7 (rango efectivo de MATH_LEVELS=[[1,3],[2,4],[3,5],[4,6],[5,7]])",
+      "skill_es": "Contar objetos tocándolos uno a uno y usar el conteo para responder '¿cuántos hay?'; cardinalidad (el último número contado = la cantidad total).",
+      "skill_en": "Count objects by tapping them one at a time and use counting to answer 'how many are there?'; cardinality (the last number counted = the total quantity).",
+      "standards": [
+        { "framework": "CCSS-K", "code": "K.CC.B.4", "label_es": "Comprender la relación entre números y cantidades; conectar el conteo con la cardinalidad.", "label_en": "Understand the relationship between numbers and quantities; connect counting to cardinality.", "confidence": "verified" },
+        { "framework": "CCSS-K", "code": "K.CC.B.5", "label_es": "Contar para responder '¿cuántos hay?' sobre hasta 20 objetos.", "label_en": "Count to answer 'how many?' questions about as many as 20 things.", "confidence": "verified" },
+        { "framework": "HS-ELOF", "code": "P-MATH 1", "label_es": "El niño conoce los nombres de los números y la secuencia de conteo.", "label_en": "Child knows number names and the count sequence.", "confidence": "verified" },
+        { "framework": "HS-ELOF", "code": "P-MATH 3", "label_es": "El niño comprende la relación entre números y cantidades.", "label_en": "Child understands the relationship between numbers and quantities.", "confidence": "verified" },
+        { "framework": "BCEP-CL", "code": "OA6 (Núcleo Pensamiento Matemático, Nivel Transición)", "label_es": "Emplear los números, para contar, identificar, cuantificar y comparar cantidades hasta el 20 e indicar orden o posición de algunos elementos en situaciones cotidianas o juegos.", "label_en": "(ES-only framework) Use numbers to count, identify, quantify and compare quantities up to 20, and indicate order/position of elements in everyday situations or games.", "confidence": "verified", "source": "https://parvularia.mineduc.cl/wp-content/uploads/2021/11/8.-Fichas-Pedagogicas-NT-Pensamiento-Matematico.pdf" }
+      ]
+    },
+    {
+      "id": "math.subitize",
+      "game": "math",
+      "subtype": "subitize",
+      "keyPattern": "math-sub-{n}",
+      "keyRange": "n = 2..5",
+      "skill_es": "Reconocer 'a simple vista' cuántos objetos hay en un grupo pequeño (2–5), sin necesidad de contarlos uno a uno (subitización perceptual).",
+      "skill_en": "Recognize at a glance how many objects are in a small group (2-5), without needing to count one by one (perceptual subitizing).",
+      "standards": [
+        { "framework": "HS-ELOF", "code": "P-MATH 2", "label_es": "El niño reconoce la cantidad de objetos en un conjunto pequeño.", "label_en": "Child recognizes the number of objects in a small set.", "confidence": "verified" },
+        { "framework": "CCSS-K", "code": "(sin código directo)", "label_es": "CCSS no nombra la subitización explícitamente; esta destreza es precursora perceptual de K.CC.B.5 (contar para responder '¿cuántos hay?').", "label_en": "CCSS does not name subitizing explicitly; this skill is a perceptual precursor to K.CC.B.5 (count to answer 'how many?').", "confidence": "verified" },
+        { "framework": "BCEP-CL", "code": "OA6 (Núcleo Pensamiento Matemático, Nivel Transición)", "label_es": "Mismo OA que math.count: 'cuantificar' cantidades incluye el reconocimiento rápido de pequeñas colecciones.", "label_en": "(ES-only framework) Same OA as math.count: 'quantifying' amounts includes fast recognition of small collections.", "confidence": "verified" }
+      ]
+    },
+    {
+      "id": "math.compare",
+      "game": "math",
+      "subtype": "compare",
+      "keyPattern": "math-cmp",
+      "keyRange": "clave única, sin número embebido (ver integration.md / riesgo de granularidad en manifest.json)",
+      "skill_es": "Comparar dos grupos de objetos y señalar cuál tiene MÁS (relación de cantidad: más que / menos que).",
+      "skill_en": "Compare two groups of objects and point to which has MORE (quantity relation: more than / less than).",
+      "standards": [
+        { "framework": "CCSS-K", "code": "K.CC.C.6", "label_es": "Identificar si el número de objetos de un grupo es mayor que, menor que o igual al de otro grupo.", "label_en": "Identify whether the number of objects in one group is greater than, less than, or equal to the number of objects in another group.", "confidence": "verified" },
+        { "framework": "HS-ELOF", "code": "P-MATH 4", "label_es": "El niño compara números.", "label_en": "Child compares numbers.", "confidence": "verified" },
+        { "framework": "BCEP-CL", "code": "OA6 (Núcleo Pensamiento Matemático, Nivel Transición)", "label_es": "Mismo OA que math.count: 'comparar cantidades' está incluido textualmente en el objetivo.", "label_en": "(ES-only framework) Same OA as math.count: 'comparing quantities' is explicitly included in the objective text.", "confidence": "verified" }
+      ]
+    },
+    {
+      "id": "reading.letterRecognition",
+      "game": "reading",
+      "subtype": "letter-word-match",
+      "keyPattern": "read-{L}",
+      "keyRange": "L = una de las 11 letras usadas por LETTERS.es ∪ LETTERS.en (ver items[] abajo)",
+      "skill_es": "Reconocer y nombrar una letra mayúscula, y asociarla con la palabra/imagen que empieza con ella (conocimiento del alfabeto).",
+      "skill_en": "Recognize and name an uppercase letter, and match it to the word/image that starts with it (alphabet knowledge).",
+      "note_es": "La clave registrada ('read-A', 'read-C', 'read-M', 'read-O', 'read-S') es independiente del idioma: la MISMA clave se usa cuando la sesión está en español o en inglés, aunque la palabra/objeto enseñado sea distinto (p. ej. 'read-A' = Árbol en ES, Apple en EN). Ver integration.md.",
+      "note_en": "The logged key ('read-A', 'read-C', 'read-M', 'read-O', 'read-S') is language-independent: the SAME key is used whether the session is in Spanish or English, even though the taught word/object differs (e.g. 'read-A' = Árbol in ES, Apple in EN). See integration.md.",
+      "standards": [
+        { "framework": "CCSS-K", "code": "RF.K.1d", "label_es": "Reconocer y nombrar todas las letras mayúsculas y minúsculas del alfabeto.", "label_en": "Recognize and name all upper- and lowercase letters of the alphabet.", "confidence": "verified" },
+        { "framework": "HS-ELOF", "code": "P-LIT 3", "label_es": "El niño identifica letras del alfabeto y produce los sonidos correctos asociados a ellas.", "label_en": "Child identifies letters of the alphabet and produces correct sounds associated with letters.", "confidence": "verified" },
+        { "framework": "BCEP-CL", "code": "Núcleo Lenguaje Verbal, Nivel Transición — OA de identificación de letras/grafemas en palabras conocidas", "label_es": "Área confirmada por al menos una fuente (Programa Pedagógico NT1/NT2, MINEDUC); el texto y número exacto del OA no se pudo verificar 1:1 contra el documento oficial BCEP 2018 (págs. 67–72) en esta sesión. Verificar antes de publicar como certificación formal.", "label_en": "(ES-only framework) Area confirmed by at least one source (Programa Pedagógico NT1/NT2, MINEDUC); the exact OA text/number could not be verified 1:1 against the official BCEP 2018 document (pp. 67-72) in this session. Verify before publishing as a formal certification.", "confidence": "pending_verification" }
+      ]
+    },
+    {
+      "id": "reading.initialSound",
+      "game": "reading",
+      "subtype": "phonological-awareness",
+      "keyPattern": "read-{L}",
+      "keyRange": "misma clave que reading.letterRecognition — es la MISMA ronda de juego; el audio dice el sonido y pregunta '¿qué empieza con L?'",
+      "skill_es": "Aislar y reconocer el sonido inicial de una letra/palabra hablada (conciencia fonológica temprana).",
+      "skill_en": "Isolate and recognize the initial sound of a spoken letter/word (early phonological awareness).",
+      "standards": [
+        { "framework": "CCSS-K", "code": "RF.K.2d", "label_es": "Aislar y pronunciar el sonido inicial en palabras habladas.", "label_en": "Isolate and pronounce the initial sound (phoneme) in spoken words.", "confidence": "verified" },
+        { "framework": "CCSS-K", "code": "RF.K.3a", "label_es": "Demostrar conocimiento básico de la correspondencia letra-sonido.", "label_en": "Demonstrate basic knowledge of one-to-one letter-sound correspondences.", "confidence": "verified" },
+        { "framework": "HS-ELOF", "code": "P-LIT 1", "label_es": "El niño demuestra conciencia de que el lenguaje hablado está compuesto por segmentos de sonido más pequeños.", "label_en": "Child demonstrates awareness that spoken language is composed of smaller segments of sound.", "confidence": "verified" },
+        { "framework": "BCEP-CL", "code": "Núcleo Lenguaje Verbal, Nivel Transición — OA de conciencia fonológica (sonidos iniciales/aliteraciones)", "label_es": "Texto candidato hallado en fuente oficial (Programa Pedagógico NT1/NT2, MINEDUC): 'Iniciar progresivamente la conciencia fonológica (sonidos de las palabras habladas) mediante la producción y asociación de palabras que tengan los mismos sonidos iniciales (aliteraciones) y finales (rimas).' El número de OA citado por esa fuente (6 u 11 según el documento consultado) no fue posible reconciliar 1:1 contra BCEP 2018 en esta sesión; verificar antes de publicar.", "label_en": "(ES-only framework) Candidate text found in an official source (Programa Pedagógico NT1/NT2, MINEDUC): 'Progressively begin phonological awareness (sounds of spoken words) through producing and associating words with matching initial sounds (alliteration) and final sounds (rhyme).' The OA number cited by that source (6 or 11 depending on the document consulted) could not be reconciled 1:1 against BCEP 2018 in this session; verify before publishing.", "confidence": "pending_verification" }
+      ]
+    },
+    {
+      "id": "science.habitatClassification",
+      "game": "science",
+      "subtype": "habitat",
+      "keyPattern": "sci-{hab}",
+      "keyRange": "hab ∈ {water, land, sky}",
+      "skill_es": "Clasificar animales según dónde viven (agua / tierra / cielo); asociar un ser vivo con su hábitat.",
+      "skill_en": "Classify animals by where they live (water / land / sky); associate a living thing with its habitat.",
+      "note_es": "La clave registrada agrupa por HÁBITAT, no por animal individual: 'sci-water' se registra sin importar cuál de los 4 animales acuáticos apareció en esa ronda. Ver items[] para la lista completa de animales por hábitat.",
+      "note_en": "The logged key groups by HABITAT, not by individual animal: 'sci-water' is logged regardless of which of the 4 water animals appeared in that round. See items[] for the full animal-by-habitat list.",
+      "standards": [
+        { "framework": "HS-ELOF", "code": "P-SCI 3", "label_es": "El niño compara y categoriza fenómenos observables.", "label_en": "Child compares and categorizes observable phenomena.", "confidence": "verified" },
+        { "framework": "NGSS-K", "code": "K-LS1-1", "label_es": "Usar observaciones para describir patrones de lo que las plantas y los animales (incluidos los humanos) necesitan para sobrevivir.", "label_en": "Use observations to describe patterns of what plants and animals (including humans) need to survive.", "confidence": "verified" },
+        { "framework": "BCEP-CL", "code": "Núcleo Exploración del Entorno Natural, Nivel Transición — OA de características/necesidades de seres vivos", "label_es": "Área y núcleo confirmados (existen 'OA 06 EEN NT' y 'OA 07 EEN NT' en el índice oficial de MINEDUC); se pudo verificar el texto de OA1 del mismo núcleo ('Manifestar interés y asombro al ampliar información sobre cambios que ocurren en el entorno natural, a las personas, animales, plantas, lugares y cuerpos celestes...'), pero es un OA de 'interés/asombro' general, no específico de clasificación por hábitat. El texto exacto de OA6/OA7 (más pertinente a esta actividad) no se pudo confirmar en esta sesión; verificar contra BCEP 2018 págs. 81–87 antes de publicar.", "label_en": "(ES-only framework) Core/area confirmed to exist ('OA 06 EEN NT' and 'OA 07 EEN NT' appear in MINEDUC's official index); OA1 text from the same core was verified ('Show interest and wonder in learning more about changes in the natural environment, to people, animals, plants, places and celestial bodies...'), but it is a general 'interest/wonder' OA, not specific to habitat classification. The exact text of OA6/OA7 (more relevant to this activity) could not be confirmed in this session; verify against BCEP 2018 pp. 81-87 before publishing.", "confidence": "pending_verification" }
+      ]
+    },
+    {
+      "id": "science.dietClassification",
+      "game": "science",
+      "subtype": "diet",
+      "keyPattern": "sci-diet-{diet}",
+      "keyRange": "diet ∈ {herb, carn}",
+      "skill_es": "Clasificar animales según qué comen (plantas / carne); asociar un ser vivo con su tipo de alimentación.",
+      "skill_en": "Classify animals by what they eat (plants / meat); associate a living thing with its diet type.",
+      "note_es": "Igual que science.habitatClassification, la clave agrupa por categoría de dieta, no por animal individual.",
+      "note_en": "Same as science.habitatClassification, the key groups by diet category, not by individual animal.",
+      "standards": [
+        { "framework": "HS-ELOF", "code": "P-SCI 3", "label_es": "El niño compara y categoriza fenómenos observables.", "label_en": "Child compares and categorizes observable phenomena.", "confidence": "verified" },
+        { "framework": "NGSS-K", "code": "K-LS1-1", "label_es": "Usar observaciones para describir patrones de lo que las plantas y los animales necesitan para sobrevivir (incluye alimentación).", "label_en": "Use observations to describe patterns of what plants and animals need to survive (includes feeding).", "confidence": "verified" },
+        { "framework": "BCEP-CL", "code": "Núcleo Exploración del Entorno Natural, Nivel Transición — OA de características/necesidades de seres vivos", "label_es": "Mismo estado de verificación que science.habitatClassification: núcleo y área confirmados, texto exacto del OA más pertinente pendiente de verificación.", "label_en": "(ES-only framework) Same verification status as science.habitatClassification: core/area confirmed, exact text of the most relevant OA pending verification.", "confidence": "pending_verification" }
+      ]
+    }
+  ],
+
+  "items": {
+    "math.count": [
+      { "key": "math-1", "value": 1 }, { "key": "math-2", "value": 2 }, { "key": "math-3", "value": 3 },
+      { "key": "math-4", "value": 4 }, { "key": "math-5", "value": 5 }, { "key": "math-6", "value": 6 },
+      { "key": "math-7", "value": 7 }
+    ],
+    "math.subitize": [
+      { "key": "math-sub-2", "value": 2 }, { "key": "math-sub-3", "value": 3 },
+      { "key": "math-sub-4", "value": 4 }, { "key": "math-sub-5", "value": 5 }
+    ],
+    "math.compare": [
+      { "key": "math-cmp", "value": null, "note_es": "representa cualquier par comparado, magnitudes 2..5", "note_en": "represents any compared pair, magnitudes 2..5" }
+    ],
+    "reading.letterRecognition": [
+      { "key": "read-A", "letter": "A", "es": { "word": "Árbol", "emoji": "🌳", "sound": "aaa" }, "en": { "word": "Apple", "emoji": "🍎", "sound": "aa" } },
+      { "key": "read-B", "letter": "B", "es": null, "en": { "word": "Ball", "emoji": "⚽", "sound": "buh" } },
+      { "key": "read-C", "letter": "C", "es": { "word": "Casa", "emoji": "🏠", "sound": "ca" }, "en": { "word": "Cat", "emoji": "🐱", "sound": "kuh" } },
+      { "key": "read-D", "letter": "D", "es": null, "en": { "word": "Dog", "emoji": "🐶", "sound": "duh" } },
+      { "key": "read-E", "letter": "E", "es": { "word": "Elefante", "emoji": "🐘", "sound": "eee" }, "en": null },
+      { "key": "read-F", "letter": "F", "es": null, "en": { "word": "Fish", "emoji": "🐟", "sound": "fff" } },
+      { "key": "read-L", "letter": "L", "es": { "word": "Luna", "emoji": "🌙", "sound": "lll" }, "en": null },
+      { "key": "read-M", "letter": "M", "es": { "word": "Manzana", "emoji": "🍎", "sound": "mmm" }, "en": { "word": "Moon", "emoji": "🌙", "sound": "mmm" } },
+      { "key": "read-O", "letter": "O", "es": { "word": "Oso", "emoji": "🐻", "sound": "ooo" }, "en": { "word": "Octopus", "emoji": "🐙", "sound": "ah" } },
+      { "key": "read-P", "letter": "P", "es": { "word": "Perro", "emoji": "🐶", "sound": "ppp" }, "en": null },
+      { "key": "read-S", "letter": "S", "es": { "word": "Sol", "emoji": "☀️", "sound": "sss" }, "en": { "word": "Sun", "emoji": "☀️", "sound": "sss" } }
+    ],
+    "science.habitatClassification": [
+      { "key": "sci-water", "habitat": "water", "es": "Agua", "en": "Water", "emoji": "💧",
+        "animals": [
+          { "emoji": "🐟", "es": "El pez", "en": "The fish" },
+          { "emoji": "🐬", "es": "El delfín", "en": "The dolphin" },
+          { "emoji": "🐙", "es": "El pulpo", "en": "The octopus" },
+          { "emoji": "🐳", "es": "La ballena", "en": "The whale" }
+        ] },
+      { "key": "sci-land", "habitat": "land", "es": "Tierra", "en": "Land", "emoji": "🌳",
+        "animals": [
+          { "emoji": "🐘", "es": "El elefante", "en": "The elephant" },
+          { "emoji": "🦁", "es": "El león", "en": "The lion" },
+          { "emoji": "🐰", "es": "El conejo", "en": "The rabbit" },
+          { "emoji": "🐶", "es": "El perro", "en": "The dog" }
+        ] },
+      { "key": "sci-sky", "habitat": "sky", "es": "Cielo", "en": "Sky", "emoji": "☁️",
+        "animals": [
+          { "emoji": "🦋", "es": "La mariposa", "en": "The butterfly" },
+          { "emoji": "🐝", "es": "La abeja", "en": "The bee" },
+          { "emoji": "🦅", "es": "El águila", "en": "The eagle" },
+          { "emoji": "🐦", "es": "El pájaro", "en": "The bird" }
+        ] }
+    ],
+    "science.dietClassification": [
+      { "key": "sci-diet-herb", "diet": "herb", "es": "Plantas", "en": "Plants", "emoji": "🌿",
+        "animals": [
+          { "emoji": "🐘", "es": "El elefante", "en": "The elephant" },
+          { "emoji": "🐰", "es": "El conejo", "en": "The rabbit" },
+          { "emoji": "🦋", "es": "La mariposa", "en": "The butterfly" },
+          { "emoji": "🐝", "es": "La abeja", "en": "The bee" },
+          { "emoji": "🐦", "es": "El pájaro", "en": "The bird" }
+        ] },
+      { "key": "sci-diet-carn", "diet": "carn", "es": "Carne", "en": "Meat", "emoji": "🍖",
+        "animals": [
+          { "emoji": "🐟", "es": "El pez", "en": "The fish" },
+          { "emoji": "🐬", "es": "El delfín", "en": "The dolphin" },
+          { "emoji": "🐙", "es": "El pulpo", "en": "The octopus" },
+          { "emoji": "🐳", "es": "La ballena", "en": "The whale" },
+          { "emoji": "🦁", "es": "El león", "en": "The lion" },
+          { "emoji": "🐶", "es": "El perro", "en": "The dog" },
+          { "emoji": "🦅", "es": "El águila", "en": "The eagle" }
+        ] }
+    ]
+  },
+
+  "evidenceBase_already_in_app": [
+    "Hirsh-Pasek 2015 (aprendizaje guiado/lúdico)",
+    "Callaghan 2021",
+    "NAEYC 2022 (Developmentally Appropriate Practice)",
+    "AAP (límites de tiempo de pantalla, co-juego)",
+    "Lepper 1973 (motivación intrínseca)"
+  ]
+}
