@@ -1,0 +1,23 @@
+/* ===== Fase 4 · #15 CMS/JSON de contenido =====
+   Aditivo: una sola regla nueva para la insignia informativa opcional
+   #cmsBadge (creada por spec.js dentro de #eduView, como hermana de
+   #eduBody). Reutiliza tokens de diseño ya existentes (--card, --shadow,
+   --sci, --ease-out) en vez de inventar valores nuevos. Solo anima
+   opacity/transform y respeta prefers-reduced-motion. No hay ningún otro
+   estilo nuevo: esta mejora es principalmente de datos (CONTENT), no de UI.
+   Si el panel educador (#eduView, mejora #11) no está integrado, esta regla
+   simplemente no se aplica a ningún elemento. */
+.cmsBadge{
+  display:flex;align-items:center;gap:8px;
+  background:#EAFBF2;color:#1f6b4a;
+  border-radius:14px;padding:8px 12px;margin:0 0 12px;
+  font-size:13px;font-weight:600;
+  opacity:0;transform:translateY(-4px);
+  animation:cmsBadgeIn 260ms var(--ease-out, ease) forwards;
+}
+.cmsBadge[hidden]{display:none;}
+#cmsBadgeIcon{font-size:16px;line-height:1;}
+@keyframes cmsBadgeIn{ to{ opacity:1; transform:translateY(0); } }
+@media (prefers-reduced-motion: reduce){
+  .cmsBadge{ animation:none !important; opacity:1; transform:none; }
+}

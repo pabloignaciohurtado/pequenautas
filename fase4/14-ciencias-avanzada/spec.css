@@ -1,0 +1,45 @@
+/* ==================== FASE 4 · #14 Ciencias avanzada ====================
+   Estilos aditivos: nuevas clases (.bodyFigure, .choices.bodyparts,
+   .choice.bodypart, .choices.seasons, .choice.season(.spring/.summer/
+   .autumn/.winter), .choices.bins, .choice.bin(.organic/.paper/.plastic)).
+   No se redefine ninguna regla existente (.animalBig, .choice, .cface,
+   .clabel, .habitat, .diet, etc. se reutilizan tal cual, mismo patrón
+   visual que ya usan hábitat/dieta de Fase 2). Solo se anima
+   transform/opacity; el bloque @media (prefers-reduced-motion: reduce)
+   ya global en index.html cubre *, así que estas reglas heredan esa
+   protección sin overrides adicionales (no se define ninguna @keyframes
+   nueva en este archivo). */
+
+/* Partes del cuerpo: figura neutra decorativa (no revela la respuesta),
+   reutiliza el tamaño/bob de .animalBig; las opciones son tarjetas
+   .choice normales (blancas) con emoji + etiqueta, igual que .habitat/
+   .diet pero sin color de categoría (no hay "familia" que clasificar). */
+.bodyFigure{ filter:drop-shadow(0 8px 10px rgba(0,0,0,.12)); }
+.choices.bodyparts{ display:flex; gap:16px; justify-content:center; flex-wrap:wrap; }
+.choice.bodypart{ width:160px; min-height:140px; }
+.choice.bodypart .clabel{ color:var(--ink-soft); font-size:15px; }
+
+/* Clima → estación: 4 tarjetas de color por estación, mismo lenguaje
+   visual que .habitat (agua/tierra/cielo) y .diet (planta/carne). */
+.choices.seasons{ display:flex; gap:14px; justify-content:center; flex-wrap:wrap; }
+.choice.season{ width:150px; min-height:140px; border-radius:26px; color:#fff; }
+.choice.season .clabel{ color:rgba(255,255,255,.92); font-size:16px; }
+.season.spring{ background:linear-gradient(160deg,#FFD1E8,var(--read)); }
+.season.summer{ background:linear-gradient(160deg,#FFE39B,var(--sun)); }
+.season.autumn{ background:linear-gradient(160deg,#F6B58B,#D97A3E); }
+.season.winter{ background:linear-gradient(160deg,#CFE8FF,var(--water)); }
+
+/* Reciclaje: 3 botes de color (orgánico verde, papel azul, plástico
+   amarillo) — mismo lenguaje visual que .diet, categorías distintas. */
+.choices.bins{ display:flex; gap:18px; justify-content:center; flex-wrap:wrap; }
+.choice.bin{ width:170px; min-height:150px; border-radius:26px; color:#fff; }
+.choice.bin .clabel{ color:rgba(255,255,255,.92); font-size:16px; }
+.bin.organic{ background:linear-gradient(160deg,var(--sci-2),var(--sci)); }
+.bin.paper{ background:linear-gradient(160deg,#BFD7FF,#6C93E0); }
+.bin.plastic{ background:linear-gradient(160deg,#FFE9A8,#F5C542); }
+
+@media (max-width:720px){
+  .choice.bodypart{ width:130px; }
+  .choice.season{ width:130px; }
+  .choice.bin{ width:140px; }
+}
