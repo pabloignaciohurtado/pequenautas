@@ -15,15 +15,21 @@
     "02-ab-testing",
     "03-repaso-espaciado",
     "04-indice-dominio",
-    "05-deteccion-frustracion"
+    "05-deteccion-frustracion",
+    // Oleada 2 — contenido curricular + CMS (dispatchers ampliados)
+    // 11 antes de 12/13/14 (aporta eduFaceOf del panel que ellos envuelven);
+    // 15 al final (muta el contenido; badge depende de #11).
+    "11-materias-nuevas",
+    "12-mates-avanzadas",
+    "13-lectura-avanzada",
+    "14-ciencias-avanzada",
+    "15-cms-json"
   ];
-  // CSS (orden no crítico: clases aditivas)
   MODULES.forEach(function (m) {
     var l = document.createElement("link");
     l.rel = "stylesheet"; l.href = BASE + m + "/spec.css";
     (document.head || document.documentElement).appendChild(l);
   });
-  // JS secuencial (orden crítico para las envolturas de globales)
   var i = 0;
   (function next() {
     if (i >= MODULES.length) return;
