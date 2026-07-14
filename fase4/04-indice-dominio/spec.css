@@ -1,0 +1,51 @@
+/* ===== Fase 4 · #4 Índice de dominio + curva de aprendizaje (panel educador) =====
+   Aditivo: nuevas clases únicamente, no se reescribe ninguna regla existente.
+   Reutiliza variables ya definidas en ship/index.html (--math,--read,--sci,--ink,
+   --ink-soft,--card,--shadow,--sun,--sci-2,--ease-out) y el patrón visual de
+   .eduHead / .eduChild / .spark / .sparkbar ya presentes en el panel educador.
+   Animación: solo transform/opacity (crecimiento del bar), respeta
+   prefers-reduced-motion (igual que el resto de la app). */
+
+/* Encabezado de sección (usa el mismo look que .eduHead ya existente) */
+.eduDomHeading{ display:flex; align-items:center; gap:6px; }
+
+/* Fila de 3 chips (uno por materia) bajo cada .eduChild del panel educador */
+.eduDomRow{
+  display:flex; gap:10px; flex-wrap:wrap;
+  margin:0 0 12px; padding-left:42px; /* alinea bajo el avatar (30px + gap 12px) */
+}
+.eduDomChip{
+  flex:1 1 96px; min-width:92px; max-width:160px;
+  background:#F8F6FD; border-radius:14px; padding:8px 10px 7px;
+  display:flex; flex-direction:column; gap:4px;
+  border-left:3px solid var(--ink-soft);
+}
+.eduDomChip.empty{ opacity:.55; }
+.eduDomChip .dTop{
+  display:flex; align-items:center; justify-content:space-between; gap:6px;
+  font-size:12px; font-weight:600; color:var(--ink-soft); white-space:nowrap;
+}
+.eduDomChip .dLabel{ overflow:hidden; text-overflow:ellipsis; }
+.eduDomChip .dNum{ font-size:17px; font-weight:700; color:var(--ink); }
+.eduDomChip.empty .dNum{ color:var(--ink-soft); font-weight:600; }
+
+/* Sparkline temporal (curva de aprendizaje) — mismo lenguaje visual que .spark/.sparkbar */
+.dSpark{ display:flex; align-items:flex-end; gap:2px; height:18px; min-height:18px; }
+.dbar{
+  width:5px; border-radius:2px; background:#E7E1F0;
+  transform:scaleY(1); transform-origin:bottom; opacity:1;
+  animation:dbarIn 360ms var(--ease-out, ease) both;
+}
+.dbar.hi{ background:var(--sci); }
+.dbar.mid{ background:var(--sun); }
+.dbar.lo{ background:var(--read); }
+@keyframes dbarIn{ from{ opacity:0; transform:scaleY(.35); } to{ opacity:1; transform:scaleY(1); } }
+
+@media (prefers-reduced-motion: reduce){
+  .dbar{ animation:none !important; }
+}
+
+@media (max-width:720px){
+  .eduDomRow{ padding-left:0; }
+  .eduDomChip{ flex:1 1 90px; }
+}

@@ -1,0 +1,11 @@
+/* ===== FASE 4 · #1: Evaluación pre/post (eval-pre-post) =====
+   Reutiliza .eduHead / .failitem / .fx / .fc del panel de Progreso ya existente
+   (ver estilos de "Panel educador (local)" en index.html). Solo se añaden aquí
+   las clases nuevas del badge de ganancia. Sin animaciones nuevas: la sección es
+   texto estático, así que no hace falta ninguna guarda de prefers-reduced-motion
+   adicional (no hay @keyframes en este archivo). */
+#assessRows .failitem{ gap:10px; }
+.assessGain{ font-weight:700; }
+.assessGain.up{ color:var(--sci); }
+.assessGain.down{ color:var(--no); }
+.assessGain.same{ color:var(--ink-soft); font-weight:600; }

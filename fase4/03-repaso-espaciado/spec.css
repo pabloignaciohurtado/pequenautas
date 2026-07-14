@@ -1,0 +1,36 @@
+/* ===== FASE 4 · #3: Repaso espaciado (repaso-espaciado) =====
+   Reutiliza .eduHead / .sub / .statgrid / .stat / .empty / .btn / .progress / .dot / .speak
+   del panel del adulto y del juego principal (ya existentes). Solo se añaden aquí las
+   reglas nuevas: el contenedor del panel, la fila del prompt con su botón de escucha, y
+   versiones compactas de .choice/.countbox/.lettertile/.animalBig/.habitat/.diet/.groupChoice
+   para que quepan dentro del panel (max-width:480px). No se define ninguna animación nueva:
+   las tarjetas de opción siguen usando @keyframes goodPulse/shake/hintPulse ya existentes
+   (transform/opacity únicamente), así que no hace falta ninguna guarda adicional de
+   prefers-reduced-motion además de la que ya cubre esas reglas. */
+
+#srsPanel{ margin-top:18px; }
+
+.srsPromptRow{ display:flex; align-items:center; justify-content:center; gap:10px; margin:2px 0 8px; }
+.srsPromptRow .speak{ width:40px; height:40px; font-size:18px; border-radius:12px; flex:0 0 auto; }
+.srsMiniPrompt{ margin:0; font-size:16px; font-weight:600; color:var(--ink); text-align:center; }
+
+.srsDots{ margin:0 0 10px; }
+.srsDots .dot{ width:11px; height:11px; }
+
+.srsStage{ display:flex; flex-direction:column; align-items:center; gap:12px; margin:4px 0 6px; }
+
+/* Versiones compactas de los widgets de elección, para el ancho del panel de adultos. */
+.srsStage .choices{ gap:12px; }
+.srsStage .choice{ min-width:88px; min-height:88px; padding:10px 12px; }
+.srsStage .cnum{ font-size:clamp(30px,8vw,40px); }
+.srsStage .cface{ font-size:clamp(34px,7vw,48px); }
+.srsStage .countbox{ gap:8px; max-width:280px; }
+.srsStage .obj{ font-size:clamp(26px,6vw,36px); }
+.srsStage .lettertile{ width:96px; height:96px; font-size:56px; border-radius:24px; }
+.srsStage .animalBig{ font-size:80px; }
+.srsStage .habitat,
+.srsStage .diet{ width:100px; min-height:92px; border-radius:20px; }
+.srsStage .clabel{ font-size:12.5px; }
+.srsStage .groupChoice{ min-width:104px; padding:12px 14px; }
+.srsStage .groupChoice .countbox{ gap:6px; max-width:150px; }
+.srsStage .groupChoice .obj{ font-size:clamp(18px,4vw,26px); }
