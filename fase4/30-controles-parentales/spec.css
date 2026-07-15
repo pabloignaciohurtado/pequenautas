@@ -1,0 +1,50 @@
+/* ==================== Fase 4 · Mejora #30 "controles-parentales" ====================
+   Solo transform/opacity animados; respeta prefers-reduced-motion.
+   Reutiliza tokens ya definidos en :root (ship/index.html): --ease-out,
+   --card, --ink, --ink-soft, --shadow. No define variables nuevas. */
+
+/* ---- teclado numérico del PIN (dentro de #pinView, hijo de #panel) ---- */
+.pinDots{display:flex;gap:14px;justify-content:center;margin:6px 0 18px;}
+.pinDot{width:18px;height:18px;border-radius:50%;background:#E3DEEE;display:inline-block;transition:transform 160ms var(--ease-out,ease),background 160ms var(--ease-out,ease);}
+.pinDot.on{background:var(--sci,#57C596);transform:scale(1.15);}
+.pinPad{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;max-width:280px;margin:0 auto;}
+.pinKey{border:none;cursor:pointer;font-family:inherit;font-weight:700;font-size:24px;color:var(--ink,#3B3355);background:#F5F2FC;border-radius:16px;padding:16px 0;transition:transform 150ms var(--ease-out,ease);}
+.pinKey:active{transform:scale(.92);}
+.pinKey:disabled{visibility:hidden;cursor:default;}
+.pinKeyBack{font-size:20px;background:#F3EEFB;}
+.pinKeyBlank{background:transparent;cursor:default;}
+.pinShakeDots{animation:pinShake .32s var(--ease-in-out,ease);}
+@keyframes pinShake{0%,100%{transform:translateX(0)}25%{transform:translateX(-6px)}75%{transform:translateX(6px)}}
+
+/* ---- pantalla de límite diario alcanzado (overlay propio, fixed) ----
+   Deliberadamente por DEBAJO de #sheet (z-index 60) para que, cuando un
+   adulto pulsa "Un adulto continúa" y se abre el gate físico (#sheet),
+   éste quede visible por encima del bloqueo diario. */
+.dailyLimitOverlay{position:fixed;inset:0;display:flex;align-items:center;justify-content:center;
+  background:rgba(20,24,40,.5);z-index:55;padding:24px;opacity:0;transition:opacity .25s var(--ease-out,ease);}
+.dailyLimitOverlay.show{opacity:1;}
+.dailyLimitOverlay[hidden]{display:none;}
+.dailyLimitPanel{max-width:480px;width:100%;text-align:center;display:flex;flex-direction:column;gap:14px;
+  align-items:center;transform:translateY(10px);transition:transform .3s var(--ease-out,ease);}
+.dailyLimitOverlay.show .dailyLimitPanel{transform:translateY(0);}
+.dailyLimitEmoji{font-size:64px;line-height:1;}
+.dailyLimitPanel .btn{min-width:220px;}
+
+/* ---- pestaña "Control parental": filas de materias + selector de idioma ---- */
+.subjRows{display:flex;flex-direction:column;}
+.choices.dailyMins,.choices.localeChoices{display:flex;gap:8px;flex-wrap:wrap;margin:4px 0 14px;}
+.choices.dailyMins.disabled{opacity:.45;}
+
+/* ---- Inicio: ocultar de verdad una tarjeta de materia deshabilitada.
+   .subject{display:flex} ya definido en index.html tiene más especificidad
+   que el user-agent stylesheet para [hidden]; sin esta regla el atributo
+   hidden NO ocultaría la tarjeta (mismo motivo por el que el ship base ya
+   define .iconbtn[hidden]{display:none;} explícitamente). ---- */
+.subject[hidden]{display:none;}
+
+@media (prefers-reduced-motion: reduce){
+  .pinDot,.pinKey{transition:none;}
+  .dailyLimitOverlay,.dailyLimitPanel{transition:none;}
+  .dailyLimitPanel{transform:none;}
+  .pinShakeDots{animation:none;}
+}

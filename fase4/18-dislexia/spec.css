@@ -1,0 +1,81 @@
+/* ==================== Fase 4 · Mejora #18 "dislexia" ====================
+   Modo dislexia-friendly: mayor espaciado entre letras/palabras/líneas
+   (siempre, en cuanto se activa html.a11y-dys) + fuente OpenDyslexic
+   OPCIONAL (solo si además está html.a11y-dys-font, que spec.js solo añade
+   cuando window.PEQUE_FLAGS.dyslexicFont===true; ver spec.js e
+   integration.md §4). Sin la clase .a11y-dys-font, el @font-face de abajo
+   nunca se referencia desde ninguna regla activa, así que el navegador
+   jamás intenta resolverlo/descargarlo -0 peticiones de red en cualquier
+   protocolo, incluido file://-.
+
+   Solo cambia tipografía/espaciado (propiedades que no son transform ni
+   opacity, pero tampoco son ANIMACIONES: es un cambio de estado estático
+   al alternar una clase, igual que html.a11y-hc/html.a11y-cb de
+   "17-accesibilidad"). No se añade ninguna animación nueva; se respeta
+   prefers-reduced-motion por herencia de las reglas globales ya
+   existentes en ship/index.html. */
+
+/* ---------- @font-face OPCIONAL: solo se resuelve si se usa font-family:'OpenDyslexic'
+   en una regla activa, lo que solo ocurre bajo html.a11y-dys-font (ver arriba).
+   Rutas relativas a ESTE archivo (fase4/18-dislexia/spec.css), asumiendo que se
+   integra por <link> externo (ver integration.md §2.a). Si en cambio se pega el
+   contenido dentro del <style> de index.html, ajustar las rutas a
+   'fase4/18-dislexia/fonts/...' (relativas a index.html). Los archivos .woff2 NO
+   se incluyen en este entregable de código; ver integration.md §4 para activarlos. */
+@font-face{
+  font-family:'OpenDyslexic';
+  src: url('fonts/OpenDyslexic-Regular.woff2') format('woff2');
+  font-weight:400; font-style:normal; font-display:swap;
+}
+@font-face{
+  font-family:'OpenDyslexic';
+  src: url('fonts/OpenDyslexic-Bold.woff2') format('woff2');
+  font-weight:700; font-style:normal; font-display:swap;
+}
+
+/* ---------- espaciado ampliado (siempre que el modo está encendido) ----------
+   letter-spacing/word-spacing/line-height son propiedades heredadas: basta con
+   fijarlas en <body> para que se propaguen a todo el árbol (títulos grandes,
+   emojis y números incluidos; no rompen el layout porque .cnum/.animalBig/etc.
+   ya usan clamp() y no dependen de un ancho de línea ajustado). */
+html.a11y-dys body{
+  letter-spacing:.035em;
+  word-spacing:.16em;
+  line-height:1.6;
+}
+/* Pila de reemplazo por defecto (fuentes de sistema, 0 red): más redondeadas y
+   con formas de letra menos ambiguas que Fredoka para algunos lectores con
+   dislexia. Se sobreescribe por 'OpenDyslexic' SOLO bajo .a11y-dys-font. */
+html.a11y-dys body{
+  font-family:'Comic Sans MS','Trebuchet MS',Verdana,sans-serif;
+}
+html.a11y-dys.a11y-dys-font body{
+  font-family:'OpenDyslexic','Comic Sans MS','Trebuchet MS',Verdana,sans-serif;
+}
+
+/* Un poco más de aire vertical en los bloques de texto corrido, sin tocar el
+   tamaño de fuente base (que ya usa clamp() pensado para preescolares). */
+html.a11y-dys .prompt .ptext,
+html.a11y-dys .panel .sub,
+html.a11y-dys .setting .name,
+html.a11y-dys .setting .desc,
+html.a11y-dys .tip,
+html.a11y-dys .celebrate p,
+html.a11y-dys .breakMsg,
+html.a11y-dys .failitem,
+html.a11y-dys .stat .l,
+html.a11y-dys .eduChildSub{
+  line-height:1.6;
+}
+
+/* Botones de elección: algo más de espacio interno para que las etiquetas de
+   texto (.clabel) no se vean apretadas con el nuevo word-spacing. */
+html.a11y-dys .choice{
+  padding-left:26px; padding-right:26px;
+}
+
+@media (prefers-reduced-motion: reduce){
+  /* No hay animaciones nuevas que anular aquí; regla presente solo por
+     simetría documental con el resto de módulos de fase4. */
+  html.a11y-dys body{ transition:none; }
+}
