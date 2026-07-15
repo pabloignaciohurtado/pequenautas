@@ -1,0 +1,24 @@
+/* ===== Fase 4 · #6 Motor de dificultad adaptativa =====
+   Aditivo: nuevas clases únicamente, no se reescribe ninguna regla existente.
+   La fila de Ajustes (#setAdaptive) reutiliza por completo las clases ya
+   existentes .setting/.name/.desc/.toggle/.knob (ver ship/index.html), así
+   que NO necesita reglas propias: se ve y se comporta exactamente igual que
+   #setSessLimit/#setCoplay ya presentes. Solo se añade una regla mínima para
+   la nota opcional del panel de Progreso (#adaptNote), reutilizando .tip.
+   Animación: solo transform/opacity, respeta prefers-reduced-motion. */
+
+/* Nota de ajuste en el panel de Progreso (adulto). Reutiliza el estilo
+   visual de .tip ya existente; solo separa el espaciado respecto de las
+   barras/fallos que renderProgress2() ya dibujó antes que esta nota. */
+.adaptNote{
+  margin-top:12px;
+  animation:adaptNoteIn 320ms var(--ease-out, ease) both;
+}
+@keyframes adaptNoteIn{
+  from{ opacity:0; transform:translateY(6px); }
+  to{ opacity:1; transform:translateY(0); }
+}
+
+@media (prefers-reduced-motion: reduce){
+  .adaptNote{ animation:none !important; }
+}

@@ -1,0 +1,5 @@
+/* ==================== Fase 4 · #8 zdp-dinamica ====================
+   No introduce clases visuales nuevas: la fila de Ajustes #setZdp y su
+   toggle reutilizan las clases base (.setting/.name/.desc/.toggle/.knob),
+   y el sesgo de dificultad opera sobre las rondas ya existentes. Este
+   archivo existe para que el loader (fase4.js) inyecte su <link> sin 404. */

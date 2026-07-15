@@ -1,0 +1,49 @@
+/* ============================================================================
+   Fase 4 · Mejora #9 "recomendador" — estilos de #recoCard (tarjeta de Inicio)
+   Solo anima transform/opacity. Bloque @media (prefers-reduced-motion:
+   reduce) propio y aditivo (no se edita el bloque ya existente en
+   ship/index.html). Reutiliza variables ya definidas en :root
+   (--card,--shadow,--shadow-lg,--ink,--ink-soft,--math,--read,--sci,--sun,
+   --ease-out) sin redeclararlas.
+   ============================================================================ */
+.recoCard{
+  position:relative;display:flex;align-items:center;gap:16px;
+  background:var(--card);box-shadow:var(--shadow);border-radius:26px;
+  padding:14px 20px 14px 16px;margin:0 auto 14px;max-width:640px;width:100%;
+  border-left:8px solid var(--recoAccent, var(--sun));
+  opacity:0;transform:translateY(10px);
+  animation:recoIn 420ms var(--ease-out) 80ms forwards;
+}
+.recoCard[hidden]{display:none;}
+.recoIcon{
+  flex:0 0 auto;width:54px;height:54px;border-radius:18px;
+  background:var(--recoAccent, var(--sun));color:#fff;
+  display:flex;align-items:center;justify-content:center;font-size:28px;line-height:1;
+}
+.recoBody{flex:1 1 auto;min-width:0;}
+.recoKicker{
+  font-size:12px;font-weight:700;letter-spacing:.04em;text-transform:uppercase;
+  color:var(--ink-soft);margin-bottom:2px;
+}
+.recoSubject{font-size:18px;font-weight:700;color:var(--ink);line-height:1.2;}
+.recoReason{font-size:13px;color:var(--ink-soft);margin-top:2px;line-height:1.35;}
+.recoPlayBtn{
+  flex:0 0 auto;border:none;cursor:pointer;font-family:inherit;font-weight:700;
+  font-size:15px;color:#fff;padding:12px 18px;border-radius:18px;
+  background:var(--recoAccent, var(--sun));box-shadow:var(--shadow);
+  transition:transform 160ms var(--ease-out);
+}
+.recoPlayBtn:active{transform:scale(.92);}
+@media (hover:hover) and (pointer:fine){
+  .recoPlayBtn:hover{transform:translateY(-2px);}
+}
+@keyframes recoIn{from{opacity:0;transform:translateY(10px);}to{opacity:1;transform:none;}}
+
+@media (max-width:720px){
+  .recoCard{flex-wrap:wrap;padding:14px 16px;}
+  .recoPlayBtn{width:100%;}
+}
+@media (prefers-reduced-motion: reduce){
+  .recoCard{animation:none !important;opacity:1;transform:none;}
+  .recoPlayBtn{transition:none;}
+}
