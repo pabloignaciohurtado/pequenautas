@@ -23,7 +23,14 @@
     "12-mates-avanzadas",
     "13-lectura-avanzada",
     "14-ciencias-avanzada",
-    "15-cms-json"
+    "15-cms-json",
+    // Oleada 3 — motor adaptativo, secuenciación y ZDP (dispatchers ya ampliados por Oleada 2)
+    // 7 antes de 6 (6 envuelve roundMathCount sobre el duplicado de 7);
+    // 8 tras 6/12/13/14 (envuelve y delega los dispatchers ampliados); 9 último (cadena refreshHome).
+    "07-secuenciacion",
+    "06-motor-adaptativo",
+    "08-zdp-dinamica",
+    "09-recomendador"
   ];
   MODULES.forEach(function (m) {
     var l = document.createElement("link");
