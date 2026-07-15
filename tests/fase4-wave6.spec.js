@@ -31,16 +31,18 @@ test('Fase 4 · Oleada 6: #28 expone PEQUE_STORE, núcleo y oleadas previas inta
 });
 
 test('Fase 4 · Oleada 6: seguridad de red — cero peticiones nuevas fuera de file:// durante alta de perfil + una ronda de juego', async ({ page }) => {
-  // El único origen no-file:// preexistente en index.html (línea 9, ajeno a Fase 4)
-  // es la hoja de estilo de Google Fonts, ya presente desde antes de Oleada 6 y que
-  // falla sola bajo file:///offline sin bloquear la app. Lo que este test verifica es
-  // que los módulos de Oleada 6 (#25/#26/#27 OFF por defecto + #28) no abren NINGÚN
-  // socket propio: cero peticiones nuevas fuera de ese origen conocido.
-  const KNOWN_PRE_EXISTING = 'https://fonts.googleapis.com/';
+  // Los únicos orígenes no-file:// preexistentes en index.html (línea 9, ajeno a Fase 4)
+  // son la hoja de estilo de Google Fonts (fonts.googleapis.com) y el propio archivo de
+  // fuente que esa hoja referencia vía @font-face (fonts.gstatic.com) — ambos ya
+  // presentes desde antes de Oleada 6, y que fallan solos bajo file:///offline sin
+  // bloquear la app. Lo que este test verifica es que los módulos de Oleada 6
+  // (#25/#26/#27 OFF por defecto + #28) no abren NINGÚN socket propio: cero peticiones
+  // nuevas fuera de esos dos orígenes conocidos.
+  const KNOWN_PRE_EXISTING = ['https://fonts.googleapis.com/', 'https://fonts.gstatic.com/'];
   const offOrigin = [];
   page.on('request', (req) => {
     const u = req.url();
-    if (!u.startsWith('file://') && !u.startsWith(KNOWN_PRE_EXISTING)) offOrigin.push(u);
+    if (!u.startsWith('file://') && !KNOWN_PRE_EXISTING.some(function(p){ return u.startsWith(p); })) offOrigin.push(u);
   });
   await page.goto(fileUrl);
   await page.waitForTimeout(1600);
