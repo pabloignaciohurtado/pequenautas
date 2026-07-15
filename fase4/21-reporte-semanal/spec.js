@@ -213,7 +213,7 @@
   }
 
   function slug(s){
-    return String(s||'peque').normalize('NFD').replace(/[̀-ͯ]/g,'')
+    return String(s||'peque').normalize('NFD').replace(/[\\u0300-\\u036f]/g,'')
       .replace(/[^a-zA-Z0-9]+/g,'-').toLowerCase().replace(/(^-|-$)/g,'') || 'peque';
   }
   function triggerDownload(filename, content, mime){
