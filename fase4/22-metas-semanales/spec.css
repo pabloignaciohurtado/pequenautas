@@ -1,0 +1,26 @@
+/* ==================== Fase 4 · Mejora #22 "metas-semanales" ====================
+   Solo transform/opacity animados; respeta prefers-reduced-motion.
+   Reutiliza tokens ya definidos en :root (ship/index.html): --ease-out,
+   --card, --ink, --ink-soft, --shadow. No define variables nuevas. */
+
+/* Tarjeta dentro de #progBody (pestaña Progreso, primer hijo) */
+.goalCard{background:#F8F6FD;border-radius:18px;padding:14px 16px;margin-bottom:14px;transition:background 260ms var(--ease-out,ease);}
+.goalCard.reached{background:linear-gradient(160deg,#FFF3D9,#FFE8B8);}
+.goalCard.off{opacity:.6;}
+.goalHead{display:flex;align-items:center;justify-content:space-between;gap:10px;flex-wrap:wrap;}
+.goalTitle{font-weight:700;font-size:15px;color:var(--ink,#3B3355);}
+.goalCount{font-weight:600;font-size:12.5px;color:var(--ink-soft,#6C6685);}
+.goalPips{display:flex;gap:6px;margin:10px 0 6px;flex-wrap:wrap;}
+.goalPip{font-size:20px;line-height:1;display:inline-block;opacity:.5;transform:scale(.9);transition:transform 220ms var(--ease-out,ease),opacity 220ms var(--ease-out,ease);}
+.goalPip.on{opacity:1;transform:scale(1);}
+.goalMsg{font-size:13px;color:var(--ink-soft,#6C6685);}
+.goalCard.reached .goalMsg{color:#8a6d2e;font-weight:600;}
+
+/* Fila de Ajustes: selector de objetivo (3/5/7), mismo patrón visual que .choices.sessMins */
+.choices.goalTarget{display:flex;gap:8px;}
+.choices.goalTarget.disabled{opacity:.45;}
+
+@media (prefers-reduced-motion: reduce){
+  .goalPip{transition:none;}
+  .goalCard{transition:none;}
+}

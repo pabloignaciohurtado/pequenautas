@@ -39,7 +39,24 @@
     "18-dislexia",
     "16-voces-mascota",
     "20-animaciones-personaje",
-    "30-controles-parentales"
+    "30-controles-parentales",
+    // Oleada 5 — familia y educador (grupo del panel de adultos, tras las
+    // oleadas de flujo de juego). Orden interno 19→21→22→23:
+    // 19 y 21 encadenan sobre window.logRound (cada uno delega primero al
+    // anterior); 21 y 22 encadenan sobre window.renderProgress2 (22 tras 21,
+    // antepone #weekGoalCard como primer hijo de #progBody sin pisar la
+    // sección #assessHead de la Oleada 1, que se repinta al final vía
+    // MutationObserver); 23 añade una 4ª/5ª pestaña (#tabAula) al mismo
+    // .tabs que ya comparten #tabAlbum (19) y #tabParental (30) sin
+    // colisión de IDs. #24 "biblioteca-cojuego" NO se integra: su contenido
+    // (más preguntas para var COPLAY_Q) requeriría editar app.js porque
+    // COPLAY_Q vive dentro de una IIFE y no es alcanzable desde fuera (a
+    // diferencia de LETTERS/ANIMALS/MATH_* del wrap de #15, que son const
+    // de nivel superior) — se deja fuera del loader, ver fase4/MASTER_PLAN.md.
+    "19-album-logros",
+    "21-reporte-semanal",
+    "22-metas-semanales",
+    "23-modo-aula"
   ];
   MODULES.forEach(function (m) {
     var l = document.createElement("link");
