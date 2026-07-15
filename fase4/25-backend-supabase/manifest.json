@@ -1,0 +1,24 @@
+{
+  "point": 25,
+  "slug": "backend-supabase",
+  "type": "scaffold",
+  "summary": "Scaffolding activable (no encendido) para el backend Supabase de cuentas/sync/respaldo ya diseñado en ship/docs/backend-supabase.md: cliente window.PequeSync (sync.js) con cola local, alias seudónimo y flush() gateado por 4 condiciones simultáneas (flag, transporte seguro, config y consentimiento) que nunca abre red bajo el default actual ni bajo file://; esquema SQL (profiles/events), políticas RLS por owner=auth.uid() y purga de retención a 365 días en sql/*.sql; y la edge function idempotente de ingest en edge/ingest.ts. window.PEQUE_FLAGS.backendSync sigue en false (ya definido así en ship/app.js); este directorio no se referencia desde index.html/app.js. El contrato de activación (qué falta: proyecto Supabase real, auth del adulto, UI de consentimiento, hosting HTTPS, decisión legal/producto) está en 25-backend-supabase.md.",
+  "files": [
+    "/home/claude/fase4/25-backend-supabase/sync.js",
+    "/home/claude/fase4/25-backend-supabase/sql/001_schema.sql",
+    "/home/claude/fase4/25-backend-supabase/sql/002_rls.sql",
+    "/home/claude/fase4/25-backend-supabase/sql/003_retention.sql",
+    "/home/claude/fase4/25-backend-supabase/edge/ingest.ts",
+    "/home/claude/fase4/25-backend-supabase/25-backend-supabase.md",
+    "/home/claude/fase4/25-backend-supabase/manifest.json"
+  ],
+  "globals": [
+    "window.PequeSync (nuevo namespace; expone isFlagOn/isSecureTransport/isConfigured/hasConsent/isReady/configure/clearConfig/setConsent/revokeConsent/aliasFor/enqueueProfile/enqueueAll/pendingCount/clearQueue/flush/exportQueueJSON/forgetLocal — todo no-op o rechazo sin red salvo activación explícita futura)",
+    "window.PEQUE_FLAGS (ya existe en ship/app.js con backendSync:false; sync.js lo redefine con Object.assign sin pisar un valor ya presente, mismo mecanismo de composición que el resto de módulos de fase4)"
+  ],
+  "domIds": [],
+  "newTests": 0,
+  "gated": true,
+  "gateReason": "Candado real de producto/legal/infra, no de permisos de este agente: requiere (1) un proyecto Supabase real con región de datos decidida, (2) implementar el fetch real en flush() una vez exista auth, (3) autenticación real del adulto (magic-link/OAuth) para emitir el JWT que flush() necesitaría, (4) una UI de consentimiento verificable dentro del parent gate que llame a PequeSync.setConsent(), (5) hosting servido por HTTPS (transportOk() lo exige salvo localhost), y (6) una decisión de producto/legal sobre versión de política de privacidad y responsable de datos ante COPPA/GDPR-K. Ninguno de estos seis puntos es alcanzable dentro de este entorno de trabajo; están detallados como checklist accionable en 25-backend-supabase.md.",
+  "risks": "(1) sync.js define window.PEQUE_FLAGS con el mismo default OFF que ship/app.js vía Object.assign no-destructivo; si se carga sync.js ANTES que app.js en algún futuro index.html, el orden no importa porque ninguno de los dos pisa un valor ya presente del otro — comportamiento verificado por lectura del código, ambos usan el mismo patrón idempotente. (2) flush() está deliberadamente sin implementar el fetch real (devuelve not_implemented_pending_auth incluso con las 4 condiciones de isReady() cumplidas); esto es intencional para que no exista NINGÚN camino de código en este scaffold que abra una conexión de red, ni siquiera activando el flag manualmente en devtools — ver 25-backend-supabase.md §'Por qué sync.js NUNCA hace red'. (3) La config (url/anonKey) vive solo en memoria (variable CFG), nunca en localStorage, para minimizar credenciales persistidas en el dispositivo de un niño; efecto secundario: se pierde en cada recarga de página, lo cual es aceptable porque activación real requeriría de todos modos una UI de consentimiento que la reconfigure. (4) Este directorio NO se referencia desde ship/index.html ni ship/app.js (a diferencia de otros módulos de fase4 con integration.md de anclas); por diseño de tipo 'scaffold' según el brief, no hay wiring a insertar hasta que se cumplan los 6 puntos del contrato de activación, así que no aplica un integration.md/tests.md de Playwright en este entregable. (5) sql/*.sql y edge/ingest.ts reproducen exactamente el diseño ya revisado en ship/docs/backend-supabase.md (mismas tablas, mismas políticas RLS, misma edge function) en vez de introducir un esquema nuevo, para no divergir de lo ya documentado/aprobado; cualquier cambio futuro al diseño debe hacerse en ambos lugares o dejar docs/backend-supabase.md como única fuente de verdad y estos archivos como su aplicación literal."
+}
