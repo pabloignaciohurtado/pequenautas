@@ -56,7 +56,10 @@
     "19-album-logros",
     "21-reporte-semanal",
     "22-metas-semanales",
-    "23-modo-aula"
+    "23-modo-aula",
+    // Oleada 6 — backend/scaffolds sin wiring (25,26,27,29 solo referencia, no en MODULES);
+    // #28 (código TWA/atajos ?game=, wrap de paintInstall) SÍ se integra, al final de todo.
+    "28-pwa-tiendas"
   ];
   MODULES.forEach(function (m) {
     var l = document.createElement("link");
