@@ -30,7 +30,16 @@
     "07-secuenciacion",
     "06-motor-adaptativo",
     "08-zdp-dinamica",
-    "09-recomendador"
+    "09-recomendador",
+    // Oleada 4 — UX, accesibilidad y personaje
+    // 17,18 puramente aditivos (filas Ajustes); 16 (mascota, voces gated) ANTES de 20
+    // (20 detecta #peqMascot y entra en modo enhance, sin doble personaje); 30 AL FINAL
+    // (applySubjectVisibility el wrapper más externo de refreshHome/passGate/startGame; PIN off por defecto).
+    "17-accesibilidad",
+    "18-dislexia",
+    "16-voces-mascota",
+    "20-animaciones-personaje",
+    "30-controles-parentales"
   ];
   MODULES.forEach(function (m) {
     var l = document.createElement("link");

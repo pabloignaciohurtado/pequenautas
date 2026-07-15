@@ -1,0 +1,75 @@
+/* ==================== FASE 4 · #20 Animaciones de personaje variadas ====================
+   Todas las animaciones usan EXCLUSIVAMENTE transform/opacity (rendimiento estable en
+   tablets de gama baja) y respetan prefers-reduced-motion. Las clases pa20-* se aplican
+   por JS (spec.js) sobre #pa20Pet (modo "own", personaje propio) o sobre #peqMascot
+   (modo "enhance", si la mejora #16 "voces-mascota" ya está integrada) — por eso las
+   reglas de animación NO están ancladas a un id concreto. */
+
+/* ---- personaje propio (solo existe si no hay ya un #peqMascot en la página) ---- */
+.pa20Pet{
+  position:absolute; left:16px; bottom:16px; z-index:42;
+  width:76px; height:76px; display:none; align-items:center; justify-content:center;
+  font-size:56px; line-height:1; pointer-events:none;
+  filter:drop-shadow(0 6px 8px rgba(0,0,0,.16));
+  transform-origin:50% 85%;
+}
+.pa20Pet.show{ display:flex; }
+.pa20PetFace{ display:block; line-height:1; }
+
+/* ---- idle (bucle, mientras se está en la pantalla de juego) ---- */
+@keyframes pa20IdleBob{ 0%,100%{transform:translateY(0) rotate(0deg);} 50%{transform:translateY(-8px) rotate(-2deg);} }
+.pa20-idle-bob{ animation:pa20IdleBob 3.6s var(--ease-in-out,ease-in-out) infinite; }
+
+@keyframes pa20IdleSway{ 0%,100%{transform:rotate(-4deg);} 50%{transform:rotate(4deg);} }
+.pa20-idle-sway{ animation:pa20IdleSway 4.2s var(--ease-in-out,ease-in-out) infinite; }
+
+@keyframes pa20IdleBreathe{ 0%,100%{transform:scale(1);} 50%{transform:scale(1.06);} }
+.pa20-idle-breathe{ animation:pa20IdleBreathe 2.8s var(--ease-in-out,ease-in-out) infinite; }
+
+@keyframes pa20IdlePeek{ 0%,100%{transform:translateX(0) rotate(0deg);} 30%{transform:translateX(-6px) rotate(-6deg);} 60%{transform:translateX(5px) rotate(4deg);} }
+.pa20-idle-peek{ animation:pa20IdlePeek 5.4s var(--ease-in-out,ease-in-out) infinite; }
+
+/* ---- celebración (un solo disparo, al acertar) ---- */
+@keyframes pa20CelJump{
+  0%{transform:translateY(0) scale(1) rotate(0deg);}
+  30%{transform:translateY(-22px) scale(1.12) rotate(-8deg);}
+  55%{transform:translateY(0) scale(.96) rotate(6deg);}
+  75%{transform:translateY(-8px) scale(1.05) rotate(-3deg);}
+  100%{transform:translateY(0) scale(1) rotate(0deg);}
+}
+.pa20-cel-jump{ animation:pa20CelJump .78s var(--ease-out,ease-out) 1; }
+
+@keyframes pa20CelSpin{ 0%{transform:rotate(0deg) scale(1);} 45%{transform:rotate(190deg) scale(1.15);} 100%{transform:rotate(360deg) scale(1);} }
+.pa20-cel-spin{ animation:pa20CelSpin .74s var(--ease-out,ease-out) 1; }
+
+@keyframes pa20CelWiggle{
+  0%,100%{transform:rotate(0deg) scale(1);}
+  20%{transform:rotate(-14deg) scale(1.08);}
+  40%{transform:rotate(12deg) scale(1.08);}
+  60%{transform:rotate(-8deg) scale(1.05);}
+  80%{transform:rotate(6deg) scale(1.02);}
+}
+.pa20-cel-wiggle{ animation:pa20CelWiggle .7s var(--ease-out,ease-out) 1; }
+
+@keyframes pa20CelPop{ 0%{transform:scale(1);opacity:1;} 35%{transform:scale(1.3);opacity:1;} 60%{transform:scale(.92);opacity:1;} 100%{transform:scale(1);opacity:1;} }
+.pa20-cel-pop{ animation:pa20CelPop .6s var(--ease-out,ease-out) 1; }
+
+/* ---- ánimo / encouragement (un solo disparo, al fallar — gesto cálido, no de regaño) ---- */
+@keyframes pa20CheerNod{ 0%,100%{transform:rotate(0deg);} 25%{transform:rotate(-6deg);} 50%{transform:rotate(5deg);} 75%{transform:rotate(-3deg);} }
+.pa20-cheer-nod{ animation:pa20CheerNod .6s var(--ease-in-out,ease-in-out) 1; }
+
+@keyframes pa20CheerNudge{ 0%,100%{transform:translateX(0);} 30%{transform:translateX(-5px);} 60%{transform:translateX(5px);} }
+.pa20-cheer-nudge{ animation:pa20CheerNudge .5s var(--ease-in-out,ease-in-out) 1; }
+
+@keyframes pa20CheerLean{ 0%,100%{transform:scale(1) rotate(0deg);} 50%{transform:scale(1.08) rotate(-3deg);} }
+.pa20-cheer-lean{ animation:pa20CheerLean .55s var(--ease-in-out,ease-in-out) 1; }
+
+@media (prefers-reduced-motion: reduce){
+  .pa20-idle-bob,.pa20-idle-sway,.pa20-idle-breathe,.pa20-idle-peek,
+  .pa20-cel-jump,.pa20-cel-spin,.pa20-cel-wiggle,.pa20-cel-pop,
+  .pa20-cheer-nod,.pa20-cheer-nudge,.pa20-cheer-lean{ animation:none !important; }
+}
+
+@media (max-width:720px){
+  .pa20Pet{ width:60px; height:60px; font-size:44px; left:12px; bottom:12px; }
+}
