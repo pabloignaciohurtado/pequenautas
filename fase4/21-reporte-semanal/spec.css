@@ -1,0 +1,28 @@
+/* ===== Fase 4 · Mejora #21 "reporte-semanal" =====
+   Reutiliza tokens ya definidos en :root (--card,--shadow,--ink,--ink-soft,
+   --ease-out) y clases ya existentes (.btn,.ghost,.empty) — no las redefine.
+   Sin animación: es una caja informativa estática dentro de la pestaña
+   "Progreso" ya gateada, así que no hay nada que reducir bajo
+   prefers-reduced-motion (se documenta el bloque igualmente por consistencia
+   con el resto de módulos de fase 4). */
+
+.wrBox{
+  margin-top:18px;background:var(--card,#fff);border-radius:20px;
+  box-shadow:var(--shadow,0 10px 30px rgba(59,51,85,.10));padding:16px;
+}
+.wrBox .wrHead{display:flex;align-items:flex-start;gap:10px;margin-bottom:4px;}
+.wrBox .wrIcon{font-size:26px;line-height:1;flex:0 0 auto;}
+.wrBox .wrTitle{font-weight:700;font-size:16px;color:var(--ink,#3B3355);}
+.wrBox .wrSub{font-size:12.5px;color:var(--ink-soft,#6C6685);margin-top:2px;line-height:1.35;}
+.wrBox .wrStatsLine{font-size:14px;font-weight:600;color:var(--ink,#3B3355);margin:10px 0 12px;}
+.wrBox .wrActions{display:flex;flex-wrap:wrap;gap:8px;}
+.wrBox .wrBtn{flex:1 1 auto;min-width:130px;padding:10px 14px;font-size:14px;border-radius:16px;}
+.wrBox .wrBtn[hidden]{display:none;}
+
+@media (max-width:420px){
+  .wrBox .wrBtn{min-width:100%;}
+}
+
+@media (prefers-reduced-motion: reduce){
+  .wrBox{transition:none;}
+}

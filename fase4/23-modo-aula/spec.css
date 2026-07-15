@@ -1,0 +1,43 @@
+/* ==================== Fase 4 · Mejora #23 "modo-aula" ====================
+   Solo transform/opacity animados; respeta prefers-reduced-motion.
+   Reutiliza tokens ya definidos en :root (ship/index.html): --ease-out,
+   --card, --ink, --ink-soft, --shadow, --sci, --math, --read, --no. No
+   define variables nuevas. Reutiliza también clases ya existentes
+   (.eduHead/.eduChild/.eduAv/.eduMeta/.eduName/.eduChildSub/.spark/
+   .statgrid/.stat/.bar/.failitem/.empty/.nameinput/.btn/.btn.ghost/
+   .choices) definidas por el ship base (panel educador) — este archivo
+   solo agrega las clases nuevas específicas de #aulaView. */
+
+/* Selector de grupos (chips) */
+.aulaGroupChips{display:flex;flex-wrap:wrap;gap:8px;margin-bottom:10px;}
+.aulaGroupChip{border:none;cursor:pointer;font-family:inherit;font-weight:600;font-size:14px;
+  padding:9px 14px;border-radius:16px;background:#F3EEFB;color:var(--ink-soft,#6C6685);
+  transition:transform 150ms var(--ease-out,ease),background 200ms var(--ease-out,ease),color 200ms var(--ease-out,ease);}
+.aulaGroupChip:active{transform:scale(.94);}
+.aulaGroupChip.on{background:linear-gradient(160deg,#8EE3B8,var(--sci,#57C596));color:#fff;}
+
+/* Fila: crear grupo nuevo */
+.aulaNewRow{display:flex;gap:8px;margin:4px 0 16px;align-items:center;}
+.aulaNewRow .nameinput{margin-bottom:0;flex:1 1 auto;}
+.aulaNewRow .btn{flex:0 0 auto;padding:12px 16px;font-size:15px;white-space:nowrap;}
+
+/* Selector de miembros (niños del dispositivo) */
+.aulaMembers{display:flex;flex-wrap:wrap;gap:8px;margin-bottom:4px;}
+.aulaMemberChip{display:flex;align-items:center;gap:6px;border:2px solid #EAE6F4;background:#fff;
+  cursor:pointer;font-family:inherit;border-radius:16px;padding:6px 12px 6px 8px;
+  font-weight:600;font-size:14px;color:var(--ink-soft,#6C6685);
+  transition:transform 150ms var(--ease-out,ease),background 200ms var(--ease-out,ease),
+    border-color 200ms var(--ease-out,ease),color 200ms var(--ease-out,ease);}
+.aulaMemberChip .av{font-size:20px;line-height:1;}
+.aulaMemberChip:active{transform:scale(.94);}
+.aulaMemberChip.on{background:#EAFBF2;border-color:var(--sci,#57C596);color:var(--ink,#3B3355);}
+
+/* Foco de materias: reutiliza .choices + .btn/.btn.ghost ya existentes, solo ajusta el gap */
+.choices.aulaFocus{gap:8px;}
+
+/* Botón eliminar grupo, estado "armado" (doble toque para confirmar, sin diálogo nativo) */
+#aulaDeleteBtn.armed{background:#FFEAEE;color:var(--no,#F2748C);}
+
+@media (prefers-reduced-motion: reduce){
+  .aulaGroupChip,.aulaMemberChip{transition:none;}
+}
