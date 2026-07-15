@@ -1,0 +1,122 @@
+<!DOCTYPE html>
+<!--
+  #26 Panel nube · cohortes — MAQUETA DE DISEÑO, no wireada a index.html/app.js.
+  Objetivo: mostrar cómo se vería una 4ª pestaña "Cohortes" dentro del área de adultos
+  (mismo <div class="sheet">/<div class="panel"> que ya existe en ship/index.html),
+  reutilizando EXACTAMENTE las clases CSS del panel educador local (#24: eduHead,
+  statgrid, stat, bar, failitem, eduChild, spark) para que, el día que se active #25 y
+  se decida construir esta pestaña de verdad, el CSS ya exista y no haya que inventar
+  un lenguaje visual nuevo. Los datos de abajo son de ejemplo (hardcodeados), no vienen
+  de ningún fetch: este archivo no abre red ni bajo file:// ni servido por HTTPS.
+  No usa Google Fonts remotas a propósito (evita cualquier red incluso accidental);
+  usa la misma pila de system-ui que el resto de mocks de este repo.
+-->
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Pequeñautas · Panel nube · Cohortes (maqueta, no conectada)</title>
+<style>
+  :root{
+    --ease-out: cubic-bezier(0.23, 1, 0.32, 1);
+    --bg: #FDF6EC; --ink: #3B3355; --ink-soft: #6C6685; --card: #FFFFFF;
+    --shadow: 0 10px 30px rgba(59,51,85,.10), 0 2px 6px rgba(59,51,85,.06);
+    --shadow-lg: 0 22px 50px rgba(59,51,85,.16);
+    --math: #4EA8DE; --read: #F2748C; --sci: #57C596; --sun: #FDBA4D; --no:#F2748C;
+  }
+  *{box-sizing:border-box;}
+  body{font-family:system-ui,-apple-system,'Segoe UI',sans-serif;background:var(--bg);color:var(--ink);margin:0;padding:32px;}
+  .wrap{max-width:480px;margin:0 auto;}
+  .note{background:#FFF7E8;border-radius:16px;padding:12px 14px;font-size:13px;color:#8a6d2e;margin-bottom:18px;line-height:1.5;}
+  .panel{background:var(--card);border-radius:30px;box-shadow:var(--shadow-lg);padding:26px;}
+  .panel h3{margin:0 0 4px;font-size:24px;}
+  .panel .sub{margin:0 0 18px;color:var(--ink-soft);font-size:15px;}
+  .tabs{display:flex;gap:8px;margin-bottom:16px;background:#F3F0FA;border-radius:16px;padding:5px;}
+  .tab{flex:1;border:none;background:none;font-family:inherit;font-weight:600;font-size:13px;color:var(--ink-soft);padding:10px 4px;border-radius:12px;cursor:pointer;}
+  .tab.on{background:#fff;color:var(--ink);box-shadow:0 2px 6px rgba(59,51,85,.08);}
+  /* selector de cohorte: reutiliza .choices.bilMode del estilo ya existente en ship */
+  .cohortSelect{display:flex;gap:8px;margin-bottom:14px;flex-wrap:wrap;}
+  .cohortSelect button{flex:1 1 auto;min-width:100px;border:none;border-radius:16px;padding:10px 12px;font-family:inherit;font-weight:600;font-size:14px;cursor:pointer;background:var(--card);color:var(--ink);box-shadow:var(--shadow);}
+  .cohortSelect button.on{background:linear-gradient(160deg,#8EE3B8,var(--sci));color:#fff;box-shadow:none;}
+  .eduHead{font-size:13px;font-weight:600;color:var(--ink-soft);margin:18px 0 6px;}
+  .eduHead:first-child{margin-top:2px;}
+  .statgrid{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:6px;}
+  .stat{background:#F8F6FD;border-radius:16px;padding:14px;}
+  .stat .n{font-size:26px;font-weight:700;line-height:1.1;}
+  .stat .l{font-size:12.5px;color:var(--ink-soft);margin-top:3px;}
+  .bar{margin-top:12px;}
+  .bar .lab{display:flex;justify-content:space-between;font-size:13px;font-weight:600;margin-bottom:5px;}
+  .bar .track{height:12px;border-radius:8px;background:#EEE9F6;overflow:hidden;}
+  .bar .fillb{height:100%;border-radius:8px;}
+  .failitem{display:flex;align-items:center;gap:10px;padding:8px 0;font-size:15px;border-top:1px solid #F0ECF6;}
+  .failitem .fx{font-size:26px;} .failitem .fc{margin-left:auto;color:var(--no);font-weight:600;font-size:14px;}
+  .eduChild{display:flex;align-items:center;gap:12px;padding:10px 2px;border-top:1px solid #F0ECF6;}
+  .eduChild:first-of-type{border-top:none;}
+  .eduAv{font-size:30px;line-height:1;flex:0 0 auto;}
+  .eduMeta{flex:1 1 auto;min-width:0;}
+  .eduName{font-weight:600;font-size:16px;}
+  .eduChildSub{font-size:12.5px;color:var(--ink-soft);}
+  .spark{display:flex;align-items:flex-end;gap:3px;height:30px;flex:0 0 auto;}
+  .sparkbar{width:7px;border-radius:3px;background:#E7E1F0;}
+  .sparkbar.hi{background:var(--sci);} .sparkbar.mid{background:var(--sun);} .sparkbar.lo{background:var(--read);}
+  .cloudBadge{display:inline-flex;align-items:center;gap:6px;font-size:12px;font-weight:600;color:var(--ink-soft);background:#F3EEFB;border-radius:12px;padding:4px 10px;margin-bottom:14px;}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <div class="note">
+    Maqueta estática de diseño (#26). Datos de ejemplo, sin conexión a red ni a Supabase.
+    Reutiliza las clases visuales del panel educador local (#24). Ver
+    <code>26-panel-nube-cohortes.md</code> para el contrato de activación real.
+  </div>
+
+  <div class="panel">
+    <div class="tabs" aria-hidden="true">
+      <button class="tab">📊 Progreso</button>
+      <button class="tab">⚙️ Ajustes</button>
+      <button class="tab">🧑‍🏫 Educador</button>
+      <button class="tab on">☁️ Cohortes</button>
+    </div>
+
+    <h3>Cohortes en la nube</h3>
+    <p class="sub">Resumen agregado de un grupo de niños, sincronizado desde varios dispositivos.</p>
+    <div class="cloudBadge" aria-hidden="true">☁️ Última sincronización: hace 2 h</div>
+
+    <!-- selector de cohorte: futuros ids de ejemplo eduCohortSelect / botones data-cohort -->
+    <div class="cohortSelect" role="tablist" aria-label="Cohortes">
+      <button class="on">Sala Azul</button>
+      <button>Refuerzo lectura</button>
+      <button>+ Nueva</button>
+    </div>
+
+    <div class="eduHead">Resumen de "Sala Azul"</div>
+    <div class="statgrid">
+      <div class="stat"><div class="n">12</div><div class="l">Niños</div></div>
+      <div class="stat"><div class="n">348</div><div class="l">Rondas</div></div>
+      <div class="stat"><div class="n">76%</div><div class="l">Aciertos a la 1ª</div></div>
+      <div class="stat"><div class="n">6.4s</div><div class="l">Tiempo medio</div></div>
+    </div>
+    <div class="bar"><div class="lab"><span>Números</span><span>81% aciertos</span></div><div class="track"><div class="fillb" style="width:81%;background:var(--math)"></div></div></div>
+    <div class="bar"><div class="lab"><span>Letras</span><span>69% aciertos</span></div><div class="track"><div class="fillb" style="width:69%;background:var(--read)"></div></div></div>
+    <div class="bar"><div class="lab"><span>Animales</span><span>78% aciertos</span></div><div class="track"><div class="fillb" style="width:78%;background:var(--sci)"></div></div></div>
+
+    <div class="eduHead">A reforzar (cohorte)</div>
+    <div class="failitem"><span class="fx">🔤</span><span>M</span><span class="fc">14 ✗</span></div>
+    <div class="failitem"><span class="fx">🔢</span><span>⚖️</span><span class="fc">9 ✗</span></div>
+    <div class="failitem"><span class="fx">🍖</span><span>Carne</span><span class="fc">6 ✗</span></div>
+
+    <div class="eduHead">Por niño (alias, sin PII)</div>
+    <div class="eduChild">
+      <span class="eduAv">🦊</span>
+      <div class="eduMeta"><div class="eduName">Peque 214</div><div class="eduChildSub">31 rondas · 84% a la 1ª</div></div>
+      <div class="spark" aria-hidden="true"><span class="sparkbar hi" style="height:26px"></span><span class="sparkbar hi" style="height:24px"></span><span class="sparkbar mid" style="height:16px"></span><span class="sparkbar hi" style="height:28px"></span></div>
+    </div>
+    <div class="eduChild">
+      <span class="eduAv">🐼</span>
+      <div class="eduMeta"><div class="eduName">Peque 087</div><div class="eduChildSub">18 rondas · 58% a la 1ª</div></div>
+      <div class="spark" aria-hidden="true"><span class="sparkbar lo" style="height:10px"></span><span class="sparkbar mid" style="height:16px"></span><span class="sparkbar lo" style="height:8px"></span><span class="sparkbar mid" style="height:18px"></span></div>
+    </div>
+  </div>
+</div>
+</body>
+</html>
