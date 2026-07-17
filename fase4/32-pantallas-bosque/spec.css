@@ -1,0 +1,135 @@
+/* ==================== FASE 4 - #32 Pantallas del bosque ====================
+   Overlays estilo papel recortado (mapa de aventuras, mochila de logros,
+   pausa de descanso, gate parental) + retoques de navegacion del home.
+   100% ADITIVO y defensivo. Solo CSS; no toca app.js ni STORE_KEY.
+   Paleta: crema #FBF6E9/#F4F1E4, tinta #2E3B2C, verde #3D7A4A/#57C596,
+   naranja zorro #E8843A, azul #4EA8DE, coral #F2748C, sol #FDBA4D.
+   Sombras solidas offset, bordes irregulares, prefers-reduced-motion. */
+
+/* ---------- Fila de navegacion inyectada en el home ---------- */
+.pa32-nav{
+  display:flex;gap:14px;justify-content:center;flex-wrap:wrap;
+  margin:8px auto 4px;width:100%;max-width:520px;
+}
+.pa32-navbtn{
+  border:none;cursor:pointer;font-family:inherit;font-weight:700;font-size:18px;
+  color:#2E3B2C;background:#FFF8EA;border:3px solid #2E3B2C;
+  border-radius:20px 22px 18px 24px;padding:12px 22px;
+  box-shadow:4px 5px 0 rgba(46,59,44,.22);
+  display:flex;align-items:center;gap:10px;
+  transition:transform 150ms cubic-bezier(0.23,1,0.32,1);
+}
+.pa32-navbtn:active{transform:translate(2px,2px);box-shadow:2px 3px 0 rgba(46,59,44,.22);}
+.pa32-navbtn .pa32-ic{width:26px;height:26px;flex:0 0 auto;display:block;}
+.pa32-navbtn.map{background:#EAF6EE;}
+.pa32-navbtn.bag{background:#FDEFE0;}
+
+/* ---------- Overlay base (papel recortado) ---------- */
+.pa32-ov{
+  position:fixed;inset:0;z-index:90;display:flex;align-items:center;justify-content:center;
+  padding:20px;background:rgba(46,59,44,.42);
+  animation:pa32Fade 220ms cubic-bezier(0.23,1,0.32,1);
+}
+@keyframes pa32Fade{from{opacity:0;}to{opacity:1;}}
+.pa32-card{
+  position:relative;width:100%;max-width:460px;max-height:88vh;overflow:auto;
+  background:#FBF6E9;border:4px solid #2E3B2C;
+  border-radius:30px 34px 26px 32px;
+  box-shadow:10px 12px 0 rgba(46,59,44,.20);
+  padding:22px 22px 26px;
+  animation:pa32Pop 300ms cubic-bezier(0.23,1,0.32,1);
+}
+@keyframes pa32Pop{from{opacity:0;transform:translateY(16px) scale(.96);}to{opacity:1;transform:none;}}
+.pa32-close{
+  position:absolute;top:14px;right:14px;width:44px;height:44px;border-radius:50%;
+  border:3px solid #2E3B2C;background:#FFF8EA;color:#2E3B2C;cursor:pointer;
+  font-size:22px;font-weight:700;line-height:1;font-family:inherit;
+  display:flex;align-items:center;justify-content:center;
+  box-shadow:3px 3px 0 rgba(46,59,44,.20);
+}
+.pa32-close:active{transform:translate(2px,2px);}
+.pa32-title{margin:2px 40px 2px 4px;font-size:26px;font-weight:700;color:#2E3B2C;line-height:1.15;}
+.pa32-sub{margin:2px 4px 16px;font-size:15px;color:#3D7A4A;font-weight:600;}
+
+/* ---------- Mapa de aventuras ---------- */
+.pa32-map{position:relative;padding:6px 4px 4px;}
+.pa32-map-bg{
+  position:absolute;inset:0;z-index:0;pointer-events:none;
+  background:
+    radial-gradient(70px 70px at 12% 12%, rgba(87,197,150,.30) 0 60%, transparent 62%),
+    radial-gradient(90px 90px at 88% 30%, rgba(61,122,74,.22) 0 60%, transparent 62%),
+    radial-gradient(80px 80px at 20% 78%, rgba(78,168,222,.20) 0 60%, transparent 62%),
+    radial-gradient(70px 70px at 82% 90%, rgba(253,186,77,.24) 0 60%, transparent 62%);
+}
+.pa32-node{
+  position:relative;z-index:1;display:flex;align-items:center;gap:14px;
+  padding:8px 6px;
+}
+.pa32-node .disc{
+  width:56px;height:56px;flex:0 0 auto;border-radius:50%;
+  border:3px solid #2E3B2C;display:flex;align-items:center;justify-content:center;
+  box-shadow:3px 4px 0 rgba(46,59,44,.22);font-weight:700;font-size:20px;color:#2E3B2C;
+  background:#FFF8EA;
+}
+.pa32-node.done .disc{background:#57C596;color:#FFF8EA;}
+.pa32-node.cur .disc{background:#E8843A;color:#FFF8EA;transform:scale(1.12);
+  box-shadow:0 0 0 5px rgba(232,132,58,.30),3px 4px 0 rgba(46,59,44,.22);}
+.pa32-node.lock .disc{background:#F4F1E4;opacity:.72;}
+.pa32-node .lbl{font-size:17px;font-weight:600;color:#2E3B2C;}
+.pa32-node.lock .lbl{color:#6C6685;}
+.pa32-node .path{
+  position:absolute;left:33px;top:-14px;width:4px;height:22px;background:#2E3B2C;
+  opacity:.28;border-radius:3px;z-index:0;
+}
+.pa32-node:first-child .path{display:none;}
+
+/* ---------- Mochila de logros ---------- */
+.pa32-racha{
+  display:flex;align-items:center;justify-content:center;gap:10px;
+  background:#FDEFE0;border:3px solid #2E3B2C;border-radius:18px 22px 18px 22px;
+  padding:10px 14px;margin:0 4px 16px;font-weight:700;color:#2E3B2C;font-size:16px;
+  box-shadow:3px 4px 0 rgba(46,59,44,.16);
+}
+.pa32-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;padding:2px 2px 4px;}
+.pa32-badge{
+  border:3px solid #2E3B2C;border-radius:20px 22px 18px 22px;
+  background:#FFF8EA;padding:12px 6px 10px;text-align:center;
+  box-shadow:3px 4px 0 rgba(46,59,44,.16);
+  display:flex;flex-direction:column;align-items:center;gap:6px;min-height:104px;justify-content:center;
+}
+.pa32-badge .bico{width:40px;height:40px;display:flex;align-items:center;justify-content:center;}
+.pa32-badge .bname{font-size:12.5px;font-weight:700;color:#2E3B2C;line-height:1.15;}
+.pa32-badge.locked{background:#F4F1E4;opacity:.66;}
+.pa32-badge.locked .bname{color:#6C6685;}
+.pa32-badge.locked .bq{font-size:30px;font-weight:700;color:#9c9;}
+
+/* ---------- Pausa de descanso ---------- */
+.pa32-center{display:flex;flex-direction:column;align-items:center;gap:14px;text-align:center;padding:6px 4px 2px;}
+.pa32-center .rufo{width:110px;height:110px;}
+.pa32-center .msg{font-size:19px;font-weight:600;color:#2E3B2C;line-height:1.4;max-width:320px;}
+.pa32-cta{
+  border:none;cursor:pointer;font-family:inherit;font-weight:700;font-size:18px;color:#FFF8EA;
+  background:#E8843A;border:3px solid #2E3B2C;border-radius:20px 22px 18px 22px;
+  padding:14px 28px;box-shadow:4px 5px 0 rgba(46,59,44,.22);margin-top:4px;
+}
+.pa32-cta:active{transform:translate(2px,2px);box-shadow:2px 3px 0 rgba(46,59,44,.22);}
+
+/* ---------- Gate parental ---------- */
+.pa32-gate-q{font-size:30px;font-weight:700;color:#2E3B2C;text-align:center;margin:6px 0 16px;}
+.pa32-gate-opts{display:flex;gap:14px;justify-content:center;flex-wrap:wrap;}
+.pa32-opt{
+  border:none;cursor:pointer;font-family:inherit;font-weight:700;font-size:30px;color:#2E3B2C;
+  background:#FFF8EA;border:3px solid #2E3B2C;border-radius:20px;
+  min-width:78px;min-height:78px;box-shadow:3px 4px 0 rgba(46,59,44,.20);
+}
+.pa32-opt:active{transform:translate(2px,2px);}
+.pa32-opt.bad{background:#FFEAEE;animation:pa32Shake 360ms cubic-bezier(0.23,1,0.32,1);}
+.pa32-opt.good{background:#57C596;color:#FFF8EA;}
+@keyframes pa32Shake{10%,90%{transform:translateX(-2px);}30%,70%{transform:translateX(-7px);}50%{transform:translateX(7px);}}
+
+@media (prefers-reduced-motion: reduce){
+  .pa32-ov,.pa32-card{animation:none !important;}
+  .pa32-navbtn,.pa32-close,.pa32-cta,.pa32-opt{transition:none !important;}
+  .pa32-opt.bad{animation:none !important;}
+  .pa32-node.cur .disc{transform:none;}
+}
