@@ -59,7 +59,11 @@
     "23-modo-aula",
     // Oleada 6 — backend/scaffolds sin wiring (25,26,27,29 solo referencia, no en MODULES);
     // #28 (código TWA/atajos ?game=, wrap de paintInstall) SÍ se integra, al final de todo.
-    "28-pwa-tiendas"
+    "28-pwa-tiendas",
+    // Oleada 7 — identidad visual "Aventuras en el Bosque" (skin papel recortado).
+    // Al final de todo: solo CSS + retoques DOM en runtime (mascota Rufo, rename
+    // del home); no envuelve globales de juego, no toca STORE_KEY.
+    "31-identidad-visual"
   ];
   MODULES.forEach(function (m) {
     var l = document.createElement("link");

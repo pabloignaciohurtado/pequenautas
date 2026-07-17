@@ -1,0 +1,126 @@
+/* ==================== FASE 4 - #31 Identidad visual "Aventuras en el Bosque" ====================
+   Skin ADITIVO estilo papel recortado (Forest Papercraft). Solo CSS encima del
+   tema existente: no edita index.html ni app.js. Sombras solidas con offset,
+   rotaciones leves alternadas y bordes "rasgados" con border-radius irregular.
+   Respeta prefers-reduced-motion. Sin red, sin fuentes externas nuevas. */
+
+/* ---------- paleta papel recortado ---------- */
+:root{
+  --pa31-cream:#FBF6E9;
+  --pa31-kraft:#F4F1E4;
+  --pa31-ink:#2E3B2C;
+  --pa31-math:#4EA8DE;
+  --pa31-read:#F2748C;
+  --pa31-sci:#57C596;
+  --pa31-sun:#FDBA4D;
+  --pa31-fox:#E8843A;
+  /* re-mapea las variables del tema base al bosque */
+  --bg: var(--pa31-cream);
+  --ink: var(--pa31-ink);
+  --ink-soft: #5C6B58;
+  --card: #FFFDF7;
+  --math: var(--pa31-math);
+  --read: var(--pa31-read);
+  --sci: var(--pa31-sci);
+  --sun: var(--pa31-sun);
+  --ok: var(--pa31-sci);
+  --no: var(--pa31-read);
+  /* sombras SOLIDAS de papel (sin blur grande) */
+  --shadow: 3px 4px 0 rgba(46,59,44,.18);
+  --shadow-lg: 4px 6px 0 rgba(46,59,44,.20);
+}
+
+body{
+  background:
+    radial-gradient(1100px 560px at 12% -8%, #F2ECD8 0%, transparent 55%),
+    radial-gradient(900px 640px at 108% 8%, #E7EFDF 0%, transparent 50%),
+    var(--pa31-cream) !important;
+  color: var(--pa31-ink) !important;
+}
+
+/* ---------- piezas de papel: tarjetas y botones ---------- */
+.iconbtn, .stars, .pchip, .prompt, .choice, .pcard, .panel,
+.btn.ghost, .coplayCard{
+  background: var(--card);
+  box-shadow: 3px 4px 0 rgba(46,59,44,.18) !important;
+  border-radius: 14px 18px 13px 17px !important;
+  border: 2px solid rgba(46,59,44,.14);
+}
+.btn{
+  box-shadow: 3px 4px 0 rgba(46,59,44,.22) !important;
+  border-radius: 12px 16px 11px 15px !important;
+  border: 2px solid rgba(46,59,44,.16);
+}
+
+/* ---------- tarjetas de materia: papel rotado, colores planos ---------- */
+.subject{
+  box-shadow: 4px 6px 0 rgba(46,59,44,.20) !important;
+  border-radius: 8px 12px 9px 11px !important;
+  border: 3px solid rgba(46,59,44,.16);
+}
+/* Numeros azul */
+.subject:nth-child(1){ background: var(--pa31-math) !important; transform: rotate(-1deg); }
+/* Letras coral (el skin la lleva SIEMPRE a coral) */
+.subject:nth-child(2){ background: var(--pa31-read) !important; transform: rotate(1.2deg); }
+/* Ciencias verde */
+.subject:nth-child(3){ background: var(--pa31-sci) !important; transform: rotate(-0.6deg); }
+.subject .blob{ background: rgba(255,253,247,.22); }
+.subject .lv{ background: rgba(46,59,44,.22); }
+.subject:active{ transform: scale(.96) rotate(0deg) !important; }
+@media (hover:hover) and (pointer:fine){
+  .subject:hover{
+    transform: translateY(-6px) rotate(0deg) !important;
+    box-shadow: 5px 8px 0 rgba(46,59,44,.24) !important;
+  }
+}
+
+/* mantener la animacion de entrada pero acabando en la rotacion del skin */
+.screen.active .subject:nth-child(1){ animation: pa31In1 520ms var(--ease-out) forwards; }
+.screen.active .subject:nth-child(2){ animation: pa31In2 520ms var(--ease-out) forwards; animation-delay:130ms; }
+.screen.active .subject:nth-child(3){ animation: pa31In3 520ms var(--ease-out) forwards; animation-delay:200ms; }
+@keyframes pa31In1{ from{opacity:0; transform:translateY(18px) rotate(-1deg);} to{opacity:1; transform:rotate(-1deg);} }
+@keyframes pa31In2{ from{opacity:0; transform:translateY(18px) rotate(1.2deg);} to{opacity:1; transform:rotate(1.2deg);} }
+@keyframes pa31In3{ from{opacity:0; transform:translateY(18px) rotate(-0.6deg);} to{opacity:1; transform:rotate(-0.6deg);} }
+
+/* ---------- hero: tinta plana sobre papel (sin degradado de texto) ---------- */
+#home .hero h1{
+  background: none !important;
+  -webkit-text-fill-color: var(--pa31-ink) !important;
+  color: var(--pa31-ink) !important;
+  text-shadow: 2px 3px 0 rgba(46,59,44,.14);
+}
+.hero p{ color:#5C6B58; }
+
+/* ---------- perfiles / avatares / paneles ---------- */
+.pcard{ border-radius: 12px 16px 11px 15px !important; }
+.pcard:nth-child(odd){ transform: rotate(-0.8deg); }
+.pcard:nth-child(even){ transform: rotate(0.9deg); }
+.pcard.add{ border:3px dashed rgba(46,59,44,.28) !important; background: var(--pa31-kraft) !important; box-shadow:none !important; }
+.avopt{
+  background: var(--pa31-kraft);
+  border-radius: 10px 14px 9px 13px !important;
+  box-shadow: 2px 3px 0 rgba(46,59,44,.16);
+}
+.avopt.sel{ box-shadow: 0 0 0 3px var(--pa31-sci), 2px 3px 0 rgba(46,59,44,.16) !important; background:#EAF6EE !important; }
+.tabs{ background: var(--pa31-kraft); border-radius: 12px 15px 11px 14px; }
+.tab.on{ box-shadow: 2px 2px 0 rgba(46,59,44,.14); }
+.toggle.on{ background: var(--pa31-sci); }
+.tip{ background:#F6EED8; color:#6B5A2E; border-radius: 10px 14px 9px 13px; }
+.habitat, .diet, .lettertile{
+  box-shadow: 4px 6px 0 rgba(46,59,44,.20) !important;
+  border-radius: 10px 14px 9px 13px !important;
+  border: 3px solid rgba(46,59,44,.14);
+}
+.dot.done{ background: var(--pa31-sun); }
+.celebrate{ background: rgba(251,246,233,.78); }
+
+/* ---------- mascota Rufo (nodo #peqMascot re-vestido por spec.js) ---------- */
+#peqMascot svg{ display:block; filter: drop-shadow(3px 4px 0 rgba(46,59,44,.18)); }
+
+/* ---------- reduced motion: sin rotaciones animadas ni transiciones extra ---------- */
+@media (prefers-reduced-motion: reduce){
+  .screen.active .subject:nth-child(1),
+  .screen.active .subject:nth-child(2),
+  .screen.active .subject:nth-child(3){ animation:none !important; opacity:1 !important; }
+  .subject, .pcard{ transform:none !important; }
+}
