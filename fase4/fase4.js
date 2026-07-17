@@ -63,7 +63,13 @@
     // Oleada 7 — identidad visual "Aventuras en el Bosque" (skin papel recortado).
     // Al final de todo: solo CSS + retoques DOM en runtime (mascota Rufo, rename
     // del home); no envuelve globales de juego, no toca STORE_KEY.
-    "31-identidad-visual"
+    "31-identidad-visual",
+    // Oleada 8 - #32 pantallas del bosque (overlays mapa de aventuras y
+    // mochila de logros, cableados a botones inyectados en el home; pausa y
+    // gate listos como window.PEQ32.* sin cablear) + fix del boton duplicado
+    // del modal "Nuevo peque". Al final de todo: solo CSS + overlays y
+    // retoques DOM en runtime; no envuelve globales de juego, no toca STORE_KEY.
+    "32-pantallas-bosque"
   ];
   MODULES.forEach(function (m) {
     var l = document.createElement("link");
