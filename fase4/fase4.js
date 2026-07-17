@@ -69,7 +69,15 @@
     // gate listos como window.PEQ32.* sin cablear) + fix del boton duplicado
     // del modal "Nuevo peque". Al final de todo: solo CSS + overlays y
     // retoques DOM en runtime; no envuelve globales de juego, no toca STORE_KEY.
-    "32-pantallas-bosque"
+    "32-pantallas-bosque",
+    // Oleada 9 - #33 hero diorama 3D + rediseño del home. Banda hero (fondo de
+    // bosque + Rufo saludando + saludo con el nombre), barra de navegación
+    // inferior de 4 items (Inicio/Mapa/Mochila/Adultos) cableada a window.PEQ32
+    // (#32) y al gate de adultos, y Rufo celebrando en el logro. Al final de
+    // todo: solo CSS + retoques DOM en runtime; imágenes embebidas como data-URI
+    // en img/*.css (los binarios no se pueden subir byte-exactos con las
+    // herramientas MCP). No envuelve globales de juego, no toca STORE_KEY.
+    "33-hero-diorama"
   ];
   MODULES.forEach(function (m) {
     var l = document.createElement("link");
