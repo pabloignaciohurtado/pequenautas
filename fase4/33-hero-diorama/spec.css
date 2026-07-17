@@ -1,0 +1,130 @@
+/* ==================== FASE 4 - #33 Hero diorama 3D + rediseno home ====================
+   Banda hero (diorama papel), barra de navegacion inferior, retoques de header
+   y de tarjetas. 100% ADITIVO y defensivo. Solo CSS; no toca app.js ni STORE_KEY.
+   Las imagenes (Rufo saluda/celebra/idle, fondo de bosque) van embebidas como
+   data-URI en los ficheros img/*.css (importados abajo): las herramientas MCP de
+   GitHub no permiten subir binarios byte-exactos, asi que se incrustan como texto
+   verificable por blob SHA. Paleta: crema #FBF6E9, verde #3D7A4A/#57C596,
+   naranja #E8843A, azul #4EA8DE, coral #F2748C, tinta #2E3B2C, sol #FDBA4D.
+   Respeta prefers-reduced-motion. */
+
+@import url("img/bosque.css");
+@import url("img/saluda.css");
+@import url("img/celebra.css");
+@import url("img/idle.css");
+
+/* ---------- Aligerar el titulo del home (quita gradiente/sombra pesada) ---------- */
+#home .hero{margin:2px 0 6px;}
+#home .hero h1{
+  background:none !important;-webkit-background-clip:border-box !important;
+  background-clip:border-box !important;-webkit-text-fill-color:#3D7A4A !important;
+  color:#3D7A4A !important;text-shadow:none !important;letter-spacing:.3px;
+  font-size:clamp(24px,4.8vw,38px) !important;
+}
+#home .hero p{margin-top:2px;color:#3D7A4A;opacity:.8;}
+
+/* ---------- Home scrollable + espacio para la barra inferior ---------- */
+.screen#home{overflow:auto;padding-bottom:92px;}
+
+/* ---------- Banda hero (diorama) ---------- */
+.pa33-hero{
+  position:relative;width:100%;max-width:560px;margin:2px auto 14px;
+  height:150px;border-radius:26px 30px 24px 28px;overflow:hidden;
+  border:4px solid #2E3B2C;box-shadow:6px 7px 0 rgba(46,59,44,.18);
+  display:flex;align-items:center;flex:0 0 auto;
+}
+.pa33-hero .pa33-hero-bg{
+  position:absolute;inset:0;z-index:0;
+  background-size:cover;background-position:center;background-repeat:no-repeat;
+}
+.pa33-hero::after{
+  content:"";position:absolute;inset:0;z-index:1;pointer-events:none;
+  background:linear-gradient(90deg,rgba(46,59,44,.02) 40%,rgba(46,59,44,.20));
+}
+.pa33-saluda{
+  position:relative;z-index:2;width:110px;height:126px;flex:0 0 auto;
+  margin-left:6px;align-self:flex-end;
+}
+.pa33-saluda .pa33-saluda-img{
+  position:absolute;inset:0;background-size:contain;background-repeat:no-repeat;
+  background-position:bottom center;filter:drop-shadow(2px 3px 0 rgba(46,59,44,.22));
+}
+.pa33-greet{position:relative;z-index:2;flex:1 1 auto;padding:0 12px;min-width:0;}
+.pa33-greet .panel{
+  display:inline-block;background:rgba(255,248,234,.88);
+  border:3px solid #2E3B2C;border-radius:16px 18px 14px 18px;padding:8px 14px;
+  box-shadow:3px 4px 0 rgba(46,59,44,.18);max-width:100%;
+}
+.pa33-greet .hi{font-size:22px;font-weight:700;color:#3D7A4A;line-height:1.15;
+  overflow:hidden;text-overflow:ellipsis;}
+.pa33-greet .sub{font-size:13.5px;font-weight:600;color:#2E3B2C;margin-top:2px;}
+.pa33-idle{
+  position:relative;z-index:2;width:66px;height:104px;flex:0 0 auto;
+  margin-right:8px;align-self:flex-end;
+}
+.pa33-idle .pa33-idle-img{
+  position:absolute;inset:0;background-size:contain;background-repeat:no-repeat;
+  background-position:bottom center;filter:drop-shadow(2px 3px 0 rgba(46,59,44,.18));
+}
+@media (max-width:420px){
+  .pa33-hero{height:128px;}
+  .pa33-saluda{width:90px;height:104px;}
+  .pa33-idle{display:none;}
+  .pa33-greet .hi{font-size:19px;}
+}
+
+/* ---------- Tarjetas de materia: neutraliza el blob decorativo de esquina ---------- */
+.subject .blob{display:none !important;}
+
+/* ---------- Header: una sola linea, sin desborde ---------- */
+.topbar{gap:8px;padding:12px 14px;flex-wrap:nowrap;}
+.topbar .iconbtn{width:52px;height:52px;font-size:24px;}
+.topbar .stars{height:52px;padding:0 12px;font-size:20px;}
+.topbar .stars .s{font-size:22px;}
+#profileChip{height:52px;min-width:0;flex:0 1 auto;padding:0 12px 0 8px;}
+#profileChip .nm{max-width:96px;}
+.topbar .lang{height:52px;min-width:70px;font-size:18px;}
+@media (max-width:380px){
+  /* el chip de idioma se oculta si no cabe (sigue en el DOM, reversible) */
+  .topbar .lang{display:none;}
+  #profileChip .nm{max-width:72px;}
+}
+
+/* ---------- Oculta la navegacion vieja (#32) y el boton "Para grandes" suelto ---------- */
+#home .pa32-nav{display:none !important;}
+#home #adultBtn{display:none !important;}
+
+/* ---------- Barra de navegacion inferior (4 items) ---------- */
+.pa33-tabbar{
+  position:fixed;left:50%;transform:translateX(-50%);bottom:14px;z-index:55;
+  display:none;align-items:stretch;gap:6px;background:#FFF8EA;
+  border:3px solid #2E3B2C;border-radius:24px;padding:7px 8px;
+  box-shadow:5px 6px 0 rgba(46,59,44,.20);max-width:94vw;
+}
+.pa33-tabbar.show{display:flex;}
+.pa33-tab{
+  border:none;cursor:pointer;font-family:inherit;font-weight:700;font-size:11.5px;
+  color:#2E3B2C;background:transparent;border-radius:16px;padding:6px 10px;min-width:64px;
+  display:flex;flex-direction:column;align-items:center;gap:3px;
+  transition:transform 140ms cubic-bezier(0.23,1,0.32,1),background 160ms ease;
+}
+.pa33-tab svg{width:26px;height:26px;display:block;}
+.pa33-tab svg *{stroke:#2E3B2C;}
+.pa33-tab.active{background:#E8843A;color:#FFF8EA;}
+.pa33-tab.active svg *{stroke:#FFF8EA;}
+.pa33-tab:active{transform:translateY(2px);}
+
+/* ---------- Imagen de Rufo celebrando en el logro ---------- */
+.pa33-celebrate-on .trophy{display:none !important;}
+.pa33-celebra{position:relative;width:180px;height:180px;margin-bottom:2px;}
+.pa33-celebra .pa33-celebra-fig{
+  position:absolute;inset:0;background-size:contain;background-repeat:no-repeat;
+  background-position:center;filter:drop-shadow(3px 4px 0 rgba(46,59,44,.20));
+  animation:pa33Pop 520ms cubic-bezier(0.23,1,0.32,1);
+}
+@keyframes pa33Pop{from{opacity:0;transform:scale(.6) translateY(16px);}to{opacity:1;transform:none;}}
+
+@media (prefers-reduced-motion: reduce){
+  .pa33-tab{transition:none !important;}
+  .pa33-celebra .pa33-celebra-fig{animation:none !important;}
+}
