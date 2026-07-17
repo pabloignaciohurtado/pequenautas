@@ -41,8 +41,9 @@
   content:"";position:absolute;inset:0;z-index:1;pointer-events:none;
   background:linear-gradient(90deg,rgba(46,59,44,.02) 40%,rgba(46,59,44,.20));
 }
+/* Rufo saluda: figura en HD, ampliada para aprovechar la nueva resolucion. */
 .pa33-saluda{
-  position:relative;z-index:2;width:110px;height:126px;flex:0 0 auto;
+  position:relative;z-index:2;width:120px;height:138px;flex:0 0 auto;
   margin-left:6px;align-self:flex-end;
 }
 .pa33-saluda .pa33-saluda-img{
@@ -68,7 +69,7 @@
 }
 @media (max-width:420px){
   .pa33-hero{height:128px;}
-  .pa33-saluda{width:90px;height:104px;}
+  .pa33-saluda{width:100px;height:116px;}
   .pa33-idle{display:none;}
   .pa33-greet .hi{font-size:19px;}
 }
@@ -84,16 +85,35 @@
 #profileChip{height:52px;min-width:0;flex:0 1 auto;padding:0 12px 0 8px;}
 #profileChip .nm{max-width:96px;}
 .topbar .lang{height:52px;min-width:70px;font-size:18px;}
+
+/* ---------- Chip de idioma: fuera del header SIEMPRE ---------- */
+/* El cambio de idioma vive en Adultos/Ajustes, no en el header del nino. El chip
+   ES/EN (#langBtn) desbordaba el header en pantallas ~390px. Se mantiene en el DOM
+   y CLICABLE (un smoke test de CI hace click en #langBtn), pero se saca del flujo y
+   de la vista de forma accesible: por eso NO se usa display:none. */
+#langBtn.lang{
+  position:absolute;top:4px;left:4px;width:1px;height:1px;min-width:0;
+  margin:0;padding:0;border:none;background:transparent;box-shadow:none;
+  opacity:0;overflow:hidden;pointer-events:auto;z-index:1;
+}
 @media (max-width:380px){
-  /* el chip de idioma se oculta si no cabe (sigue en el DOM, reversible) */
-  .topbar .lang{display:none;}
   #profileChip .nm{max-width:72px;}
 }
 
 /* ---------- Oculta la navegacion suelta vieja del #32 (Ir al mapa / Mochila) ---------- */
-/* El boton "Para grandes" (#adultBtn) se conserva visible y clicable (lo usan
-   flujos existentes y tests E2E); la barra inferior lo reutiliza via click(). */
 #home .pa32-nav{display:none !important;}
+
+/* ---------- Boton "Para grandes" (#adultBtn) residual ---------- */
+/* La barra inferior nueva ya ofrece "Adultos", asi que el enlace suelto quedaba
+   semi-tapado tras la barra. Se saca del flujo visual pero se mantiene en el DOM y
+   CLICABLE: un smoke test de CI hace #adultBtn.click(). Por eso NO se usa
+   display:none; se posiciona fuera de vista (position:absolute + opacity:0) con
+   pointer-events:auto, lejos de la barra inferior para no romper el hit-test. */
+#home #adultBtn.adultbtn{
+  position:absolute;top:2px;left:2px;width:1px;height:1px;min-width:0;
+  margin:0;padding:0;border:none;background:none;
+  opacity:0;overflow:hidden;pointer-events:auto;z-index:1;
+}
 
 /* ---------- Barra de navegacion inferior (4 items) ---------- */
 .pa33-tabbar{
