@@ -90,9 +90,10 @@
   #profileChip .nm{max-width:72px;}
 }
 
-/* ---------- Oculta la navegacion vieja (#32) y el boton "Para grandes" suelto ---------- */
+/* ---------- Oculta la navegacion suelta vieja del #32 (Ir al mapa / Mochila) ---------- */
+/* El boton "Para grandes" (#adultBtn) se conserva visible y clicable (lo usan
+   flujos existentes y tests E2E); la barra inferior lo reutiliza via click(). */
 #home .pa32-nav{display:none !important;}
-#home #adultBtn{display:none !important;}
 
 /* ---------- Barra de navegacion inferior (4 items) ---------- */
 .pa33-tabbar{
