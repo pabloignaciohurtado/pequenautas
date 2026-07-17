@@ -4,7 +4,7 @@
    "Nuevo peque". 100% ADITIVO y defensivo. No toca app.js, sw.js, ship/ ni
    STORE_KEY. Lee el progreso real leyendo localStorage 'pequenautas.v1'
    (contrato estable) sin depender de simbolos de ambito de script de app.js.
-   Todas las cadenas no ASCII van como \uXXXX. Cero red.
+   Todas las cadenas no ASCII se construyen con String.fromCharCode. Cero red.
 
    Contenido:
    1. FIX boton duplicado: en el modal #newView conviven el boton crear
@@ -23,7 +23,11 @@
   /* ---------- Paleta ---------- */
   var CRE="#FFF8EA", TIN="#2E3B2C", SOL="#FDBA4D", NAR="#E8843A";
 
-  /* ---------- Textos (acentos como \uXXXX) ---------- */
+  /* ---------- Textos (acentos via String.fromCharCode; solo ASCII en fuente) ---------- */
+  function C(){ return String.fromCharCode.apply(null, arguments); }
+  var A1  = C(161);            // exclamacion inicial
+  var Q1  = C(191);            // interrogacion inicial
+  var A_  = C(225), I_ = C(237), U_ = C(250); // vocales acentuadas usadas
   var T = {
     mapTitle:   "Mapa de Aventuras",
     mapSub:     "Tu camino por el bosque",
@@ -33,18 +37,18 @@
     navBag:     "Mochila",
     nivel:      "Nivel ",
     racha:      "Racha: ",
-    dias:       " días",     // dias
+    dias:       " d" + I_ + "as",
     pauseTitle: "Hora de descansar",
-    pauseMsg:   "Estira las piernas y respira. ¡Rufo te espera para seguir!", // Rufo espera
+    pauseMsg:   "Estira las piernas y respira. " + A1 + "Rufo te espera para seguir!",
     pauseCta:   "Seguir jugando",
     gateTitle:  "Solo para grandes",
     gateSub:    "Resuelve para continuar.",
-    gateQ:      "¿Cuánto es 7 + 4?", // Cuanto es 7 + 4
+    gateQ:      Q1 + "Cu" + A_ + "nto es 7 + 4?",
     cerrar:     "Cerrar",
     b_star1:    "Primera estrella",
     b_star5:    "Cinco estrellas",
     b_star10:   "Diez estrellas",
-    b_num:      "Números",    // Numeros
+    b_num:      "N" + U_ + "meros",
     b_let:      "Letras",
     b_ani:      "Animales",
     b_racha:    "Racha de 3",
@@ -137,7 +141,7 @@
     closeBtn.type = 'button';
     closeBtn.className = 'pa32-close';
     closeBtn.setAttribute('aria-label', T.cerrar);
-    closeBtn.innerHTML = '×'; // x
+    closeBtn.innerHTML = C(215); // signo de multiplicacion como icono de cierre
 
     var h = document.createElement('div');
     h.className = 'pa32-title';
