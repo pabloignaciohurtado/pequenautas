@@ -78,7 +78,12 @@
     // en img/*.css (los binarios no se pueden subir byte-exactos con las
     // herramientas MCP). No envuelve globales de juego, no toca STORE_KEY.
     "33-hero-diorama",
-    "34-juegos"
+    "34-juegos",
+    // Oleada 10 - #35 cajas de menu 3D: reemplaza el aspecto plano de las
+    // tarjetas .subject por casas del bosque de papel (fondo diorama, marco de
+    // color, etiqueta de papel, chevron). Al final de todo: SOLO CSS; imagenes
+    // embebidas como data-URI en img/*.css. No toca app.js ni STORE_KEY.
+    "35-cajas3d"
   ];
   MODULES.forEach(function (m) {
     var l = document.createElement("link");
