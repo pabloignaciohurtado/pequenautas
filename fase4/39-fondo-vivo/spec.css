@@ -1,10 +1,19 @@
 /* ===== Fase 4 #39 · Fondo de bosque vivo (capa decorativa animada) =====
    100% ADITIVO y solo CSS/JS aparte. Capa fija detrás de todo el contenido
-   (z-index:-1) que anima el espacio crema del home: nubes, mariposa, pajaro,
-   hojas y una linea de arboles de papel. GPU-only (transform/opacity). */
+   (z-index:-1) que anima el espacio crema del home: una franja de bosque
+   (imagen Grok) que se desplaza en loop, mas nubes, hojas, mariposa y pajaro.
+   GPU-only donde importa (transform/opacity). */
+@import url("img/scroll.css");
 #pa39bg{position:fixed;inset:0;z-index:-1;pointer-events:none;overflow:hidden;
   opacity:0;transition:opacity .7s ease;}
 #pa39bg.on{opacity:1;}
+
+/* ---- franja de bosque (imagen) que se desplaza ---- */
+#pa39bg .pa39-scroll{position:absolute;left:0;right:0;bottom:0;
+  height:clamp(240px,44vh,360px);opacity:.92;
+  background-repeat:repeat-x;background-size:640px 100%;background-position:0 bottom;
+  animation:pa39pan 95s linear infinite;}
+@keyframes pa39pan{from{background-position-x:0;}to{background-position-x:-640px;}}
 
 /* ---- nubes de papel ---- */
 #pa39bg .c{position:absolute;background:#FFFFFF;border-radius:50%;
@@ -50,14 +59,8 @@
 @keyframes pa39birdx{0%{transform:translate(0,0);}100%{transform:translate(132vw,10vh);}}
 @keyframes pa39wing{0%,100%{transform:rotate(0);}50%{transform:rotate(-16deg);}}
 
-/* ---- linea de arboles de papel (base) ---- */
-#pa39bg .trees{position:absolute;left:0;right:0;bottom:0;height:120px;
-  opacity:.5;transform-origin:50% 100%;animation:pa39sway 9s ease-in-out infinite;
-  background-repeat:repeat-x;background-position:center bottom;background-size:auto 118px;}
-@keyframes pa39sway{0%,100%{transform:rotate(-.4deg);}50%{transform:rotate(.4deg);}}
-
 @media (prefers-reduced-motion: reduce){
-  #pa39bg .c,#pa39bg .lf,#pa39bg .bfly,#pa39bg .bfly .bob,#pa39bg .bfly .w,
-  #pa39bg .bird,#pa39bg .bird .bob,#pa39bg .bird .wg,#pa39bg .trees{animation:none !important;}
+  #pa39bg .pa39-scroll,#pa39bg .c,#pa39bg .lf,#pa39bg .bfly,#pa39bg .bfly .bob,#pa39bg .bfly .w,
+  #pa39bg .bird,#pa39bg .bird .bob,#pa39bg .bird .wg{animation:none !important;}
   #pa39bg .lf{opacity:.5;}
 }
