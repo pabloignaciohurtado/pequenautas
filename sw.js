@@ -1,5 +1,7 @@
-/* Pequeñautas Service Worker — app shell offline, cache-first + limpieza de versiones */
-const CACHE='pequenautas-v1';
+/* Aventuras en el Bosque - Service Worker
+   network-first (mismo origen) para que las actualizaciones lleguen siempre que haya red;
+   cache como respaldo offline. Fuentes en cache-first. Bump de version para purgar cache viejo. */
+const CACHE='pequenautas-v2';
 const SHELL=['./','./index.html','./app.js','./manifest.webmanifest'];
 const FONT_HOSTS=['fonts.googleapis.com','fonts.gstatic.com'];
 
@@ -24,19 +26,34 @@ self.addEventListener('fetch',(e)=>{
   const sameOrigin=url.origin===self.location.origin;
   const isFont=FONT_HOSTS.indexOf(url.hostname)!==-1; // Fredoka (CSS + woff2) para uso offline
   if(!sameOrigin && !isFont) return;                 // el resto va directo a la red
-  e.respondWith(
-    caches.match(req).then(cached=>{
-      if(cached) return cached;                        // cache-first
-      return fetch(req).then(res=>{
-        if(res && (res.ok || res.type==='opaque')){    // opaque = respuesta CORS de fuentes
+
+  if(isFont){
+    // cache-first para fuentes (rara vez cambian; sirve offline)
+    e.respondWith(
+      caches.match(req).then(cached=>cached || fetch(req).then(res=>{
+        if(res && (res.ok || res.type==='opaque')){
           const copy=res.clone();
           caches.open(CACHE).then(c=>c.put(req,copy)).catch(()=>{});
         }
         return res;
-      }).catch(()=>{
-        if(req.mode==='navigate') return caches.match('./index.html'); // fallback offline
-        return cached;
-      });
-    })
+      }))
+    );
+    return;
+  }
+
+  // network-first para mismo origen: siempre trae la ultima version cuando hay red,
+  // refresca el cache, y cae al cache (o al index.html) si no hay conexion.
+  e.respondWith(
+    fetch(req).then(res=>{
+      if(res && res.ok){
+        const copy=res.clone();
+        caches.open(CACHE).then(c=>c.put(req,copy)).catch(()=>{});
+      }
+      return res;
+    }).catch(()=>
+      caches.match(req).then(cached=>
+        cached || (req.mode==='navigate' ? caches.match('./index.html') : undefined)
+      )
+    )
   );
 });
