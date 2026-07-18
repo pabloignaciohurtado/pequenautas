@@ -89,7 +89,8 @@
     // esquina. Al final de todo: solo CSS + un botón; no toca app.js ni STORE_KEY.
     "36-gate-esquina",
     "37-nav-iconos",
-    "38-bosque-arte"
+    "38-bosque-arte",
+    "39-fondo-vivo"
   ];
   MODULES.forEach(function (m) {
     var l = document.createElement("link");
