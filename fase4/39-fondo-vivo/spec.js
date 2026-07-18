@@ -5,16 +5,6 @@
   "use strict";
   if(window.__pa39) return; window.__pa39 = true;
 
-  // linea de arboles de papel (SVG tileable, tonos palidos)
-  var TREES = '<svg xmlns="http://www.w3.org/2000/svg" width="240" height="120" viewBox="0 0 240 120">'
-    + '<g fill="#B9D3B0">'
-    + '<polygon points="40,20 66,70 14,70"/><polygon points="40,44 72,96 8,96"/>'
-    + '<polygon points="120,10 150,66 90,66"/><polygon points="120,40 158,100 82,100"/>'
-    + '<polygon points="200,26 224,72 176,72"/><polygon points="200,50 230,102 170,102"/>'
-    + '</g>'
-    + '<g fill="#9CBE93">'
-    + '<rect x="36" y="94" width="8" height="18" rx="2"/><rect x="116" y="98" width="9" height="18" rx="2"/>'
-    + '<rect x="196" y="100" width="8" height="16" rx="2"/></g></svg>';
 
   function bflySVG(){
     return '<div class="bob"><svg width="26" height="22" viewBox="0 0 26 22">'
@@ -48,10 +38,8 @@
       + leaves
       + '<div class="bfly">'+bflySVG()+'</div>'
       + '<div class="bird">'+birdSVG()+'</div>'
-      + '<div class="trees"></div>';
+      + '<div class="pa39-scroll"></div>';
     document.body.appendChild(bg);
-    var tr = bg.querySelector('.trees');
-    if(tr){ tr.style.backgroundImage = 'url("data:image/svg+xml;utf8,'+encodeURIComponent(TREES)+'")'; }
     sync();
     try{
       var home = document.getElementById('home');
