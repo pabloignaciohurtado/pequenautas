@@ -42,6 +42,7 @@ test('el control de Modo de idioma aparece en Ajustes, persiste por perfil y no 
   expect(await page.evaluate(() => currentProfile().langMode)).toBe('mirror');
   await page.evaluate(() => { $('sheet').classList.remove('show'); });
   await page.click('.subject[data-game="math"]');
+  await page.click('[data-pa34-app="math"]');
   await page.waitForTimeout(500);
   const count = await page.$$eval('#stage .obj', (els) => els.length);
   const btns = await page.$$('#stage .choice');
@@ -58,6 +59,7 @@ test('el modo Alternado cambia la lengua entre rondas', async ({ page }) => {
   await createProfile(page, 'Alt');
   await page.evaluate(() => { const p = currentProfile(); p.langMode = 'alternate'; saveDB(); });
   await page.click('.subject[data-game="reading"]');
+  await page.click('[data-pa34-app="reading"]');
   await page.waitForTimeout(300);
   expect(await page.evaluate(() => document.documentElement.lang)).toBe('es');
   const flipped = await page.evaluate(() => { S.round = 1; nextRound(); return document.documentElement.lang; });
