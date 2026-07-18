@@ -87,7 +87,8 @@
     // Oleada 11 - #36 reubica el acceso de adultos: lo saca de la barra inferior
     // (alto riesgo de toque accidental) y lo pone como engranaje discreto en la
     // esquina. Al final de todo: solo CSS + un botón; no toca app.js ni STORE_KEY.
-    "36-gate-esquina"
+    "36-gate-esquina",
+    "37-nav-iconos"
   ];
   MODULES.forEach(function (m) {
     var l = document.createElement("link");
