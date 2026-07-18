@@ -100,5 +100,28 @@
 .pa34-emoji{font-size:38px;line-height:1;}
 .pa34-dots{display:grid;grid-template-columns:repeat(3,1fr);gap:6px;padding:2px;}
 .pa34-dots span{width:15px;height:15px;border-radius:50%;background:#E8843A;box-shadow:0 2px 0 rgba(46,59,44,.18);}
+/* ===== sort game ===== */
+.pa34-splay{position:fixed;inset:0;z-index:1500;display:none;flex-direction:column;
+  background:linear-gradient(180deg,#CDE7F5 0%,#DDEFD6 46%,#CFE8C4 100%);}
+.pa34-splay.show{display:flex;}
+.pa34-sarea{flex:1;display:flex;flex-wrap:wrap;gap:15px;align-content:center;justify-content:center;
+  padding:16px;max-width:440px;margin:0 auto;width:100%;}
+.pa34-scard{border:0;background:#FFFDF7;border-radius:20px;min-width:80px;min-height:80px;
+  display:flex;align-items:center;justify-content:center;font-family:inherit;padding:10px;position:relative;
+  box-shadow:0 5px 0 rgba(46,59,44,.15),0 8px 16px rgba(46,59,44,.08);cursor:pointer;transition:transform .1s;}
+.pa34-scard:active{transform:translateY(2px);}
+.pa34-scard.done{background:#DDF3E6;box-shadow:0 4px 0 #9FD9BC;pointer-events:none;}
+.pa34-scard.bad{animation:pa34shake .3s;outline:4px solid #F2748C;}
+.pa34-scard .ord{position:absolute;top:-9px;left:-9px;width:27px;height:27px;border-radius:50%;
+  background:#57C596;color:#fff;font-weight:800;font-size:14px;display:flex;align-items:center;justify-content:center;
+  box-shadow:0 2px 0 #369468;}
+
+/* ===== trace game ===== */
+.pa34-tplay{position:fixed;inset:0;z-index:1500;display:none;flex-direction:column;
+  background:linear-gradient(180deg,#CDE7F5 0%,#DDEFD6 46%,#CFE8C4 100%);}
+.pa34-tplay.show{display:flex;}
+.pa34-tarea{flex:1;display:flex;align-items:center;justify-content:center;padding:16px;}
+.pa34-tsvg{width:min(86vw,340px);height:min(86vw,340px);touch-action:none;
+  background:#FFFDF7;border-radius:24px;box-shadow:0 6px 0 rgba(46,59,44,.12);}
 
 @media(prefers-reduced-motion:reduce){.pa34-ov.show,*[class*="pa34"]{animation:none!important;transition:none!important;}}
