@@ -1,0 +1,326 @@
+/* ===== Fase 4 #34 · Juegos por secciones, niveles y arrastrar =====
+   100% ADITIVO. No toca app.js/STORE_KEY. Progreso propio en clave separada.
+   - Intercepta el tap en las tarjetas .subject y abre una grilla de juegos.
+   - Juego "ya existe" -> llama startGame() de la app.
+   - Juego de arrastrar -> mapa de 5 niveles -> motor de arrastrar.
+*/
+(function(){
+  "use strict";
+  var PKEY = "pequenautas.f4.juegos.v1";
+  function loadP(){ try{ return JSON.parse(localStorage.getItem(PKEY)||"{}")||{}; }catch(e){ return {}; } }
+  function saveP(o){ try{ localStorage.setItem(PKEY, JSON.stringify(o)); }catch(e){} }
+  function unlocked(gid){ var p=loadP(); return (typeof p[gid]==="number")?p[gid]:0; } // highest unlocked level index (0..4)
+  function setUnlocked(gid,v){ var p=loadP(); if(!(p[gid]>=v)){ p[gid]=v; saveP(p); } }
+
+  function ch(sp){ return String.fromCharCode(sp); }
+  var ACC = ch(0xE1); // a acute
+  var IACC = ch(0xED); // i acute
+  var OACC = ch(0xF3); // o acute
+  var UACC = ch(0xFA);
+  var NTIL = ch(0xF1);
+  var INV = ch(0xA1); // inverted !
+  var INVQ = ch(0xBF); // inverted ?
+
+  // ---- registry ----
+  // mech: tap|drag|sort|match|trace ; impl: 'app' (existing) | 'drag' | 'soon'
+  var SECTIONS = {
+    math: { name:"N"+UACC+"meros", games:[
+      {id:"math:count", name:"Contar y arrastrar", mech:"drag", impl:"drag", desc:"Lleva las bellotas a la canasta"},
+      {id:"math:tap", name:"Cu"+ACC+"ntos ves", mech:"tap", impl:"app", app:"math", desc:"Cuenta y toca el n"+UACC+"mero"},
+      {id:"math:sort", name:"Ordena los n"+UACC+"meros", mech:"sort", impl:"soon", desc:"Pronto"},
+      {id:"math:match", name:"Une cantidad y n"+UACC+"mero", mech:"match", impl:"soon", desc:"Pronto"}
+    ]},
+    reading: { name:"Letras", games:[
+      {id:"read:tap", name:"Con qu"+ACC+" letra empieza", mech:"tap", impl:"app", app:"reading", desc:"Toca la letra inicial"},
+      {id:"read:drag", name:"Letra a su sombra", mech:"drag", impl:"soon", desc:"Pronto"},
+      {id:"read:match", name:"May"+UACC+"scula y min"+UACC+"scula", mech:"match", impl:"soon", desc:"Pronto"},
+      {id:"read:trace", name:"Traza la letra", mech:"trace", impl:"soon", desc:"Pronto"}
+    ]},
+    science: { name:"Animales", games:[
+      {id:"sci:tap", name:"D"+OACC+"nde vive", mech:"tap", impl:"app", app:"science", desc:"Toca el h"+ACC+"bitat"},
+      {id:"sci:drag", name:"Cada uno a su casa", mech:"drag", impl:"soon", desc:"Pronto"},
+      {id:"sci:sort", name:"Grandes y chicos", mech:"sort", impl:"soon", desc:"Pronto"},
+      {id:"sci:match", name:"Mam"+ACC+" y beb"+ch(0xE9), mech:"match", impl:"soon", desc:"Pronto"}
+    ]}
+  };
+  var MECH_ICON = {tap:ch(0x1F446)?"":"", }; // fallback set below
+  // use simple text glyphs to stay ASCII-safe in source; build via codepoints
+  function mechEmoji(m){
+    if(m==="tap") return String.fromCodePoint(0x1F446);
+    if(m==="drag") return String.fromCodePoint(0x270B);
+    if(m==="sort") return String.fromCodePoint(0x2195,0xFE0F);
+    if(m==="match") return String.fromCodePoint(0x1F517);
+    if(m==="trace") return String.fromCodePoint(0x270F,0xFE0F);
+    return "";
+  }
+  // drag-count 5 levels: [need, poolExtra]
+  var DRAG_LEVELS = [ [3,2],[5,2],[4,4],[6,3],[8,4] ];
+
+  var $=function(id){return document.getElementById(id);};
+  function el(tag,cls,html){ var e=document.createElement(tag); if(cls)e.className=cls; if(html!=null)e.innerHTML=html; return e; }
+
+  // ---------- overlays root ----------
+  var ov=null, sheet=null, hdT=null, body=null, backBtn=null, curSection=null;
+  function ensureOv(){
+    if(ov) return;
+    ov=el("div","pa34-ov"); ov.setAttribute("role","dialog"); ov.setAttribute("aria-modal","true");
+    sheet=el("div","pa34-sheet");
+    var hd=el("div","pa34-hd");
+    backBtn=el("button","pa34-back",INVQ===""?"&lsaquo;":"&lsaquo;"); backBtn.setAttribute("aria-label","Volver"); backBtn.style.display="none";
+    hdT=el("div","t","");
+    var x=el("button","pa34-x","&times;"); x.setAttribute("aria-label","Cerrar");
+    hd.appendChild(backBtn); hd.appendChild(hdT); hd.appendChild(x);
+    body=el("div","pa34-body");
+    sheet.appendChild(hd); sheet.appendChild(body); ov.appendChild(sheet);
+    document.body.appendChild(ov);
+    x.addEventListener("click",closeOv);
+    ov.addEventListener("click",function(e){ if(e.target===ov) closeOv(); });
+    document.addEventListener("keydown",function(e){ if(e.key==="Escape" && ov.classList.contains("show")) closeOv(); });
+  }
+  function closeOv(){ if(ov) ov.classList.remove("show"); }
+  function openOv(){ ensureOv(); ov.classList.add("show"); }
+
+  // ---------- games grid ----------
+  function openGames(sectionKey){
+    var sec=SECTIONS[sectionKey]; if(!sec) return;
+    curSection=sectionKey;
+    openOv(); backBtn.style.display="none";
+    hdT.innerHTML = sec.name + "<small>Elige un juego</small>";
+    body.innerHTML="";
+    var grid=el("div","pa34-games");
+    sec.games.forEach(function(g){
+      var b=el("button","pa34-game"+(g.impl==="soon"?" pa34-soon":""));
+      var mech=el("div","pa34-m-"+g.mech+" mech", mechEmoji(g.mech));
+      var nm=el("div","gn",g.name);
+      var pr;
+      if(g.impl==="drag"){ var u=unlocked(g.id); pr=el("div","gp","Nivel "+(u+1)+" de 5"); }
+      else if(g.impl==="app"){ pr=el("div","gp","Con voz de Rufo"); }
+      else { pr=el("div","gp","Pronto"); }
+      b.appendChild(mech); b.appendChild(nm); b.appendChild(pr);
+      if(g.impl==="soon"){ b.appendChild(el("div","lock",String.fromCodePoint(0x1F512))); }
+      b.addEventListener("click",function(){ pickGame(g); });
+      grid.appendChild(b);
+    });
+    body.appendChild(grid);
+  }
+
+  function pickGame(g){
+    if(g.impl==="app"){
+      closeOv();
+      if(typeof window.startGame==="function"){ try{ window.startGame(g.app); }catch(e){} }
+      return;
+    }
+    if(g.impl==="drag"){ openLevels(g); return; }
+    // soon
+    toast(INV+"Pronto"+"! Este juego llega muy prontito "+String.fromCodePoint(0x1F98A));
+  }
+
+  function toast(msg){
+    var t=el("div",null,msg);
+    t.style.cssText="position:fixed;left:50%;bottom:120px;transform:translateX(-50%);background:#2E3B2C;color:#fff;padding:11px 18px;border-radius:16px;font-family:'Plus Jakarta Sans',sans-serif;font-weight:600;font-size:14px;z-index:1600;box-shadow:0 6px 18px rgba(0,0,0,.3);max-width:80%;text-align:center;";
+    document.body.appendChild(t);
+    setTimeout(function(){ t.style.transition="opacity .4s"; t.style.opacity="0"; setTimeout(function(){t.remove();},420); },1500);
+  }
+
+  // ---------- level map ----------
+  function openLevels(g){
+    openOv(); backBtn.style.display="";
+    backBtn.onclick=function(){ openGames(curSection); };
+    hdT.innerHTML = g.name + "<small>Elige un nivel</small>";
+    body.innerHTML="";
+    var u=unlocked(g.id);
+    var wrap=el("div","pa34-levels");
+    for(var i=0;i<5;i++){(function(i){
+      if(i>0){ wrap.appendChild(el("div","pa34-link")); }
+      var row=el("div","pa34-lvlwrap");
+      var state = i<u? "done" : (i===u? "cur":"lock");
+      var b=el("button","pa34-lvl "+state, String(i+1));
+      if(state!=="lock" || i===u){
+        b.addEventListener("click",function(){ launchDrag(g,i); });
+      } else {
+        b.innerHTML=String.fromCodePoint(0x1F512); b.disabled=true;
+      }
+      if(state==="done"){ b.appendChild(el("span","st",String.fromCodePoint(0x2B50))); }
+      var caps=["Muy f"+ACC+"cil","F"+ACC+"cil","Normal","Un reto","Experto"];
+      var cap=el("div","cap",caps[i]);
+      // alternate side for a path feel
+      if(i%2===0){ row.appendChild(b); row.appendChild(cap); }
+      else { row.appendChild(cap); row.appendChild(b); }
+      wrap.appendChild(row);
+    })(i);}
+    body.appendChild(wrap);
+  }
+
+  // ---------- DRAG GAME ENGINE ----------
+  var play=null, pEls={};
+  function acornSVG(){
+    return '<svg viewBox="0 0 100 100"><ellipse cx="50" cy="62" rx="30" ry="34" fill="#C98A4A"/><ellipse cx="50" cy="60" rx="30" ry="32" fill="#D89A57"/><path d="M20 40 Q50 20 80 40 Q78 52 50 52 Q22 52 20 40 Z" fill="#7A4B23"/><path d="M20 40 Q50 30 80 40" fill="none" stroke="#5E3A1B" stroke-width="3"/><rect x="46" y="16" width="8" height="12" rx="3" fill="#5E3A1B"/><ellipse cx="42" cy="60" rx="6" ry="9" fill="#E8B57C" opacity=".55"/></svg>';
+  }
+  function basketSVG(){
+    return '<svg viewBox="0 0 200 160" style="width:100%;height:100%"><ellipse cx="100" cy="50" rx="82" ry="25" fill="#C98A4A"/><path d="M22 52 L38 150 Q100 168 162 150 L178 52 Q100 82 22 52 Z" fill="#A8703A"/><g stroke="#8B5E2F" stroke-width="4" opacity=".5"><path d="M40 66 L54 148"/><path d="M70 74 L78 156"/><path d="M100 78 L100 160"/><path d="M130 74 L122 156"/><path d="M160 66 L146 148"/><path d="M28 92 Q100 108 172 92"/><path d="M32 120 Q100 138 168 120"/></g></svg>';
+  }
+  function rufoSVG(happy){
+    var eyes = happy ? '<path d="M34 50 Q42 42 50 50" fill="none" stroke="#2E3B2C" stroke-width="4" stroke-linecap="round"/><path d="M50 50 Q58 42 66 50" fill="none" stroke="#2E3B2C" stroke-width="4" stroke-linecap="round"/><path d="M40 64 Q50 76 60 64" fill="none" stroke="#2E3B2C" stroke-width="4.5" stroke-linecap="round"/>'
+      : '<circle cx="42" cy="52" r="8" fill="#fff"/><circle cx="58" cy="52" r="8" fill="#fff"/><circle cx="43" cy="53" r="3.4" fill="#2E3B2C"/><circle cx="57" cy="53" r="3.4" fill="#2E3B2C"/><polygon points="50,60 46,66 54,66" fill="#2E3B2C"/>';
+    return '<svg viewBox="0 0 100 100"><circle cx="50" cy="52" r="46" fill="#FBE3CC"/><path d="M30 74 Q22 45 40 33 L34 18 L48 30 Q50 27 52 30 L66 18 L60 33 Q78 45 70 74 Z" fill="#E8843A"/>'+eyes+'</svg>';
+  }
+  function ensurePlay(){
+    if(play) return;
+    play=el("div","pa34-play");
+    play.innerHTML=
+      '<div class="pa34-ptop"><button class="pa34-x" id="pa34pX" aria-label="Salir">&times;</button>'+
+        '<div class="pa34-prompt" id="pa34prompt"></div>'+
+        '<div class="pa34-pstar">'+String.fromCodePoint(0x2B50)+' <span id="pa34score">0</span></div></div>'+
+      '<div class="pa34-field" id="pa34field">'+
+        '<div class="pa34-basket" id="pa34basket"><div class="count" id="pa34count">0 / 0</div>'+basketSVG()+'</div>'+
+        '<div class="pa34-hint" id="pa34hint">Tocá una bellota y llevala a la canasta</div>'+
+        '<div class="pa34-rufo" id="pa34rufo">'+rufoSVG(false)+'</div>'+
+      '</div>'+
+      '<div class="pa34-pbot"><div class="pa34-prog" id="pa34prog"></div>'+
+        '<button class="pa34-cta" id="pa34cta" disabled>Sigue arrastrando...</button></div>'+
+      '<div class="pa34-win" id="pa34win"><div class="pa34-wc">'+
+        '<div class="rf">'+rufoSVG(true)+'</div><h2 id="pa34wt">'+INV+'Muy bien!</h2><p id="pa34wp"></p>'+
+        '<div class="row"><button class="pa34-cta ghost" id="pa34wmap">Mapa</button><button class="pa34-cta" id="pa34wnext">Siguiente</button></div>'+
+      '</div></div>';
+    document.body.appendChild(play);
+    pEls={ field:$("pa34field"), basket:$("pa34basket"), count:$("pa34count"),
+      prompt:$("pa34prompt"), cta:$("pa34cta"), prog:$("pa34prog"), rufo:$("pa34rufo"),
+      hint:$("pa34hint"), win:$("pa34win"), score:$("pa34score"), wt:$("pa34wt"), wp:$("pa34wp"),
+      wnext:$("pa34wnext"), wmap:$("pa34wmap") };
+    $("pa34pX").addEventListener("click",exitPlay);
+    pEls.cta.addEventListener("click",function(){ if(!pEls.cta.disabled) advanceOrExit(); });
+  }
+  var G={ acorns:[], need:0, placed:0, gid:null, level:0, score:0 };
+  function exitPlay(){ play.classList.remove("show"); }
+  function pointXY(e){ if(e.touches&&e.touches[0])return{x:e.touches[0].clientX,y:e.touches[0].clientY}; if(e.changedTouches&&e.changedTouches[0])return{x:e.changedTouches[0].clientX,y:e.changedTouches[0].clientY}; return{x:e.clientX,y:e.clientY}; }
+  function overBasket(x,y){ var r=pEls.basket.getBoundingClientRect(); return x>r.left-18&&x<r.right+18&&y>r.top-10&&y<r.bottom; }
+
+  function launchDrag(g,level){
+    ensurePlay();
+    closeOv();
+    G.gid=g.id; G.level=level; G.name=g.name;
+    var cfg=DRAG_LEVELS[level]||DRAG_LEVELS[0];
+    G.need=cfg[0]; var pool=cfg[0]+cfg[1]; G.placed=0;
+    play.classList.add("show"); pEls.win.classList.remove("show");
+    pEls.rufo.innerHTML=rufoSVG(false);
+    pEls.prompt.innerHTML="Arrastra <b>"+G.need+"</b> bellotas "+String.fromCodePoint(0x1F330)+" a la canasta";
+    pEls.count.textContent="0 / "+G.need;
+    pEls.cta.textContent="Sigue arrastrando..."; pEls.cta.disabled=true;
+    pEls.hint.style.display="";
+    // progress leaves
+    pEls.prog.innerHTML=""; for(var i=0;i<G.need;i++){ var lf=el("div","pa34-leaf"); lf.id="pa34lf"+i; pEls.prog.appendChild(lf); }
+    // clear acorns
+    G.acorns.forEach(function(a){ a.remove(); }); G.acorns=[];
+    var spots=[[18,60],[74,70],[10,150],[80,175],[44,110],[60,230],[26,220],[70,130],[40,40],[86,110],[14,110],[56,60]];
+    for(var k=0;k<pool && k<spots.length;k++){
+      var a=el("div","pa34-acorn",acornSVG());
+      a.style.left="calc("+spots[k][0]+"% - 29px)"; a.style.top=spots[k][1]+"px";
+      pEls.field.appendChild(a); makeDraggable(a); G.acorns.push(a);
+    }
+  }
+  function makeDraggable(elm){
+    var dragging=false,offx=0,offy=0;
+    function start(e){ if(elm.classList.contains("placed"))return; dragging=true; elm.classList.add("grab");
+      var p=pointXY(e),r=elm.getBoundingClientRect(); offx=p.x-r.left; offy=p.y-r.top; pEls.hint.style.display="none"; e.preventDefault(); }
+    function move(e){ if(!dragging)return; var p=pointXY(e),fr=pEls.field.getBoundingClientRect();
+      elm.style.left=(p.x-fr.left-offx)+"px"; elm.style.top=(p.y-fr.top-offy)+"px";
+      pEls.basket.classList.toggle("hot",overBasket(p.x,p.y)); e.preventDefault(); }
+    function end(e){ if(!dragging)return; dragging=false; elm.classList.remove("grab");
+      var p=pointXY(e); pEls.basket.classList.remove("hot"); if(overBasket(p.x,p.y)) drop(elm); }
+    elm.addEventListener("mousedown",start); elm.addEventListener("touchstart",start,{passive:false});
+    window.addEventListener("mousemove",move); window.addEventListener("touchmove",move,{passive:false});
+    window.addEventListener("mouseup",end); window.addEventListener("touchend",end);
+  }
+  function drop(elm){
+    elm.classList.add("placed");
+    var br=pEls.basket.getBoundingClientRect(), fr=pEls.field.getBoundingClientRect();
+    var col=G.placed%3, row=Math.floor(G.placed/3);
+    elm.style.left=(br.left-fr.left+42+col*38)+"px"; elm.style.top=(br.top-fr.top+48+row*22)+"px"; elm.style.transform="scale(.66)";
+    G.placed++;
+    pEls.count.textContent=G.placed+" / "+G.need;
+    var lf=$("pa34lf"+(G.placed-1)); if(lf) lf.classList.add("on");
+    pEls.rufo.classList.add("cheer"); setTimeout(function(){ pEls.rufo.classList.remove("cheer"); },260);
+    if(G.placed>=G.need) winLevel();
+  }
+  function winLevel(){
+    pEls.cta.textContent=INV+"Listo!"; pEls.cta.disabled=false;
+    G.score++; pEls.score.textContent=G.score;
+    // unlock next level & add a star in the app if possible
+    setUnlocked(G.gid, Math.min(G.level+1,4));
+    try{ if(typeof window.addStar==="function") window.addStar(); }catch(e){}
+    pEls.wp.textContent="Contaste y llevaste "+G.need+" bellotas "+String.fromCodePoint(0x1F330);
+    var last = G.level>=4;
+    pEls.wnext.textContent = last ? INV+"Terminado!" : "Siguiente";
+    setTimeout(function(){ burst(); pEls.win.classList.add("show"); },340);
+  }
+  function advanceOrExit(){
+    // CTA in-game (when level solved) -> show win already handled; this fires only if enabled
+    pEls.win.classList.add("show");
+  }
+  pEls_bind();
+  function pEls_bind(){} // placeholder (bindings set in ensurePlay)
+
+  function wireWinButtons(){
+    if(!pEls.wnext) return;
+    pEls.wnext.onclick=function(){
+      pEls.win.classList.remove("show");
+      if(G.level>=4){ // finished all -> go to level map
+        var g=findGame(G.gid); if(g) openLevels(g);
+      } else {
+        var g=findGame(G.gid); if(g) launchDrag(g, G.level+1);
+      }
+    };
+    pEls.wmap.onclick=function(){ pEls.win.classList.remove("show"); play.classList.remove("show"); var g=findGame(G.gid); if(g) openLevels(g); };
+  }
+  function findGame(gid){ for(var s in SECTIONS){ var arr=SECTIONS[s].games; for(var i=0;i<arr.length;i++){ if(arr[i].id===gid){ curSection=s; return arr[i]; } } } return null; }
+
+  function burst(){
+    if(!play) return;
+    var colors=["#E8843A","#57C596","#4EA8DE","#F2748C","#FDBA4D"];
+    for(var i=0;i<24;i++){(function(i){
+      var c=el("div"); c.style.cssText="position:absolute;width:10px;height:14px;border-radius:2px;top:-20px;z-index:19;background:"+colors[i%5]+";left:"+(20+Math.random()*60)+"%;";
+      play.appendChild(c);
+      var dx=(Math.random()*2-1)*120, dur=900+Math.random()*700;
+      try{ c.animate([{transform:"translate(0,0) rotate(0)",opacity:1},{transform:"translate("+dx+"px,540px) rotate("+(Math.random()*720)+"deg)",opacity:.9}],{duration:dur,easing:"cubic-bezier(.3,.7,.5,1)"}); }catch(e){}
+      setTimeout(function(){ c.remove(); },dur);
+    })(i);}
+  }
+
+  // ---------- hook subject cards ----------
+  function hookCards(){
+    var cards=document.querySelectorAll(".subject");
+    if(!cards.length) return false;
+    cards.forEach(function(b){
+      if(b.getAttribute("data-pa34")) return;
+      b.setAttribute("data-pa34","1");
+      b.addEventListener("click",function(e){
+        var key=b.dataset.game;
+        if(SECTIONS[key]){
+          e.stopImmediatePropagation(); e.preventDefault();
+          openGames(key);
+        }
+      }, true); // capture phase -> runs before app handler
+    });
+    return true;
+  }
+
+  function init(){
+    // ensure win buttons wired once play exists (lazy). Poll cards until home renders.
+    var tries=0;
+    var iv=setInterval(function(){
+      tries++;
+      var ok=hookCards();
+      if(play && pEls.wnext) wireWinButtons();
+      if(ok || tries>40) { /* keep observing a bit for late renders */ }
+      if(tries>60) clearInterval(iv);
+    },400);
+    // also observe DOM for home re-renders (profiles switching etc.)
+    try{
+      var mo=new MutationObserver(function(){ hookCards(); if(play&&pEls.wnext) wireWinButtons(); });
+      mo.observe(document.body,{childList:true,subtree:true});
+    }catch(e){}
+    // wire win buttons after first play creation
+    var wb=setInterval(function(){ if(play&&pEls.wnext){ wireWinButtons(); clearInterval(wb); } },300);
+  }
+  if(document.readyState==="loading") document.addEventListener("DOMContentLoaded",init); else init();
+})();
