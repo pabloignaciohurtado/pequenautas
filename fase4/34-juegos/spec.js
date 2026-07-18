@@ -32,13 +32,13 @@
     ]},
     reading: { name:"Letras", games:[
       {id:"read:tap", name:"Con qu"+ACC+" letra empieza", mech:"tap", impl:"app", app:"reading", desc:"Toca la letra inicial"},
-      {id:"read:drag", name:"Letra a su sombra", mech:"drag", impl:"soon", desc:"Pronto"},
+      {id:"read:drag", name:"Letra a su sombra", mech:"drag", impl:"classify", gen:"shadow", desc:"Toca la letra y luego su sombra"},
       {id:"read:match", name:"May"+UACC+"scula y min"+UACC+"scula", mech:"match", impl:"match", gen:"caseAa", desc:"Une la letra grande con la peque"+NTIL+"a"},
       {id:"read:trace", name:"Traza la letra", mech:"trace", impl:"trace", gen:"trace", desc:"Une los puntos y traza la letra"}
     ]},
     science: { name:"Animales", games:[
       {id:"sci:tap", name:"D"+OACC+"nde vive", mech:"tap", impl:"app", app:"science", desc:"Toca el h"+ACC+"bitat"},
-      {id:"sci:drag", name:"Cada uno a su casa", mech:"drag", impl:"soon", desc:"Pronto"},
+      {id:"sci:drag", name:"Cada uno a su casa", mech:"drag", impl:"classify", gen:"habitat", desc:"Toca el animal y luego su casa"},
       {id:"sci:sort", name:"Grandes y chicos", mech:"sort", impl:"sort", gen:"ordersize", desc:"Toca del m"+ACC+"s chico al m"+ACC+"s grande"},
       {id:"sci:match", name:"Mam"+ACC+" y beb"+ch(0xE9), mech:"match", impl:"match", gen:"babies", desc:"Une cada mam"+ACC+" con su beb"+ch(0xE9)}
     ]}
@@ -95,7 +95,7 @@
       var mech=el("div","pa34-m-"+g.mech+" mech", mechEmoji(g.mech));
       var nm=el("div","gn",g.name);
       var pr;
-      if(g.impl==="drag"||g.impl==="match"||g.impl==="sort"||g.impl==="trace"){ var u=unlocked(g.id); pr=el("div","gp","Nivel "+(u+1)+" de 5"); }
+      if(g.impl==="drag"||g.impl==="match"||g.impl==="sort"||g.impl==="trace"||g.impl==="classify"){ var u=unlocked(g.id); pr=el("div","gp","Nivel "+(u+1)+" de 5"); }
       else if(g.impl==="app"){ pr=el("div","gp","Con voz de Rufo"); }
       else { pr=el("div","gp","Pronto"); }
       b.appendChild(mech); b.appendChild(nm); b.appendChild(pr);
@@ -112,7 +112,7 @@
       if(typeof window.startGame==="function"){ try{ window.startGame(g.app); }catch(e){} }
       return;
     }
-    if(g.impl==="drag"||g.impl==="match"||g.impl==="sort"||g.impl==="trace"){ openLevels(g); return; }
+    if(g.impl==="drag"||g.impl==="match"||g.impl==="sort"||g.impl==="trace"||g.impl==="classify"){ openLevels(g); return; }
     // soon
     toast(INV+"Pronto"+"! Este juego llega muy prontito "+String.fromCodePoint(0x1F98A));
   }
@@ -293,6 +293,7 @@
     if(g.impl==="match"){ launchMatch(g,level); }
     else if(g.impl==="sort"){ launchSort(g,level); }
     else if(g.impl==="trace"){ launchTrace(g,level); }
+    else if(g.impl==="classify"){ launchClassify(g,level); }
     else { launchDrag(g,level); }
   }
 
@@ -591,6 +592,122 @@
     tEls.wp.textContent="Trazaste la letra "+L.ch+" "+String.fromCodePoint(0x270F,0xFE0F);
     tEls.wnext.textContent = TR.level>=4 ? INV+"Terminado!" : "Siguiente";
     setTimeout(function(){ burstIn(tplay); tEls.win.classList.add("show"); },300);
+  }
+
+  // ================= CLASSIFY GAME ENGINE (tocar y colocar) =================
+  var SHADOW_LETTERS = ["A","B","C","D","E","F","L","M","O","S","T","U"];
+  var CLASS_LET_LEVELS = [2,3,4,4,5];
+  var CLASS_HAB_LEVELS = [3,4,4,5,6];
+  var HAB_BINS = [
+    { key:"agua", label:"Agua", tok:cp(0x1F30A) },
+    { key:"tierra", label:"Tierra", tok:cp(0x1F333) },
+    { key:"cielo", label:"Cielo", tok:cp(0x2601,0xFE0F) }
+  ];
+  // animal -> índice de HAB_BINS (0 agua, 1 tierra, 2 cielo)
+  var ANIMAL_HAB = [
+    [0x1F41F,0],[0x1F422,0],[0x1F419,0],[0x1F433,0],[0x1F980,0],
+    [0x1F415,1],[0x1F408,1],[0x1F407,1],[0x1F981,1],[0x1F418,1],
+    [0x1F426,2],[0x1F98B,2],[0x1F41D,2],[0x1F989,2]
+  ];
+  function buildClassify(g,level){
+    if(g.gen==="habitat"){
+      var n=CLASS_HAB_LEVELS[level]||3;
+      var pool=shuffle(ANIMAL_HAB).slice(0,n);
+      return { bins:HAB_BINS.map(function(b){ return {kind:"hab", label:b.label, tok:{k:"emoji",v:b.tok}}; }),
+        items:pool.map(function(p){ return {tok:{k:"emoji",v:cp(p[0])}, bin:p[1]}; }) };
+    }
+    // shadow (letras)
+    var m=CLASS_LET_LEVELS[level]||2;
+    var letters=shuffle(SHADOW_LETTERS).slice(0,m);
+    var bins=shuffle(letters.slice()).map(function(L){ return {kind:"shadow", letter:L, tok:{k:"shadow",v:L}}; });
+    var items=shuffle(letters.slice()).map(function(L){
+      var bi=-1; for(var i=0;i<bins.length;i++){ if(bins[i].letter===L){ bi=i; break; } }
+      return {tok:{k:"text",v:L}, bin:bi};
+    });
+    return { bins:bins, items:items };
+  }
+
+  var cplay=null, cEls={}, C={ gid:null, level:0, g:null, sel:null, placed:0, total:0, score:0 };
+  function ensureCPlay(){
+    if(cplay) return;
+    cplay=el("div","pa34-cplay");
+    cplay.innerHTML=
+      '<div class="pa34-ptop"><button class="pa34-x" id="pa34cX" aria-label="Salir">&times;</button>'+
+        '<div class="pa34-prompt" id="pa34cprompt"></div>'+
+        '<div class="pa34-pstar">'+String.fromCodePoint(0x2B50)+' <span id="pa34cscore">0</span></div></div>'+
+      '<div class="pa34-citems" id="pa34citems"></div>'+
+      '<div class="pa34-cbins" id="pa34cbins"></div>'+
+      '<div class="pa34-win" id="pa34cwin"><div class="pa34-wc">'+
+        '<div class="rf">'+rufoSVG(true)+'</div><h2>'+INV+'Muy bien!</h2><p id="pa34cwp"></p>'+
+        '<div class="row"><button class="pa34-cta ghost" id="pa34cwmap">Mapa</button><button class="pa34-cta" id="pa34cwnext">Siguiente</button></div>'+
+      '</div></div>';
+    document.body.appendChild(cplay);
+    cEls={ items:$("pa34citems"), bins:$("pa34cbins"), prompt:$("pa34cprompt"), score:$("pa34cscore"),
+      win:$("pa34cwin"), wp:$("pa34cwp"), wnext:$("pa34cwnext"), wmap:$("pa34cwmap") };
+    $("pa34cX").addEventListener("click",function(){ cplay.classList.remove("show"); });
+    cEls.wnext.onclick=function(){
+      cEls.win.classList.remove("show");
+      if(C.level>=4){ cplay.classList.remove("show"); if(C.g) openLevels(C.g); }
+      else { launchClassify(C.g, C.level+1); }
+    };
+    cEls.wmap.onclick=function(){ cEls.win.classList.remove("show"); cplay.classList.remove("show"); if(C.g) openLevels(C.g); };
+  }
+  function launchClassify(g,level){
+    ensureCPlay(); closeOv();
+    C.gid=g.id; C.level=level; C.g=g; C.sel=null; C.placed=0;
+    var data=buildClassify(g,level); C.total=data.items.length;
+    cplay.classList.add("show"); cEls.win.classList.remove("show");
+    cEls.prompt.innerHTML=g.desc || "Toca y coloca";
+    // bins
+    cEls.bins.innerHTML="";
+    data.bins.forEach(function(b,idx){
+      var bin=el("button","pa34-cbin");
+      bin.setAttribute("data-bin",idx);
+      var head=el("div","bh");
+      if(b.kind==="shadow"){ head.appendChild(el("span","pa34-shadow",b.letter)); }
+      else { head.appendChild(el("span","pa34-emoji",b.tok.v)); head.appendChild(el("span","bl",b.label)); }
+      var slot=el("div","bslot");
+      bin.appendChild(head); bin.appendChild(slot);
+      bin.addEventListener("click",function(){ onBin(bin,slot); });
+      cEls.bins.appendChild(bin);
+    });
+    // items
+    cEls.items.innerHTML="";
+    shuffle(data.items.slice()).forEach(function(it){
+      var b=el("button","pa34-citem", tokenHTML(it.tok));
+      b.setAttribute("data-bin", it.bin);
+      b.addEventListener("click",function(){ onItem(b); });
+      cEls.items.appendChild(b);
+    });
+  }
+  function onItem(btn){
+    if(btn.classList.contains("placed")) return;
+    if(C.sel){ C.sel.classList.remove("sel"); }
+    if(C.sel===btn){ C.sel=null; return; }
+    C.sel=btn; btn.classList.add("sel");
+  }
+  function onBin(bin,slot){
+    if(!C.sel){ bin.classList.add("bad"); setTimeout(function(){ bin.classList.remove("bad"); },300); return; }
+    var want=C.sel.getAttribute("data-bin"), got=bin.getAttribute("data-bin");
+    if(want===got){
+      var item=C.sel; item.classList.remove("sel"); item.classList.add("placed");
+      var mini=el("span","pa34-mini", item.innerHTML); slot.appendChild(mini);
+      C.sel=null; C.placed++;
+      try{ if(typeof window.playSfx==="function") window.playSfx("ok"); }catch(e){}
+      if(C.placed>=C.total) classifyWin();
+    } else {
+      var s=C.sel; s.classList.add("bad"); bin.classList.add("bad");
+      s.classList.remove("sel"); C.sel=null;
+      setTimeout(function(){ s.classList.remove("bad"); bin.classList.remove("bad"); },320);
+    }
+  }
+  function classifyWin(){
+    setUnlocked(C.gid, Math.min(C.level+1,4));
+    C.score=(C.score||0)+1; cEls.score.textContent=C.score;
+    try{ if(typeof window.addStar==="function") window.addStar(); }catch(e){}
+    cEls.wp.textContent="Colocaste "+C.total+" en su lugar "+String.fromCodePoint(0x1F31F);
+    cEls.wnext.textContent = C.level>=4 ? INV+"Terminado!" : "Siguiente";
+    setTimeout(function(){ burstIn(cplay); cEls.win.classList.add("show"); },300);
   }
 
   // ---------- hook subject cards ----------
