@@ -90,6 +90,8 @@
     var grid=el("div","pa34-games");
     sec.games.forEach(function(g){
       var b=el("button","pa34-game"+(g.impl==="soon"?" pa34-soon":""));
+      b.setAttribute("data-pa34-game", g.id);
+      if(g.impl==="app" && g.app){ b.setAttribute("data-pa34-app", g.app); }
       var mech=el("div","pa34-m-"+g.mech+" mech", mechEmoji(g.mech));
       var nm=el("div","gn",g.name);
       var pr;
