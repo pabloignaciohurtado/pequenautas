@@ -60,6 +60,7 @@ test('Fase 4 · #21/#22: #weekGoalCard antepuesto en #progBody sin pisar #assess
   await mk(page, 'W5prog');
   // jugar una ronda para generar actividad y datos de evaluación
   await page.click('.subject[data-game="math"]');
+  await page.click('[data-pa34-app="math"]');
   await page.waitForTimeout(500);
   const count = await page.$$eval('#stage .obj', (els) => els.length);
   const btns = await page.$$('#stage .choice');
@@ -97,6 +98,7 @@ test('Fase 4 · Oleada 5: 3 materias (regresión), level-0 Números con .cnum y 
   await expect(page.locator('.subject')).toHaveCount(3);
   await mk(page, 'W5reg');
   await page.click('.subject[data-game="math"]');
+  await page.click('[data-pa34-app="math"]');
   await page.waitForTimeout(500);
   expect(await page.locator('#stage .choice .cnum').count()).toBeGreaterThan(0);
   const count = await page.$$eval('#stage .obj', (els) => els.length);

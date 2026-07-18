@@ -20,6 +20,7 @@ test('co-juego OFF por defecto: no aparece tarjeta y la ronda sigue premiando', 
   await createProfile(page, 'Sin');
   expect(await page.evaluate(() => window.__coplay.isOn())).toBe(false);
   await page.click('.subject[data-game="math"]');
+  await page.click('[data-pa34-app="math"]');
   await page.waitForTimeout(500);
   await expect(page.locator('#coplayCard')).toBeHidden();
   const count = await page.$$eval('#stage .obj', (els) => els.length);
@@ -39,6 +40,7 @@ test('co-juego ON: tarjeta indagatoria aparece al iniciar la materia y se puede 
   await createProfile(page, 'Con');
   await page.evaluate(() => window.__coplay.enable());
   await page.click('.subject[data-game="reading"]');
+  await page.click('[data-pa34-app="reading"]');
   await page.waitForTimeout(600);
   const cardVisible = await page.locator('#coplayCard.show').isVisible();
   expect(cardVisible).toBe(true);

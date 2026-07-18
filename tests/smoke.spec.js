@@ -27,6 +27,7 @@ test('la pantalla de perfiles crea un perfil y lleva al hub con 3 materias', asy
 test('el juego de numeros suma una estrella al acertar', async ({ page }) => {
   await createProfile(page, 'Ana');
   await page.click('.subject[data-game="math"]');
+  await page.click('[data-pa34-app="math"]');
   await page.waitForTimeout(500);
   const count = await page.$$eval('#stage .obj', (els) => els.length);
   const btns = await page.$$('#stage .choice');
@@ -41,6 +42,7 @@ test('el juego de numeros suma una estrella al acertar', async ({ page }) => {
 test('la pista progresiva revela la respuesta correcta tras dos fallas', async ({ page }) => {
   await createProfile(page, 'Leo');
   await page.click('.subject[data-game="math"]');
+  await page.click('[data-pa34-app="math"]');
   await page.waitForTimeout(500);
   const count = await page.$$eval('#stage .obj', (els) => els.length);
   const btns = await page.$$('#stage .choice');
