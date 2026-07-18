@@ -88,7 +88,8 @@
     // (alto riesgo de toque accidental) y lo pone como engranaje discreto en la
     // esquina. Al final de todo: solo CSS + un botón; no toca app.js ni STORE_KEY.
     "36-gate-esquina",
-    "37-nav-iconos"
+    "37-nav-iconos",
+    "38-bosque-arte"
   ];
   MODULES.forEach(function (m) {
     var l = document.createElement("link");
