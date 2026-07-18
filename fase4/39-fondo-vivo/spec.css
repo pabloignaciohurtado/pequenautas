@@ -1,32 +1,21 @@
-/* ===== Fase 4 #39 · Fondo de bosque vivo (capa decorativa animada) =====
+/* ===== Fase 4 #39 · Fondo de bosque vivo (escena completa animada) =====
    100% ADITIVO y solo CSS/JS aparte. Capa fija detrás de todo el contenido
-   (z-index:-1) que anima el espacio crema del home: una franja de bosque
-   (imagen Grok) que se desplaza en loop, mas nubes, hojas, mariposa y pajaro.
-   GPU-only donde importa (transform/opacity). */
+   (z-index:-1) que muestra una escena de bosque COMPLETA (imagen Grok) a
+   pantalla completa, con paneo/zoom suave (Ken Burns) y hojas cayendo. */
 @import url("img/scroll.css");
 #pa39bg{position:fixed;inset:0;z-index:-1;pointer-events:none;overflow:hidden;
   opacity:0;transition:opacity .7s ease;}
 #pa39bg.on{opacity:1;}
 
-/* ---- franja de bosque (imagen) que se desplaza ---- */
-#pa39bg .pa39-scroll{position:absolute;left:0;right:0;bottom:0;
-  height:clamp(240px,44vh,360px);opacity:.92;
-  background-repeat:repeat-x;background-size:720px 100%;background-position:0 bottom;
-  animation:pa39pan 10s linear infinite;}
-@keyframes pa39pan{from{background-position-x:0;}to{background-position-x:-720px;}}
+/* ---- escena de bosque completa (cover) con paneo suave ---- */
+#pa39bg .pa39-scroll{position:absolute;inset:-2%;
+  background-size:cover;background-position:center;background-repeat:no-repeat;
+  transform-origin:center;animation:pa39ken 12s ease-in-out infinite alternate;will-change:transform;}
+@keyframes pa39ken{from{transform:scale(1.04) translate(0,0);}to{transform:scale(1.11) translate(-1.6%,-1.2%);}}
 
-/* ---- nubes de papel ---- */
-#pa39bg .c{position:absolute;background:#FFFFFF;border-radius:50%;
-  box-shadow:34px 6px 0 -4px #FFFFFF, 66px 12px 0 -10px #FFFFFF, -30px 10px 0 -6px #FBF7EC;
-  opacity:.85;filter:drop-shadow(0 6px 6px rgba(46,59,44,.06));}
-#pa39bg .c1{width:70px;height:44px;top:15%;left:-16%;animation:pa39drift 46s linear infinite;}
-#pa39bg .c2{width:52px;height:34px;top:32%;left:-14%;animation:pa39drift 62s linear infinite 8s;opacity:.7;transform:scale(.9);}
-#pa39bg .c3{width:88px;height:54px;top:9%;left:-20%;animation:pa39drift 78s linear infinite 20s;opacity:.6;}
-@keyframes pa39drift{from{transform:translateX(0);}to{transform:translateX(135vw);}}
-
-/* ---- hojas cayendo ---- */
+/* ---- hojas cayendo (movimiento ambiental sutil sobre la escena) ---- */
 #pa39bg .lf{position:absolute;top:-6%;width:16px;height:16px;border-radius:0 60% 0 60%;
-  opacity:.75;will-change:transform;}
+  opacity:.7;will-change:transform;}
 #pa39bg .lf.g{background:#7FB77E;} #pa39bg .lf.o{background:#E8A15A;} #pa39bg .lf.y{background:#EAC85A;}
 #pa39bg .l1{left:14%;animation:pa39fall 13s linear infinite;}
 #pa39bg .l2{left:38%;animation:pa39fall 17s linear infinite 3s;}
@@ -36,31 +25,13 @@
 #pa39bg .l6{left:72%;animation:pa39fall 16s linear infinite 12s;}
 @keyframes pa39fall{
   0%{transform:translate(0,0) rotate(0);opacity:0;}
-  8%{opacity:.75;}
+  8%{opacity:.7;}
   50%{transform:translate(38px,52vh) rotate(220deg);}
-  92%{opacity:.75;}
+  92%{opacity:.7;}
   100%{transform:translate(-16px,108vh) rotate(420deg);opacity:0;}
 }
 
-/* ---- mariposa ---- */
-#pa39bg .bfly{position:absolute;top:44%;left:-8%;width:26px;height:22px;
-  animation:pa39flyx 26s ease-in-out infinite;}
-#pa39bg .bfly .bob{width:100%;height:100%;animation:pa39bob 3.4s ease-in-out infinite;}
-#pa39bg .bfly .w{transform-origin:50% 50%;animation:pa39flap .32s ease-in-out infinite;}
-@keyframes pa39flyx{0%{transform:translate(0,0);}100%{transform:translate(128vw,-8vh);}}
-@keyframes pa39bob{0%,100%{transform:translateY(0);}50%{transform:translateY(26px);}}
-@keyframes pa39flap{0%,100%{transform:scaleX(1);}50%{transform:scaleX(.42);}}
-
-/* ---- pajaro ---- */
-#pa39bg .bird{position:absolute;top:22%;left:-10%;width:34px;height:24px;
-  animation:pa39birdx 22s linear infinite 5s;}
-#pa39bg .bird .bob{width:100%;height:100%;animation:pa39bob 4.6s ease-in-out infinite;}
-#pa39bg .bird .wg{transform-origin:50% 40%;animation:pa39wing .5s ease-in-out infinite;}
-@keyframes pa39birdx{0%{transform:translate(0,0);}100%{transform:translate(132vw,10vh);}}
-@keyframes pa39wing{0%,100%{transform:rotate(0);}50%{transform:rotate(-16deg);}}
-
 @media (prefers-reduced-motion: reduce){
-  #pa39bg .pa39-scroll,#pa39bg .c,#pa39bg .lf,#pa39bg .bfly,#pa39bg .bfly .bob,#pa39bg .bfly .w,
-  #pa39bg .bird,#pa39bg .bird .bob,#pa39bg .bird .wg{animation:none !important;}
+  #pa39bg .pa39-scroll,#pa39bg .lf{animation:none !important;}
   #pa39bg .lf{opacity:.5;}
 }
