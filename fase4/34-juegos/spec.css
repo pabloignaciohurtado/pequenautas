@@ -81,4 +81,24 @@
 .pa34-wc .row{display:flex;gap:10px;}
 .pa34-wc .row .pa34-cta{font-size:16px;padding:13px;}
 .pa34-wc .ghost{background:#EDE6D3;color:#2E3B2C;box-shadow:0 5px 0 #D3CBB4;}
+/* ===== match game ===== */
+.pa34-mplay{position:fixed;inset:0;z-index:1500;display:none;flex-direction:column;
+  background:linear-gradient(180deg,#CDE7F5 0%,#DDEFD6 46%,#CFE8C4 100%);}
+.pa34-mplay.show{display:flex;}
+.pa34-mcols{flex:1;display:flex;gap:14px;max-width:440px;margin:0 auto;width:100%;padding:8px 16px 22px;overflow-y:auto;-webkit-overflow-scrolling:touch;}
+.pa34-col{flex:1;display:flex;flex-direction:column;gap:12px;justify-content:center;}
+.pa34-mcard{border:0;background:#FFFDF7;border-radius:20px;min-height:66px;display:flex;align-items:center;justify-content:center;
+  box-shadow:0 5px 0 rgba(46,59,44,.15),0 8px 16px rgba(46,59,44,.08);cursor:pointer;font-family:inherit;
+  padding:10px;transition:transform .1s;position:relative;}
+.pa34-mcard:active{transform:translateY(2px);}
+.pa34-mcard.sel{outline:4px solid #4EA8DE;box-shadow:0 5px 0 #2F7BA8,0 0 0 4px rgba(78,168,222,.25);}
+.pa34-mcard.done{background:#DDF3E6;box-shadow:0 4px 0 #9FD9BC;opacity:.9;cursor:default;}
+.pa34-mcard.done::after{content:"\2713";position:absolute;top:6px;right:9px;color:#369468;font-weight:800;font-size:16px;}
+.pa34-mcard.bad{animation:pa34shake .3s;outline:4px solid #F2748C;}
+@keyframes pa34shake{0%,100%{transform:translateX(0)}25%{transform:translateX(-6px)}75%{transform:translateX(6px)}}
+.pa34-big{font-size:34px;font-weight:800;color:#2E3B2C;font-family:'Fredoka',sans-serif;}
+.pa34-emoji{font-size:38px;line-height:1;}
+.pa34-dots{display:grid;grid-template-columns:repeat(3,1fr);gap:6px;padding:2px;}
+.pa34-dots span{width:15px;height:15px;border-radius:50%;background:#E8843A;box-shadow:0 2px 0 rgba(46,59,44,.18);}
+
 @media(prefers-reduced-motion:reduce){.pa34-ov.show,*[class*="pa34"]{animation:none!important;transition:none!important;}}
