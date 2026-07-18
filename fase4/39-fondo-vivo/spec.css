@@ -1,21 +1,22 @@
-/* ===== Fase 4 #39 · Fondo de bosque vivo (escena completa animada) =====
-   100% ADITIVO y solo CSS/JS aparte. Capa fija detrás de todo el contenido
-   (z-index:-1) que muestra una escena de bosque COMPLETA (imagen Grok) a
-   pantalla completa, con paneo/zoom suave (Ken Burns) y hojas cayendo. */
-@import url("img/scroll.css");
+/* ===== Fase 4 #39 · Fondo de bosque completo HD (4 franjas recompuestas) =====
+   Pipeline sin binarios/offline: la escena HD se corta en 4 franjas verticales,
+   cada una embebida como data-URI en su propio CSS (<=20KB, subible byte-exacto),
+   y se recomponen como 4 capas de fondo. Paneo Ken Burns. Solo #home. */
+@import url("img/strip0.css");
+@import url("img/strip1.css");
+@import url("img/strip2.css");
+@import url("img/strip3.css");
 #pa39bg{position:fixed;inset:0;z-index:-1;pointer-events:none;overflow:hidden;
   opacity:0;transition:opacity .7s ease;}
 #pa39bg.on{opacity:1;}
-
-/* ---- escena de bosque completa (cover) con paneo suave ---- */
 #pa39bg .pa39-scroll{position:absolute;inset:-2%;
-  background-size:cover;background-position:center;background-repeat:no-repeat;
+  background-image:var(--pa39s0),var(--pa39s1),var(--pa39s2),var(--pa39s3);
+  background-size:100% 25.5%;
+  background-position:center top,center 33.333%,center 66.667%,center bottom;
+  background-repeat:no-repeat;
   transform-origin:center;animation:pa39ken 12s ease-in-out infinite alternate;will-change:transform;}
 @keyframes pa39ken{from{transform:scale(1.04) translate(0,0);}to{transform:scale(1.11) translate(-1.6%,-1.2%);}}
-
-/* ---- hojas cayendo (movimiento ambiental sutil sobre la escena) ---- */
-#pa39bg .lf{position:absolute;top:-6%;width:16px;height:16px;border-radius:0 60% 0 60%;
-  opacity:.7;will-change:transform;}
+#pa39bg .lf{position:absolute;top:-6%;width:16px;height:16px;border-radius:0 60% 0 60%;opacity:.7;will-change:transform;}
 #pa39bg .lf.g{background:#7FB77E;} #pa39bg .lf.o{background:#E8A15A;} #pa39bg .lf.y{background:#EAC85A;}
 #pa39bg .l1{left:14%;animation:pa39fall 13s linear infinite;}
 #pa39bg .l2{left:38%;animation:pa39fall 17s linear infinite 3s;}
@@ -23,15 +24,5 @@
 #pa39bg .l4{left:82%;animation:pa39fall 19s linear infinite 2s;}
 #pa39bg .l5{left:26%;animation:pa39fall 21s linear infinite 9s;}
 #pa39bg .l6{left:72%;animation:pa39fall 16s linear infinite 12s;}
-@keyframes pa39fall{
-  0%{transform:translate(0,0) rotate(0);opacity:0;}
-  8%{opacity:.7;}
-  50%{transform:translate(38px,52vh) rotate(220deg);}
-  92%{opacity:.7;}
-  100%{transform:translate(-16px,108vh) rotate(420deg);opacity:0;}
-}
-
-@media (prefers-reduced-motion: reduce){
-  #pa39bg .pa39-scroll,#pa39bg .lf{animation:none !important;}
-  #pa39bg .lf{opacity:.5;}
-}
+@keyframes pa39fall{0%{transform:translate(0,0) rotate(0);opacity:0;}8%{opacity:.7;}50%{transform:translate(38px,52vh) rotate(220deg);}92%{opacity:.7;}100%{transform:translate(-16px,108vh) rotate(420deg);opacity:0;}}
+@media (prefers-reduced-motion: reduce){#pa39bg .pa39-scroll,#pa39bg .lf{animation:none !important;}#pa39bg .lf{opacity:.5;}}
