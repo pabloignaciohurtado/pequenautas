@@ -34,6 +34,7 @@ test('Fase 4 · Oleada 1: el flujo de juego sigue premiando (regresión núcleo)
   await page.click('#createBtn');
   await page.waitForTimeout(300);
   await page.click('.subject[data-game="math"]');
+  await page.click('[data-pa34-app="math"]');
   await page.waitForTimeout(500);
   const count = await page.$$eval('#stage .obj', (els) => els.length);
   const btns = await page.$$('#stage .choice');
