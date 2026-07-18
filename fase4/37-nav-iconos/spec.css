@@ -1,0 +1,6 @@
+/* ===== Fase 4 #37 · Iconos de la barra inferior (papel recortado) ===== */
+@import url("img/nav-home.css");
+@import url("img/nav-map.css");
+@import url("img/nav-bag.css");
+.pa33-tabbar .pa33-tab svg{display:none!important;}
+.pa33-tabbar .pa33-tab::before{content:"";display:block;width:30px;height:30px;background-position:center;background-repeat:no-repeat;background-size:contain;filter:drop-shadow(1px 2px 0 rgba(46,59,44,.16));}
