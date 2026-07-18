@@ -1,7 +1,7 @@
 /* Aventuras en el Bosque - Service Worker
    network-first (mismo origen) para que las actualizaciones lleguen siempre que haya red;
    cache como respaldo offline. Fuentes en cache-first. Bump de version para purgar cache viejo. */
-const CACHE='pequenautas-v2';
+const CACHE='pequenautas-v3';
 const SHELL=['./','./index.html','./app.js','./manifest.webmanifest'];
 const FONT_HOSTS=['fonts.googleapis.com','fonts.gstatic.com'];
 
@@ -44,7 +44,7 @@ self.addEventListener('fetch',(e)=>{
   // network-first para mismo origen: siempre trae la ultima version cuando hay red,
   // refresca el cache, y cae al cache (o al index.html) si no hay conexion.
   e.respondWith(
-    fetch(req).then(res=>{
+    fetch(req,{cache:'reload'}).then(res=>{
       if(res && res.ok){
         const copy=res.clone();
         caches.open(CACHE).then(c=>c.put(req,copy)).catch(()=>{});
