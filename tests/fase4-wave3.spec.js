@@ -57,6 +57,7 @@ test('Fase 4 · Oleada 3: 3 materias por defecto (regresión) y nivel-0 de Núme
   await expect(page.locator('.subject')).toHaveCount(3);
   await mk(page, 'W3reg');
   await page.click('.subject[data-game="math"]');
+  await page.click('[data-pa34-app="math"]');
   await page.waitForTimeout(500);
   expect(await page.locator('#stage .choice .cnum').count()).toBeGreaterThan(0);
   const count = await page.$$eval('#stage .obj', (els) => els.length);
