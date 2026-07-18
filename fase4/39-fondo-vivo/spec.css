@@ -11,9 +11,9 @@
 /* ---- franja de bosque (imagen) que se desplaza ---- */
 #pa39bg .pa39-scroll{position:absolute;left:0;right:0;bottom:0;
   height:clamp(240px,44vh,360px);opacity:.92;
-  background-repeat:repeat-x;background-size:640px 100%;background-position:0 bottom;
-  animation:pa39pan 95s linear infinite;}
-@keyframes pa39pan{from{background-position-x:0;}to{background-position-x:-640px;}}
+  background-repeat:repeat-x;background-size:720px 100%;background-position:0 bottom;
+  animation:pa39pan 10s linear infinite;}
+@keyframes pa39pan{from{background-position-x:0;}to{background-position-x:-720px;}}
 
 /* ---- nubes de papel ---- */
 #pa39bg .c{position:absolute;background:#FFFFFF;border-radius:50%;
