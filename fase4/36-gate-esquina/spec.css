@@ -1,0 +1,22 @@
+/* ===== Fase 4 #36 · Acceso de adultos reubicado ===== */
+/* Oculta el 4º item ("Adultos") de la barra inferior del #33: los 3 restantes
+   (Inicio/Mapa/Mochila) son seguros para el peque; el acceso de adultos pasa a
+   una esquina discreta. */
+.pa33-tabbar .pa33-tab:nth-child(4){ display:none !important; }
+
+/* Engranaje pequeño, esquina superior derecha, fuera del recorrido del pulgar. */
+.pa36-adult{
+  position:fixed; top:calc(6px + env(safe-area-inset-top)); right:8px;
+  width:34px; height:34px; border:0; border-radius:50%;
+  background:rgba(255,253,247,.55); color:#8A9683;
+  display:none; align-items:center; justify-content:center;
+  z-index:1300; cursor:pointer; padding:0;
+  box-shadow:0 2px 6px rgba(46,59,44,.12);
+  backdrop-filter:saturate(1.1) blur(2px);
+}
+.pa36-adult.show{ display:flex; }
+.pa36-adult svg{ width:20px; height:20px; }
+.pa36-adult:active{ transform:scale(.92); }
+@media (hover:hover) and (pointer:fine){
+  .pa36-adult:hover{ background:rgba(255,253,247,.9); color:#6B7A5E; }
+}
