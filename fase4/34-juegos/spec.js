@@ -31,7 +31,7 @@
       {id:"math:match", name:"Une cantidad y n"+UACC+"mero", mech:"match", impl:"match", gen:"countnum", desc:"Une la cantidad con su n"+UACC+"mero"}
     ]},
     reading: { name:"Letras", games:[
-      {id:"read:tap", name:"Con qu"+ACC+" letra empieza", mech:"tap", impl:"app", app:"reading", desc:"Toca la letra inicial"},
+      {id:"read:tap", name:"Con qu"+ch(0xE9)+" letra empieza", mech:"tap", impl:"app", app:"reading", desc:"Toca la letra inicial"},
       {id:"read:drag", name:"Letra a su sombra", mech:"drag", impl:"classify", gen:"shadow", desc:"Toca la letra y luego su sombra"},
       {id:"read:match", name:"May"+UACC+"scula y min"+UACC+"scula", mech:"match", impl:"match", gen:"caseAa", desc:"Une la letra grande con la peque"+NTIL+"a"},
       {id:"read:trace", name:"Traza la letra", mech:"trace", impl:"trace", gen:"trace", desc:"Une los puntos y traza la letra"}
