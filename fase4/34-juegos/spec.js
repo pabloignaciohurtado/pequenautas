@@ -28,19 +28,19 @@
       {id:"math:count", name:"Contar y arrastrar", mech:"drag", impl:"drag", desc:"Lleva las bellotas a la canasta"},
       {id:"math:tap", name:"Cu"+ACC+"ntos ves", mech:"tap", impl:"app", app:"math", desc:"Cuenta y toca el n"+UACC+"mero"},
       {id:"math:sort", name:"Ordena los n"+UACC+"meros", mech:"sort", impl:"soon", desc:"Pronto"},
-      {id:"math:match", name:"Une cantidad y n"+UACC+"mero", mech:"match", impl:"soon", desc:"Pronto"}
+      {id:"math:match", name:"Une cantidad y n"+UACC+"mero", mech:"match", impl:"match", gen:"countnum", desc:"Une la cantidad con su n"+UACC+"mero"}
     ]},
     reading: { name:"Letras", games:[
       {id:"read:tap", name:"Con qu"+ACC+" letra empieza", mech:"tap", impl:"app", app:"reading", desc:"Toca la letra inicial"},
       {id:"read:drag", name:"Letra a su sombra", mech:"drag", impl:"soon", desc:"Pronto"},
-      {id:"read:match", name:"May"+UACC+"scula y min"+UACC+"scula", mech:"match", impl:"soon", desc:"Pronto"},
+      {id:"read:match", name:"May"+UACC+"scula y min"+UACC+"scula", mech:"match", impl:"match", gen:"caseAa", desc:"Une la letra grande con la peque"+NTIL+"a"},
       {id:"read:trace", name:"Traza la letra", mech:"trace", impl:"soon", desc:"Pronto"}
     ]},
     science: { name:"Animales", games:[
       {id:"sci:tap", name:"D"+OACC+"nde vive", mech:"tap", impl:"app", app:"science", desc:"Toca el h"+ACC+"bitat"},
       {id:"sci:drag", name:"Cada uno a su casa", mech:"drag", impl:"soon", desc:"Pronto"},
       {id:"sci:sort", name:"Grandes y chicos", mech:"sort", impl:"soon", desc:"Pronto"},
-      {id:"sci:match", name:"Mam"+ACC+" y beb"+ch(0xE9), mech:"match", impl:"soon", desc:"Pronto"}
+      {id:"sci:match", name:"Mam"+ACC+" y beb"+ch(0xE9), mech:"match", impl:"match", gen:"babies", desc:"Une cada mam"+ACC+" con su beb"+ch(0xE9)}
     ]}
   };
   var MECH_ICON = {tap:ch(0x1F446)?"":"", }; // fallback set below
@@ -95,7 +95,7 @@
       var mech=el("div","pa34-m-"+g.mech+" mech", mechEmoji(g.mech));
       var nm=el("div","gn",g.name);
       var pr;
-      if(g.impl==="drag"){ var u=unlocked(g.id); pr=el("div","gp","Nivel "+(u+1)+" de 5"); }
+      if(g.impl==="drag"||g.impl==="match"){ var u=unlocked(g.id); pr=el("div","gp","Nivel "+(u+1)+" de 5"); }
       else if(g.impl==="app"){ pr=el("div","gp","Con voz de Rufo"); }
       else { pr=el("div","gp","Pronto"); }
       b.appendChild(mech); b.appendChild(nm); b.appendChild(pr);
@@ -112,7 +112,7 @@
       if(typeof window.startGame==="function"){ try{ window.startGame(g.app); }catch(e){} }
       return;
     }
-    if(g.impl==="drag"){ openLevels(g); return; }
+    if(g.impl==="drag"||g.impl==="match"){ openLevels(g); return; }
     // soon
     toast(INV+"Pronto"+"! Este juego llega muy prontito "+String.fromCodePoint(0x1F98A));
   }
@@ -138,7 +138,7 @@
       var state = i<u? "done" : (i===u? "cur":"lock");
       var b=el("button","pa34-lvl "+state, String(i+1));
       if(state!=="lock" || i===u){
-        b.addEventListener("click",function(){ launchDrag(g,i); });
+        b.addEventListener("click",function(){ launchLevel(g,i); });
       } else {
         b.innerHTML=String.fromCodePoint(0x1F512); b.disabled=true;
       }
@@ -282,6 +282,128 @@
     for(var i=0;i<24;i++){(function(i){
       var c=el("div"); c.style.cssText="position:absolute;width:10px;height:14px;border-radius:2px;top:-20px;z-index:19;background:"+colors[i%5]+";left:"+(20+Math.random()*60)+"%;";
       play.appendChild(c);
+      var dx=(Math.random()*2-1)*120, dur=900+Math.random()*700;
+      try{ c.animate([{transform:"translate(0,0) rotate(0)",opacity:1},{transform:"translate("+dx+"px,540px) rotate("+(Math.random()*720)+"deg)",opacity:.9}],{duration:dur,easing:"cubic-bezier(.3,.7,.5,1)"}); }catch(e){}
+      setTimeout(function(){ c.remove(); },dur);
+    })(i);}
+  }
+
+  // ---------- level launch dispatch ----------
+  function launchLevel(g,level){
+    if(g.impl==="match"){ launchMatch(g,level); }
+    else { launchDrag(g,level); }
+  }
+
+  // ================= MATCH GAME ENGINE =================
+  var MATCH_PAIRS = [3,3,4,4,5];              // pares por nivel
+  var LETTERS_POOL = ["A","B","C","D","E","F","L","M","O","P","S","T","U","N"];
+  function cp(n){ return String.fromCodePoint(n); }
+  // parejas mamá/bebé por punto de código (fuente ASCII-safe, ver nota arriba)
+  var BABY_PAIRS = [ [cp(0x1F404),cp(0x1F42E)], [cp(0x1F415),cp(0x1F436)],
+    [cp(0x1F408),cp(0x1F431)], [cp(0x1F416),cp(0x1F437)],
+    [cp(0x1F414),cp(0x1F423)], [cp(0x1F40E),cp(0x1F434)] ];
+  function shuffle(arr){ var a=arr.slice(); for(var i=a.length-1;i>0;i--){ var j=Math.floor(Math.random()*(i+1)); var t=a[i];a[i]=a[j];a[j]=t; } return a; }
+  function dotsHTML(n){ var s='<div class="pa34-dots">'; for(var i=0;i<n;i++){ s+='<span></span>'; } return s+'</div>'; }
+  function tokenHTML(tk){
+    if(tk.k==="dots") return dotsHTML(tk.v);
+    if(tk.k==="emoji") return '<span class="pa34-emoji">'+tk.v+'</span>';
+    return '<span class="pa34-big">'+tk.v+'</span>';
+  }
+  // build [{a,b}] pairs for a game+level
+  function buildPairs(g,level){
+    var n=MATCH_PAIRS[level]||3, out=[];
+    if(g.gen==="countnum"){
+      var maxN=[3,4,5,6,9][level]||n;
+      var nums=shuffle(function(){var r=[];for(var i=1;i<=maxN;i++)r.push(i);return r;}()).slice(0,n);
+      nums.forEach(function(v){ out.push({a:{k:"dots",v:v}, b:{k:"text",v:String(v)}}); });
+    } else if(g.gen==="caseAa"){
+      var ls=shuffle(LETTERS_POOL).slice(0,n);
+      ls.forEach(function(v){ out.push({a:{k:"text",v:v}, b:{k:"text",v:v.toLowerCase()}}); });
+    } else { // babies
+      var ps=shuffle(BABY_PAIRS).slice(0,n);
+      ps.forEach(function(p){ out.push({a:{k:"emoji",v:p[0]}, b:{k:"emoji",v:p[1]}}); });
+    }
+    return out;
+  }
+
+  var mplay=null, mEls={}, M={ gid:null, level:0, name:"", total:0, matched:0, selLeft:null, g:null };
+  function ensureMPlay(){
+    if(mplay) return;
+    mplay=el("div","pa34-mplay");
+    mplay.innerHTML=
+      '<div class="pa34-ptop"><button class="pa34-x" id="pa34mX" aria-label="Salir">&times;</button>'+
+        '<div class="pa34-prompt" id="pa34mprompt"></div>'+
+        '<div class="pa34-pstar">'+String.fromCodePoint(0x2B50)+' <span id="pa34mscore">0</span></div></div>'+
+      '<div class="pa34-mcols"><div class="pa34-col" id="pa34mL"></div><div class="pa34-col" id="pa34mR"></div></div>'+
+      '<div class="pa34-win" id="pa34mwin"><div class="pa34-wc">'+
+        '<div class="rf">'+rufoSVG(true)+'</div><h2 id="pa34mwt">'+INV+'Muy bien!</h2><p id="pa34mwp"></p>'+
+        '<div class="row"><button class="pa34-cta ghost" id="pa34mwmap">Mapa</button><button class="pa34-cta" id="pa34mwnext">Siguiente</button></div>'+
+      '</div></div>';
+    document.body.appendChild(mplay);
+    mEls={ L:$("pa34mL"), R:$("pa34mR"), prompt:$("pa34mprompt"), score:$("pa34mscore"),
+      win:$("pa34mwin"), wt:$("pa34mwt"), wp:$("pa34mwp"), wnext:$("pa34mwnext"), wmap:$("pa34mwmap") };
+    $("pa34mX").addEventListener("click",function(){ mplay.classList.remove("show"); });
+    mEls.wnext.onclick=function(){
+      mEls.win.classList.remove("show");
+      if(M.level>=4){ mplay.classList.remove("show"); if(M.g) openLevels(M.g); }
+      else { launchMatch(M.g, M.level+1); }
+    };
+    mEls.wmap.onclick=function(){ mEls.win.classList.remove("show"); mplay.classList.remove("show"); if(M.g) openLevels(M.g); };
+  }
+  function launchMatch(g,level){
+    ensureMPlay();
+    closeOv();
+    M.gid=g.id; M.level=level; M.name=g.name; M.g=g; M.selLeft=null; M.matched=0;
+    var pairs=buildPairs(g,level); M.total=pairs.length;
+    mplay.classList.add("show"); mEls.win.classList.remove("show");
+    mEls.prompt.innerHTML=g.desc || "Une las parejas";
+    mEls.L.innerHTML=""; mEls.R.innerHTML="";
+    // left in order, right shuffled; tag each with the same pairId
+    var rights=shuffle(pairs.map(function(p,idx){ return {tok:p.b, id:idx}; }));
+    pairs.forEach(function(p,idx){
+      var lb=el("button","pa34-mcard", tokenHTML(p.a)); lb.setAttribute("data-pid",idx); lb.setAttribute("data-side","L");
+      lb.addEventListener("click",function(){ onLeft(lb); }); mEls.L.appendChild(lb);
+    });
+    rights.forEach(function(r){
+      var rb=el("button","pa34-mcard", tokenHTML(r.tok)); rb.setAttribute("data-pid",r.id); rb.setAttribute("data-side","R");
+      rb.addEventListener("click",function(){ onRight(rb); }); mEls.R.appendChild(rb);
+    });
+  }
+  function onLeft(btn){
+    if(btn.classList.contains("done")) return;
+    if(M.selLeft){ M.selLeft.classList.remove("sel"); }
+    if(M.selLeft===btn){ M.selLeft=null; return; }
+    M.selLeft=btn; btn.classList.add("sel");
+  }
+  function onRight(btn){
+    if(btn.classList.contains("done")) return;
+    if(!M.selLeft){ btn.classList.add("bad"); setTimeout(function(){ btn.classList.remove("bad"); },300); return; }
+    var lp=M.selLeft.getAttribute("data-pid"), rp=btn.getAttribute("data-pid");
+    if(lp===rp){
+      M.selLeft.classList.remove("sel"); M.selLeft.classList.add("done");
+      btn.classList.add("done"); M.selLeft=null; M.matched++;
+      try{ if(typeof window.playSfx==="function") window.playSfx("ok"); }catch(e){}
+      if(M.matched>=M.total) matchWin();
+    } else {
+      var a=M.selLeft; a.classList.add("bad"); btn.classList.add("bad");
+      a.classList.remove("sel"); M.selLeft=null;
+      setTimeout(function(){ a.classList.remove("bad"); btn.classList.remove("bad"); },320);
+    }
+  }
+  function matchWin(){
+    setUnlocked(M.gid, Math.min(M.level+1,4));
+    M.score=(M.score||0)+1; mEls.score.textContent=M.score;
+    try{ if(typeof window.addStar==="function") window.addStar(); }catch(e){}
+    mEls.wp.textContent="Uniste "+M.total+" parejas "+String.fromCodePoint(0x1F31F);
+    mEls.wnext.textContent = M.level>=4 ? INV+"Terminado!" : "Siguiente";
+    setTimeout(function(){ if(typeof burstIn==="function") burstIn(mplay); mEls.win.classList.add("show"); },300);
+  }
+  function burstIn(host){
+    if(!host) return;
+    var colors=["#E8843A","#57C596","#4EA8DE","#F2748C","#FDBA4D"];
+    for(var i=0;i<20;i++){(function(i){
+      var c=el("div"); c.style.cssText="position:absolute;width:10px;height:14px;border-radius:2px;top:-20px;z-index:19;background:"+colors[i%5]+";left:"+(20+Math.random()*60)+"%;";
+      host.appendChild(c);
       var dx=(Math.random()*2-1)*120, dur=900+Math.random()*700;
       try{ c.animate([{transform:"translate(0,0) rotate(0)",opacity:1},{transform:"translate("+dx+"px,540px) rotate("+(Math.random()*720)+"deg)",opacity:.9}],{duration:dur,easing:"cubic-bezier(.3,.7,.5,1)"}); }catch(e){}
       setTimeout(function(){ c.remove(); },dur);

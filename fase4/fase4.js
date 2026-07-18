@@ -83,7 +83,11 @@
     // tarjetas .subject por casas del bosque de papel (fondo diorama, marco de
     // color, etiqueta de papel, chevron). Al final de todo: SOLO CSS; imagenes
     // embebidas como data-URI en img/*.css. No toca app.js ni STORE_KEY.
-    "35-cajas3d"
+    "35-cajas3d",
+    // Oleada 11 - #36 reubica el acceso de adultos: lo saca de la barra inferior
+    // (alto riesgo de toque accidental) y lo pone como engranaje discreto en la
+    // esquina. Al final de todo: solo CSS + un botón; no toca app.js ni STORE_KEY.
+    "36-gate-esquina"
   ];
   MODULES.forEach(function (m) {
     var l = document.createElement("link");
