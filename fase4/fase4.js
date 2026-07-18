@@ -77,7 +77,8 @@
     // todo: solo CSS + retoques DOM en runtime; imágenes embebidas como data-URI
     // en img/*.css (los binarios no se pueden subir byte-exactos con las
     // herramientas MCP). No envuelve globales de juego, no toca STORE_KEY.
-    "33-hero-diorama"
+    "33-hero-diorama",
+    "34-juegos"
   ];
   MODULES.forEach(function (m) {
     var l = document.createElement("link");
