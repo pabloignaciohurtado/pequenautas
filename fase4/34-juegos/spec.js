@@ -27,19 +27,19 @@
     math: { name:"N"+UACC+"meros", games:[
       {id:"math:count", name:"Contar y arrastrar", mech:"drag", impl:"drag", desc:"Lleva las bellotas a la canasta"},
       {id:"math:tap", name:"Cu"+ACC+"ntos ves", mech:"tap", impl:"app", app:"math", desc:"Cuenta y toca el n"+UACC+"mero"},
-      {id:"math:sort", name:"Ordena los n"+UACC+"meros", mech:"sort", impl:"soon", desc:"Pronto"},
+      {id:"math:sort", name:"Ordena los n"+UACC+"meros", mech:"sort", impl:"sort", gen:"ordernum", desc:"Toca del m"+ACC+"s chico al m"+ACC+"s grande"},
       {id:"math:match", name:"Une cantidad y n"+UACC+"mero", mech:"match", impl:"match", gen:"countnum", desc:"Une la cantidad con su n"+UACC+"mero"}
     ]},
     reading: { name:"Letras", games:[
       {id:"read:tap", name:"Con qu"+ACC+" letra empieza", mech:"tap", impl:"app", app:"reading", desc:"Toca la letra inicial"},
       {id:"read:drag", name:"Letra a su sombra", mech:"drag", impl:"soon", desc:"Pronto"},
       {id:"read:match", name:"May"+UACC+"scula y min"+UACC+"scula", mech:"match", impl:"match", gen:"caseAa", desc:"Une la letra grande con la peque"+NTIL+"a"},
-      {id:"read:trace", name:"Traza la letra", mech:"trace", impl:"soon", desc:"Pronto"}
+      {id:"read:trace", name:"Traza la letra", mech:"trace", impl:"trace", gen:"trace", desc:"Une los puntos y traza la letra"}
     ]},
     science: { name:"Animales", games:[
       {id:"sci:tap", name:"D"+OACC+"nde vive", mech:"tap", impl:"app", app:"science", desc:"Toca el h"+ACC+"bitat"},
       {id:"sci:drag", name:"Cada uno a su casa", mech:"drag", impl:"soon", desc:"Pronto"},
-      {id:"sci:sort", name:"Grandes y chicos", mech:"sort", impl:"soon", desc:"Pronto"},
+      {id:"sci:sort", name:"Grandes y chicos", mech:"sort", impl:"sort", gen:"ordersize", desc:"Toca del m"+ACC+"s chico al m"+ACC+"s grande"},
       {id:"sci:match", name:"Mam"+ACC+" y beb"+ch(0xE9), mech:"match", impl:"match", gen:"babies", desc:"Une cada mam"+ACC+" con su beb"+ch(0xE9)}
     ]}
   };
@@ -95,7 +95,7 @@
       var mech=el("div","pa34-m-"+g.mech+" mech", mechEmoji(g.mech));
       var nm=el("div","gn",g.name);
       var pr;
-      if(g.impl==="drag"||g.impl==="match"){ var u=unlocked(g.id); pr=el("div","gp","Nivel "+(u+1)+" de 5"); }
+      if(g.impl==="drag"||g.impl==="match"||g.impl==="sort"||g.impl==="trace"){ var u=unlocked(g.id); pr=el("div","gp","Nivel "+(u+1)+" de 5"); }
       else if(g.impl==="app"){ pr=el("div","gp","Con voz de Rufo"); }
       else { pr=el("div","gp","Pronto"); }
       b.appendChild(mech); b.appendChild(nm); b.appendChild(pr);
@@ -112,7 +112,7 @@
       if(typeof window.startGame==="function"){ try{ window.startGame(g.app); }catch(e){} }
       return;
     }
-    if(g.impl==="drag"||g.impl==="match"){ openLevels(g); return; }
+    if(g.impl==="drag"||g.impl==="match"||g.impl==="sort"||g.impl==="trace"){ openLevels(g); return; }
     // soon
     toast(INV+"Pronto"+"! Este juego llega muy prontito "+String.fromCodePoint(0x1F98A));
   }
@@ -291,6 +291,8 @@
   // ---------- level launch dispatch ----------
   function launchLevel(g,level){
     if(g.impl==="match"){ launchMatch(g,level); }
+    else if(g.impl==="sort"){ launchSort(g,level); }
+    else if(g.impl==="trace"){ launchTrace(g,level); }
     else { launchDrag(g,level); }
   }
 
@@ -408,6 +410,187 @@
       try{ c.animate([{transform:"translate(0,0) rotate(0)",opacity:1},{transform:"translate("+dx+"px,540px) rotate("+(Math.random()*720)+"deg)",opacity:.9}],{duration:dur,easing:"cubic-bezier(.3,.7,.5,1)"}); }catch(e){}
       setTimeout(function(){ c.remove(); },dur);
     })(i);}
+  }
+
+  // ================= SORT GAME ENGINE =================
+  var SORT_LEVELS = [3,3,4,4,5];
+  // ranking chico -> grande (puntos de código)
+  var ANIMAL_SIZES = [0x1F41C,0x1F401,0x1F407,0x1F408,0x1F415,0x1F416,0x1F40E,0x1F404,0x1F418];
+  function buildSort(g,level){
+    var n=SORT_LEVELS[level]||3, out=[];
+    if(g.gen==="ordersize"){
+      var idx=shuffle(ANIMAL_SIZES.map(function(_,i){return i;})).slice(0,n).sort(function(a,b){return a-b;});
+      idx.forEach(function(ai,rank){ out.push({tok:{k:"emoji",v:cp(ANIMAL_SIZES[ai])}, rank:rank}); });
+    } else {
+      var maxN=[5,6,7,8,9][level]||n;
+      var nums=shuffle(function(){var r=[];for(var i=1;i<=maxN;i++)r.push(i);return r;}()).slice(0,n).sort(function(a,b){return a-b;});
+      nums.forEach(function(v,rank){ out.push({tok:{k:"text",v:String(v)}, rank:rank}); });
+    }
+    return out;
+  }
+  var splay=null, sEls={}, ST={ gid:null, level:0, g:null, expected:0, total:0, score:0 };
+  function ensureSPlay(){
+    if(splay) return;
+    splay=el("div","pa34-splay");
+    splay.innerHTML=
+      '<div class="pa34-ptop"><button class="pa34-x" id="pa34sX" aria-label="Salir">&times;</button>'+
+        '<div class="pa34-prompt" id="pa34sprompt"></div>'+
+        '<div class="pa34-pstar">'+String.fromCodePoint(0x2B50)+' <span id="pa34sscore">0</span></div></div>'+
+      '<div class="pa34-sarea" id="pa34sarea"></div>'+
+      '<div class="pa34-win" id="pa34swin"><div class="pa34-wc">'+
+        '<div class="rf">'+rufoSVG(true)+'</div><h2>'+INV+'Muy bien!</h2><p id="pa34swp"></p>'+
+        '<div class="row"><button class="pa34-cta ghost" id="pa34swmap">Mapa</button><button class="pa34-cta" id="pa34swnext">Siguiente</button></div>'+
+      '</div></div>';
+    document.body.appendChild(splay);
+    sEls={ area:$("pa34sarea"), prompt:$("pa34sprompt"), score:$("pa34sscore"),
+      win:$("pa34swin"), wp:$("pa34swp"), wnext:$("pa34swnext"), wmap:$("pa34swmap") };
+    $("pa34sX").addEventListener("click",function(){ splay.classList.remove("show"); });
+    sEls.wnext.onclick=function(){
+      sEls.win.classList.remove("show");
+      if(ST.level>=4){ splay.classList.remove("show"); if(ST.g) openLevels(ST.g); }
+      else { launchSort(ST.g, ST.level+1); }
+    };
+    sEls.wmap.onclick=function(){ sEls.win.classList.remove("show"); splay.classList.remove("show"); if(ST.g) openLevels(ST.g); };
+  }
+  function launchSort(g,level){
+    ensureSPlay(); closeOv();
+    ST.gid=g.id; ST.level=level; ST.g=g; ST.expected=0;
+    var items=buildSort(g,level); ST.total=items.length;
+    splay.classList.add("show"); sEls.win.classList.remove("show");
+    sEls.prompt.innerHTML=g.desc || "Ordena";
+    sEls.area.innerHTML="";
+    shuffle(items).forEach(function(it){
+      var b=el("button","pa34-scard", tokenHTML(it.tok));
+      b.setAttribute("data-rank", it.rank);
+      b.addEventListener("click",function(){ onSortTile(b); });
+      sEls.area.appendChild(b);
+    });
+  }
+  function onSortTile(btn){
+    if(btn.classList.contains("done")) return;
+    var r=parseInt(btn.getAttribute("data-rank"),10);
+    if(r===ST.expected){
+      btn.classList.add("done");
+      btn.appendChild(el("div","ord", String(ST.expected+1)));
+      ST.expected++;
+      try{ if(typeof window.playSfx==="function") window.playSfx("ok"); }catch(e){}
+      if(ST.expected>=ST.total) sortWin();
+    } else {
+      btn.classList.add("bad"); setTimeout(function(){ btn.classList.remove("bad"); },320);
+    }
+  }
+  function sortWin(){
+    setUnlocked(ST.gid, Math.min(ST.level+1,4));
+    ST.score=(ST.score||0)+1; sEls.score.textContent=ST.score;
+    try{ if(typeof window.addStar==="function") window.addStar(); }catch(e){}
+    sEls.wp.textContent="Ordenaste "+ST.total+" del m"+ACC+"s chico al m"+ACC+"s grande "+String.fromCodePoint(0x1F31F);
+    sEls.wnext.textContent = ST.level>=4 ? INV+"Terminado!" : "Siguiente";
+    setTimeout(function(){ burstIn(splay); sEls.win.classList.add("show"); },300);
+  }
+
+  // ================= TRACE GAME ENGINE =================
+  var TRACE_LETTERS = [
+    { ch:"L", pts:[[32,22],[32,78],[70,78]] },
+    { ch:"V", pts:[[28,22],[50,78],[72,22]] },
+    { ch:"N", pts:[[30,78],[30,22],[70,78],[70,22]] },
+    { ch:"Z", pts:[[30,24],[70,24],[30,76],[70,76]] },
+    { ch:"M", pts:[[26,78],[26,22],[50,52],[74,22],[74,78]] }
+  ];
+  var tplay=null, tEls={}, TR={ gid:null, level:0, g:null, pts:[], reached:0, score:0 };
+  function ensureTPlay(){
+    if(tplay) return;
+    tplay=el("div","pa34-tplay");
+    tplay.innerHTML=
+      '<div class="pa34-ptop"><button class="pa34-x" id="pa34tX" aria-label="Salir">&times;</button>'+
+        '<div class="pa34-prompt" id="pa34tprompt"></div>'+
+        '<div class="pa34-pstar">'+String.fromCodePoint(0x2B50)+' <span id="pa34tscore">0</span></div></div>'+
+      '<div class="pa34-tarea"><svg class="pa34-tsvg" id="pa34tsvg" viewBox="0 0 100 100"></svg></div>'+
+      '<div class="pa34-win" id="pa34twin"><div class="pa34-wc">'+
+        '<div class="rf">'+rufoSVG(true)+'</div><h2>'+INV+'Muy bien!</h2><p id="pa34twp"></p>'+
+        '<div class="row"><button class="pa34-cta ghost" id="pa34twmap">Mapa</button><button class="pa34-cta" id="pa34twnext">Siguiente</button></div>'+
+      '</div></div>';
+    document.body.appendChild(tplay);
+    tEls={ svg:$("pa34tsvg"), prompt:$("pa34tprompt"), score:$("pa34tscore"),
+      win:$("pa34twin"), wp:$("pa34twp"), wnext:$("pa34twnext"), wmap:$("pa34twmap") };
+    $("pa34tX").addEventListener("click",function(){ tplay.classList.remove("show"); });
+    tEls.wnext.onclick=function(){
+      tEls.win.classList.remove("show");
+      if(TR.level>=4){ tplay.classList.remove("show"); if(TR.g) openLevels(TR.g); }
+      else { launchTrace(TR.g, TR.level+1); }
+    };
+    tEls.wmap.onclick=function(){ tEls.win.classList.remove("show"); tplay.classList.remove("show"); if(TR.g) openLevels(TR.g); };
+    // pointer tracking over the svg
+    var svg=tEls.svg;
+    function toVB(e){
+      var p=pointXY(e), r=svg.getBoundingClientRect();
+      return { x:(p.x-r.left)/r.width*100, y:(p.y-r.top)/r.height*100 };
+    }
+    function onMove(e){
+      if(!tplay.classList.contains("show")) return;
+      if(TR.reached>=TR.pts.length) return;
+      var v=toVB(e), nx=TR.pts[TR.reached];
+      var d=Math.sqrt((v.x-nx[0])*(v.x-nx[0])+(v.y-nx[1])*(v.y-nx[1]));
+      if(d<15) reachPoint(TR.reached);
+      e.preventDefault();
+    }
+    svg.addEventListener("mousemove",onMove);
+    svg.addEventListener("touchmove",onMove,{passive:false});
+    svg.addEventListener("touchstart",onMove,{passive:false});
+  }
+  function svgEl(name,attrs){
+    var e=document.createElementNS("http://www.w3.org/2000/svg",name);
+    for(var k in attrs){ e.setAttribute(k,attrs[k]); } return e;
+  }
+  function launchTrace(g,level){
+    ensureTPlay(); closeOv();
+    TR.gid=g.id; TR.level=level; TR.g=g;
+    var L=TRACE_LETTERS[level]||TRACE_LETTERS[0];
+    TR.pts=L.pts; TR.reached=0;
+    tplay.classList.add("show"); tEls.win.classList.remove("show");
+    tEls.prompt.innerHTML="Traza la <b>"+L.ch+"</b>";
+    drawTrace();
+  }
+  function drawTrace(){
+    var svg=tEls.svg; svg.innerHTML="";
+    var pts=TR.pts;
+    // guía punteada por todos los puntos
+    var dpath="M"+pts.map(function(p){return p[0]+" "+p[1];}).join(" L");
+    svg.appendChild(svgEl("path",{d:dpath,fill:"none",stroke:"#CFC6AE","stroke-width":"5","stroke-linecap":"round","stroke-linejoin":"round","stroke-dasharray":"1 7"}));
+    // trazo cumplido
+    if(TR.reached>0){
+      var done="M"+pts.slice(0,TR.reached+1).map(function(p){return p[0]+" "+p[1];}).join(" L");
+      svg.appendChild(svgEl("path",{d:done,fill:"none",stroke:"#57C596","stroke-width":"7","stroke-linecap":"round","stroke-linejoin":"round"}));
+    }
+    // puntos
+    pts.forEach(function(p,i){
+      var state = i<TR.reached ? "done" : (i===TR.reached ? "next":"todo");
+      var c=svgEl("circle",{cx:p[0],cy:p[1],r:(state==="next"?7:5.5),
+        fill: state==="done"?"#369468":(state==="next"?"#E8843A":"#FFFDF7"),
+        stroke: state==="done"?"#2b7a52":(state==="next"?"#C6672A":"#CFC6AE"), "stroke-width":"2.5"});
+      c.setAttribute("data-idx",i); c.style.cursor="pointer";
+      c.addEventListener("click",function(){ if(i===TR.reached) reachPoint(i); });
+      svg.appendChild(c);
+      if(state==="next"){
+        var lbl=svgEl("text",{x:p[0],y:p[1]+3.2,"text-anchor":"middle","font-size":"7","font-weight":"800",fill:"#fff"});
+        lbl.textContent=String(i+1); svg.appendChild(lbl);
+      }
+    });
+  }
+  function reachPoint(i){
+    if(i!==TR.reached) return;
+    TR.reached++;
+    drawTrace();
+    try{ if(typeof window.playSfx==="function") window.playSfx("ok"); }catch(e){}
+    if(TR.reached>=TR.pts.length) traceWin();
+  }
+  function traceWin(){
+    setUnlocked(TR.gid, Math.min(TR.level+1,4));
+    TR.score=(TR.score||0)+1; tEls.score.textContent=TR.score;
+    try{ if(typeof window.addStar==="function") window.addStar(); }catch(e){}
+    var L=TRACE_LETTERS[TR.level]||TRACE_LETTERS[0];
+    tEls.wp.textContent="Trazaste la letra "+L.ch+" "+String.fromCodePoint(0x270F,0xFE0F);
+    tEls.wnext.textContent = TR.level>=4 ? INV+"Terminado!" : "Siguiente";
+    setTimeout(function(){ burstIn(tplay); tEls.win.classList.add("show"); },300);
   }
 
   // ---------- hook subject cards ----------
