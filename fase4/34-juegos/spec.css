@@ -1,4 +1,5 @@
 /* ===== Fase 4 #34 · Juegos por secciones + niveles + arrastrar ===== */
+@import url("img/bg.css");
 .pa34-ov{position:fixed;inset:0;z-index:1400;display:none;align-items:stretch;justify-content:center;
   background:rgba(46,59,44,.42);backdrop-filter:saturate(1.1);}
 .pa34-ov.show{display:flex;animation:pa34fade .22s ease;}
@@ -42,7 +43,7 @@
 
 /* ===== drag game ===== */
 .pa34-play{position:fixed;inset:0;z-index:1500;display:none;flex-direction:column;
-  background:linear-gradient(180deg,#CDE7F5 0%,#DDEFD6 44%,#CFE8C4 100%);touch-action:none;
+  background-color:#DDEFD6;touch-action:none;
   user-select:none;-webkit-user-select:none;}
 .pa34-play.show{display:flex;}
 .pa34-ptop{display:flex;align-items:center;gap:10px;padding:14px 16px 6px;max-width:440px;margin:0 auto;width:100%;}
@@ -83,7 +84,7 @@
 .pa34-wc .ghost{background:#EDE6D3;color:#2E3B2C;box-shadow:0 5px 0 #D3CBB4;}
 /* ===== match game ===== */
 .pa34-mplay{position:fixed;inset:0;z-index:1500;display:none;flex-direction:column;
-  background:linear-gradient(180deg,#CDE7F5 0%,#DDEFD6 46%,#CFE8C4 100%);}
+  background-color:#DDEFD6;}
 .pa34-mplay.show{display:flex;}
 .pa34-mcols{flex:1;display:flex;gap:14px;max-width:440px;margin:0 auto;width:100%;padding:8px 16px 22px;overflow-y:auto;-webkit-overflow-scrolling:touch;}
 .pa34-col{flex:1;display:flex;flex-direction:column;gap:12px;justify-content:center;}
@@ -102,7 +103,7 @@
 .pa34-dots span{width:15px;height:15px;border-radius:50%;background:#E8843A;box-shadow:0 2px 0 rgba(46,59,44,.18);}
 /* ===== sort game ===== */
 .pa34-splay{position:fixed;inset:0;z-index:1500;display:none;flex-direction:column;
-  background:linear-gradient(180deg,#CDE7F5 0%,#DDEFD6 46%,#CFE8C4 100%);}
+  background-color:#DDEFD6;}
 .pa34-splay.show{display:flex;}
 .pa34-sarea{flex:1;display:flex;flex-wrap:wrap;gap:15px;align-content:center;justify-content:center;
   padding:16px;max-width:440px;margin:0 auto;width:100%;}
@@ -118,7 +119,7 @@
 
 /* ===== trace game ===== */
 .pa34-tplay{position:fixed;inset:0;z-index:1500;display:none;flex-direction:column;
-  background:linear-gradient(180deg,#CDE7F5 0%,#DDEFD6 46%,#CFE8C4 100%);}
+  background-color:#DDEFD6;}
 .pa34-tplay.show{display:flex;}
 .pa34-tarea{flex:1;display:flex;align-items:center;justify-content:center;padding:16px;}
 .pa34-tsvg{width:min(86vw,340px);height:min(86vw,340px);touch-action:none;
@@ -126,7 +127,7 @@
 
 /* ===== classify game (tocar y colocar) ===== */
 .pa34-cplay{position:fixed;inset:0;z-index:1500;display:none;flex-direction:column;
-  background:linear-gradient(180deg,#CDE7F5 0%,#DDEFD6 46%,#CFE8C4 100%);}
+  background-color:#DDEFD6;}
 .pa34-cplay.show{display:flex;}
 .pa34-citems{display:flex;flex-wrap:wrap;gap:12px;justify-content:center;padding:14px 16px 6px;
   max-width:440px;margin:0 auto;width:100%;}
