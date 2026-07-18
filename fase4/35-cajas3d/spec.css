@@ -1,0 +1,99 @@
+/* ==================== FASE 4 - #35 Cajas de menu 3D (diorama bosque de papel) ====================
+   Reemplaza el aspecto plano de las tarjetas .subject por "casas" del bosque de
+   papel: fondo diorama 3D, marco de color de materia, etiqueta de papel con el
+   nombre y chevron. 100% ADITIVO y defensivo: SOLO CSS. No toca app.js, no toca
+   el DOM en runtime, no envuelve globales de juego, no toca STORE_KEY.
+   Las imagenes van embebidas como data-URI en img/*.css (importados abajo): las
+   herramientas MCP no suben binarios byte-exactos, asi que cada CSS se mantiene
+   por debajo de ~21KB para subir limpio. Carga DESPUES de #31/#33, gana por orden. */
+@import url("img/numeros.css");
+@import url("img/letras.css");
+@import url("img/animales.css");
+
+/* ---- marco + layout de la casa ---- */
+.subject{
+  min-height:150px !important;
+  padding:0 !important;
+  border-radius:22px !important;
+  border:4px solid var(--pa35c,#4EA8DE) !important;
+  background:#EEF4F8 !important;
+  box-shadow:0 7px 0 var(--pa35cd,#2F7BA8), 0 13px 22px rgba(46,59,44,.16) !important;
+  overflow:hidden !important;
+  transform:none !important;
+  align-items:stretch !important;
+  justify-content:flex-end !important;
+  flex-direction:column !important;
+  gap:0 !important;
+}
+/* fondo diorama */
+.subject::before{
+  content:"";
+  position:absolute; inset:0;
+  background-size:cover; background-position:center;
+  background-repeat:no-repeat;
+  z-index:0;
+}
+/* colores de materia (marco + sombra + acentos) */
+.subject:nth-child(1){ --pa35c:#4EA8DE; --pa35cd:#2F7BA8; }
+.subject:nth-child(2){ --pa35c:#F2748C; --pa35cd:#C94D68; }
+.subject:nth-child(3){ --pa35c:#57C596; --pa35cd:#369468; }
+
+/* ocultar emoji y blob viejos */
+.subject .emoji{ display:none !important; }
+.subject .blob{ display:none !important; }
+
+/* etiqueta de papel con el nombre (abajo-izquierda) */
+.subject .label{
+  position:absolute !important;
+  left:12px !important; bottom:12px !important;
+  z-index:2 !important;
+  font-size:20px !important; font-weight:800 !important;
+  color:var(--pa35c) !important;
+  background:#FFFDF7 !important;
+  padding:6px 15px !important;
+  border-radius:16px !important;
+  box-shadow:0 3px 0 rgba(46,59,44,.16) !important;
+  animation:none !important;
+}
+/* pastilla de nivel */
+.subject .lv{
+  position:absolute !important;
+  top:auto !important; left:auto !important;
+  right:56px !important; bottom:14px !important;
+  z-index:2 !important;
+  background:#FFFDF7 !important;
+  color:#2E3B2C !important;
+  font-size:12px !important; font-weight:700 !important;
+  padding:6px 11px !important;
+  border-radius:14px !important;
+  box-shadow:0 3px 0 rgba(46,59,44,.16) !important;
+}
+/* chevron circular */
+.subject::after{
+  content:"\203A";
+  position:absolute; right:12px; bottom:12px;
+  width:38px; height:38px; border-radius:50%;
+  background:var(--pa35c); color:#fff;
+  display:flex; align-items:center; justify-content:center;
+  font-size:22px; font-weight:800; line-height:1;
+  box-shadow:0 3px 0 var(--pa35cd);
+  z-index:2;
+}
+.subject:active{ transform:translateY(2px) !important; box-shadow:0 4px 0 var(--pa35cd),0 8px 14px rgba(46,59,44,.16) !important; }
+
+/* entrada suave sin rotacion (sobrescribe la de #31) */
+.screen.active .subject:nth-child(1),
+.screen.active .subject:nth-child(2),
+.screen.active .subject:nth-child(3){ animation:pa35in 460ms var(--ease-out,cubic-bezier(.2,.8,.3,1)) forwards !important; opacity:0; }
+.screen.active .subject:nth-child(2){ animation-delay:90ms !important; }
+.screen.active .subject:nth-child(3){ animation-delay:160ms !important; }
+@keyframes pa35in{ from{opacity:0; transform:translateY(16px);} to{opacity:1; transform:none;} }
+
+@media (hover:hover) and (pointer:fine){
+  .subject:hover{ transform:translateY(-5px) !important; box-shadow:0 10px 0 var(--pa35cd),0 16px 26px rgba(46,59,44,.18) !important; }
+}
+@media (prefers-reduced-motion:reduce){
+  .screen.active .subject:nth-child(1),
+  .screen.active .subject:nth-child(2),
+  .screen.active .subject:nth-child(3){ animation:none !important; opacity:1 !important; transform:none !important; }
+}
