@@ -1,0 +1,42 @@
+/* ===== Fase 4 #40 · Fondos de bosque por sección (Números/Letras/Animales) =====
+   Pipeline HD sin binarios/offline: cada escena vertical se corta en 4 franjas
+   (data-URI webp en img/*.css, subibles byte-exacto) y se recomponen como 4 capas
+   detrás del overlay de juegos (.pa34-ov). Distinta parte del bosque por sección,
+   con paneo Ken Burns. 100% aditivo; el sheet de juegos queda encima y legible. */
+@import url("img/m0.css");
+@import url("img/m1.css");
+@import url("img/m2.css");
+@import url("img/m3.css");
+@import url("img/r0.css");
+@import url("img/r1.css");
+@import url("img/r2.css");
+@import url("img/r3.css");
+@import url("img/c0.css");
+@import url("img/c1.css");
+@import url("img/c2.css");
+@import url("img/c3.css");
+
+#pa40bg{position:absolute;inset:0;z-index:0;pointer-events:none;overflow:hidden;
+  opacity:0;transition:opacity .5s ease;}
+#pa40bg.on{opacity:1;}
+#pa40bg .pa40-scroll{position:absolute;inset:-2%;background-repeat:no-repeat;
+  background-size:100% 25.5%;
+  background-position:center top,center 33.333%,center 66.667%,center bottom;
+  transform-origin:center;animation:pa40ken 13s ease-in-out infinite alternate;will-change:transform;}
+#pa40bg[data-sec="math"] .pa40-scroll{background-image:var(--pa40m0),var(--pa40m1),var(--pa40m2),var(--pa40m3);}
+#pa40bg[data-sec="reading"] .pa40-scroll{background-image:var(--pa40r0),var(--pa40r1),var(--pa40r2),var(--pa40r3);}
+#pa40bg[data-sec="science"] .pa40-scroll{background-image:var(--pa40c0),var(--pa40c1),var(--pa40c2),var(--pa40c3);}
+@keyframes pa40ken{from{transform:scale(1.05) translate(0,0);}to{transform:scale(1.12) translate(-1.5%,-1.4%);}}
+
+/* deja ver la escena a traves del sheet, manteniendo legibilidad */
+.pa34-ov .pa34-sheet{background:transparent !important;position:relative;z-index:1;}
+.pa34-ov .pa34-sheet::before{content:"";position:absolute;inset:0;z-index:-1;pointer-events:none;
+  background:linear-gradient(180deg,rgba(247,241,225,.18) 0%,rgba(247,241,225,.30) 40%,rgba(247,241,225,.52) 100%);}
+/* pastilla crema tras el titulo para contraste sobre la escena */
+.pa34-ov .pa34-hd .t{display:inline-block;background:rgba(247,241,225,.82);
+  padding:5px 13px;border-radius:15px;box-shadow:0 2px 8px rgba(46,59,44,.10);}
+
+@media (prefers-reduced-motion: reduce){
+  #pa40bg .pa40-scroll{animation:none !important;}
+  #pa40bg{transition:none !important;}
+}
