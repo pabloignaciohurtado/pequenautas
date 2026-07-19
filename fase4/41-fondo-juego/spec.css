@@ -1,0 +1,30 @@
+/* ===== Fase 4 #41 · Fondo de bosque HD para la pantalla de juego (#game) =====
+   Pipeline sin binarios/offline: escena HD 9:16 cortada en 4 franjas verticales
+   (data-URI webp en img/*.css, subibles byte-exacto) recompuestas en 4 capas
+   detras del contenido del juego. Claro del bosque con animales. Paneo Ken
+   Burns. Scrim crema plano (sin difuminado) para legibilidad de las fichas.
+   100% aditivo; solo visible cuando #game esta activo. */
+@import url("img/strip0.css");
+@import url("img/strip1.css");
+@import url("img/strip2.css");
+@import url("img/strip3.css");
+#pa41bg{position:fixed;inset:0;z-index:-1;pointer-events:none;overflow:hidden;
+  opacity:0;transition:opacity .6s ease;}
+#pa41bg.on{opacity:1;}
+#pa41bg .pa41-scroll{position:absolute;inset:-2%;
+  background-image:var(--pa41s0),var(--pa41s1),var(--pa41s2),var(--pa41s3);
+  background-size:100% 25.5%;
+  background-position:center top,center 33.333%,center 66.667%,center bottom;
+  background-repeat:no-repeat;
+  transform-origin:center;animation:pa41ken 14s ease-in-out infinite alternate;will-change:transform;}
+/* scrim crema plano (uniforme, sin fade de bordes) para levantar contraste */
+#pa41bg::after{content:"";position:absolute;inset:0;background:rgba(247,241,225,.22);}
+@keyframes pa41ken{from{transform:scale(1.05) translate(0,0);}to{transform:scale(1.12) translate(-1.4%,-1.5%);}}
+#pa41bg .lf{position:absolute;top:-6%;width:15px;height:15px;border-radius:0 60% 0 60%;opacity:.65;will-change:transform;}
+#pa41bg .lf.g{background:#7FB77E;} #pa41bg .lf.o{background:#E8A15A;} #pa41bg .lf.y{background:#EAC85A;}
+#pa41bg .l1{left:16%;animation:pa41fall 14s linear infinite;}
+#pa41bg .l2{left:44%;animation:pa41fall 18s linear infinite 4s;}
+#pa41bg .l3{left:66%;animation:pa41fall 16s linear infinite 7s;}
+#pa41bg .l4{left:84%;animation:pa41fall 20s linear infinite 2s;}
+@keyframes pa41fall{0%{transform:translate(0,0) rotate(0);opacity:0;}8%{opacity:.65;}50%{transform:translate(34px,52vh) rotate(210deg);}92%{opacity:.65;}100%{transform:translate(-14px,108vh) rotate(400deg);opacity:0;}}
+@media (prefers-reduced-motion: reduce){#pa41bg .pa41-scroll,#pa41bg .lf{animation:none !important;}#pa41bg{transition:none !important;}}
