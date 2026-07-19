@@ -90,7 +90,8 @@
     "36-gate-esquina",
     "37-nav-iconos",
     "38-bosque-arte",
-    "39-fondo-vivo"
+    "39-fondo-vivo",
+    "40-secciones-fondo"
   ];
   MODULES.forEach(function (m) {
     var l = document.createElement("link");
