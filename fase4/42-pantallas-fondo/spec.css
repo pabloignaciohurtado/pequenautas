@@ -1,0 +1,29 @@
+/* ===== Fase 4 #42 · Fondos de bosque HD para Mapa y Mochila (overlays #32) =====
+   Pipeline sin binarios/offline: dos escenas HD 9:16 (sendero de aventura para
+   el Mapa; rincon del arbol con tesoros para la Mochila), cada una cortada en 4
+   franjas (data-URI webp en img/*.css) y recompuesta en 4 capas DETRAS de la
+   tarjeta del overlay .pa32-ov. Paneo Ken Burns. Un scrim tenue mantiene la
+   tarjeta resaltada. 100% aditivo; se distingue la escena por el titulo. */
+@import url("img/a0.css");
+@import url("img/a1.css");
+@import url("img/a2.css");
+@import url("img/a3.css");
+@import url("img/b0.css");
+@import url("img/b1.css");
+@import url("img/b2.css");
+@import url("img/b3.css");
+.pa32-ov #pa42bg{position:absolute;inset:0;z-index:0;pointer-events:none;overflow:hidden;
+  opacity:0;transition:opacity .45s ease;border-radius:inherit;}
+.pa32-ov #pa42bg.on{opacity:1;}
+#pa42bg .pa42-scroll{position:absolute;inset:-2%;background-repeat:no-repeat;
+  background-size:100% 25.5%;
+  background-position:center top,center 33.333%,center 66.667%,center bottom;
+  transform-origin:center;animation:pa42ken 15s ease-in-out infinite alternate;will-change:transform;}
+#pa42bg[data-sec="map"] .pa42-scroll{background-image:var(--pa42a0),var(--pa42a1),var(--pa42a2),var(--pa42a3);}
+#pa42bg[data-sec="bag"] .pa42-scroll{background-image:var(--pa42b0),var(--pa42b1),var(--pa42b2),var(--pa42b3);}
+/* scrim plano para que la tarjeta del dialogo siga destacando sobre la escena */
+#pa42bg::after{content:"";position:absolute;inset:0;background:rgba(46,59,44,.30);}
+@keyframes pa42ken{from{transform:scale(1.05) translate(0,0);}to{transform:scale(1.12) translate(-1.5%,-1.3%);}}
+/* la tarjeta queda por encima de la escena */
+.pa32-ov .pa32-card{position:relative;z-index:1;}
+@media (prefers-reduced-motion: reduce){#pa42bg .pa42-scroll{animation:none !important;}.pa32-ov #pa42bg{transition:none !important;}}
