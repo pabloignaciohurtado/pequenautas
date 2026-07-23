@@ -91,7 +91,13 @@
     "37-nav-iconos",
     "38-bosque-arte",
     "39-fondo-vivo",
-    "40-secciones-fondo"
+    "40-secciones-fondo",
+    // Oleada 12 - #41 fondo HD del claro del bosque para la pantalla de juego
+    // (#game) y #42 fondos HD para los overlays Mapa/Mochila (#32). Al final de
+    // todo: solo CSS + capa de fondo en runtime; imagenes data-URI en img/*.css.
+    // No envuelven globales de juego, no tocan app.js ni STORE_KEY.
+    "41-fondo-juego",
+    "42-pantallas-fondo"
   ];
   MODULES.forEach(function (m) {
     var l = document.createElement("link");
