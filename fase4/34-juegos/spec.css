@@ -4,6 +4,11 @@
 @import url("img/ig-acorn.css");
 @import url("img/ig-basket.css");
 @import url("img/ig-fox.css");
+@import url("img/ig-leaf.css");
+@import url("img/ig-mushroom.css");
+@import url("img/ig-pinecone.css");
+@import url("img/ig-feather.css");
+@import url("img/ig-flower.css");
 .pa34-ov{position:fixed;inset:0;z-index:1400;display:none;align-items:stretch;justify-content:center;
   background:rgba(46,59,44,.42);backdrop-filter:saturate(1.1);}
 .pa34-ov.show{display:flex;animation:pa34fade .22s ease;}
@@ -104,7 +109,7 @@
 .pa34-big{font-size:34px;font-weight:800;color:#2E3B2C;font-family:'Fredoka',sans-serif;}
 .pa34-emoji{font-size:38px;line-height:1;}
 .pa34-dots{display:grid;grid-template-columns:repeat(3,1fr);gap:6px;padding:2px;}
-.pa34-dots span{width:15px;height:15px;border-radius:50%;background:#E8843A;box-shadow:0 2px 0 rgba(46,59,44,.18);}
+.pa34-dots span{width:15px;height:15px;}
 /* ===== sort game ===== */
 .pa34-splay{position:fixed;inset:0;z-index:1500;display:none;flex-direction:column;
   background-color:#DDEFD6;}
@@ -155,5 +160,36 @@
 .pa34-shadow{font-size:40px;font-weight:800;color:#C4CDBB;font-family:'Fredoka',sans-serif;
   text-shadow:0 2px 0 rgba(46,59,44,.06);}
 .pa34-mini{font-size:24px;line-height:1;}
+
+/* ===== memory game (arrastrar para revelar y unir) ===== */
+.pa34-mmplay{position:fixed;inset:0;z-index:1500;display:none;flex-direction:column;
+  background-color:#DDEFD6;touch-action:none;user-select:none;-webkit-user-select:none;}
+.pa34-mmplay.show{display:flex;}
+.pa34-mmhint{text-align:center;font-size:12.5px;color:#4a5a42;font-weight:700;padding:2px 16px 6px;}
+.pa34-mmgrid{flex:1;display:grid;gap:10px;padding:8px 14px 22px;max-width:440px;margin:0 auto;width:100%;
+  align-content:center;overflow-y:auto;-webkit-overflow-scrolling:touch;}
+.pa34-memcard{position:relative;aspect-ratio:3/4;perspective:700px;cursor:grab;touch-action:none;}
+.pa34-memcard.dragging{cursor:grabbing;z-index:15;}
+.pa34-memcard-inner{position:relative;width:100%;height:100%;transition:transform .18s ease;
+  transform-style:preserve-3d;}
+.pa34-memcard.face-up .pa34-memcard-inner{transform:rotateY(180deg);}
+.pa34-memface{position:absolute;inset:0;border-radius:16px;display:flex;align-items:center;justify-content:center;
+  backface-visibility:hidden;-webkit-backface-visibility:hidden;
+  box-shadow:0 5px 0 rgba(46,59,44,.15),0 8px 14px rgba(46,59,44,.08);}
+.pa34-memback{background:#57C596;font-size:26px;}
+.pa34-memback .pa34-icon{width:52%;height:52%;}
+.pa34-mm-accent{position:absolute;bottom:5px;right:5px;width:20px;height:20px;opacity:.9;z-index:1;}
+.pa34-icon{display:inline-block;}
+.pa34-memfront{background:#FFFDF7;transform:rotateY(180deg);padding:6px;position:relative;}
+.pa34-memcard.matchable .pa34-memface{outline:4px solid #FDBA4D;box-shadow:0 0 0 5px rgba(253,186,77,.3),0 5px 0 rgba(46,59,44,.15);}
+.pa34-memcard.mismatch .pa34-memface{outline:4px solid #F2748C;}
+.pa34-memcard.hot .pa34-memface{outline:4px solid #57C596;box-shadow:0 0 16px rgba(87,197,150,.8);}
+.pa34-memcard.matched{pointer-events:none;}
+.pa34-memcard.matched .pa34-memface{opacity:.9;background:#DDF3E6;box-shadow:0 4px 0 #9FD9BC;}
+.pa34-memcard.sparkle::after{
+  content:"";position:absolute;inset:-10px;border-radius:22px;pointer-events:none;
+  background:radial-gradient(circle,rgba(253,186,77,.9) 0%,rgba(253,186,77,0) 70%);
+  animation:pa34sparkle .7s ease-out;}
+@keyframes pa34sparkle{0%{transform:scale(.4);opacity:1}100%{transform:scale(1.5);opacity:0}}
 
 @media(prefers-reduced-motion:reduce){.pa34-ov.show,*[class*="pa34"]{animation:none!important;transition:none!important;}}
