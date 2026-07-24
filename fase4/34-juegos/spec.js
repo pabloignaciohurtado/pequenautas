@@ -28,19 +28,22 @@
       {id:"math:count", name:"Contar y arrastrar", mech:"drag", impl:"drag", desc:"Lleva las bellotas a la canasta"},
       {id:"math:tap", name:"Cu"+ACC+"ntos ves", mech:"tap", impl:"app", app:"math", desc:"Cuenta y toca el n"+UACC+"mero"},
       {id:"math:sort", name:"Ordena los n"+UACC+"meros", mech:"sort", impl:"sort", gen:"ordernum", desc:"Toca del m"+ACC+"s chico al m"+ACC+"s grande"},
-      {id:"math:match", name:"Une cantidad y n"+UACC+"mero", mech:"match", impl:"match", gen:"countnum", desc:"Une la cantidad con su n"+UACC+"mero"}
+      {id:"math:match", name:"Une cantidad y n"+UACC+"mero", mech:"match", impl:"match", gen:"countnum", desc:"Une la cantidad con su n"+UACC+"mero"},
+      {id:"math:memory", name:"Memoria", mech:"match", impl:"memory", gen:"countnum", desc:"Encuentra las parejas de n"+UACC+"mero y cantidad"}
     ]},
     reading: { name:"Letras", games:[
       {id:"read:tap", name:"Con qu"+ch(0xE9)+" letra empieza", mech:"tap", impl:"app", app:"reading", desc:"Toca la letra inicial"},
       {id:"read:drag", name:"Letra a su sombra", mech:"drag", impl:"classify", gen:"shadow", desc:"Toca la letra y luego su sombra"},
       {id:"read:match", name:"May"+UACC+"scula y min"+UACC+"scula", mech:"match", impl:"match", gen:"caseAa", desc:"Une la letra grande con la peque"+NTIL+"a"},
-      {id:"read:trace", name:"Traza la letra", mech:"trace", impl:"trace", gen:"trace", desc:"Une los puntos y traza la letra"}
+      {id:"read:trace", name:"Traza la letra", mech:"trace", impl:"trace", gen:"trace", desc:"Une los puntos y traza la letra"},
+      {id:"read:memory", name:"Memoria", mech:"match", impl:"memory", gen:"caseAa", desc:"Encuentra las parejas de letras"}
     ]},
     science: { name:"Animales", games:[
       {id:"sci:tap", name:"D"+OACC+"nde vive", mech:"tap", impl:"app", app:"science", desc:"Toca el h"+ACC+"bitat"},
       {id:"sci:drag", name:"Cada uno a su casa", mech:"drag", impl:"classify", gen:"habitat", desc:"Toca el animal y luego su casa"},
       {id:"sci:sort", name:"Grandes y chicos", mech:"sort", impl:"sort", gen:"ordersize", desc:"Toca del m"+ACC+"s chico al m"+ACC+"s grande"},
-      {id:"sci:match", name:"Mam"+ACC+" y beb"+ch(0xE9), mech:"match", impl:"match", gen:"babies", desc:"Une cada mam"+ACC+" con su beb"+ch(0xE9)}
+      {id:"sci:match", name:"Mam"+ACC+" y beb"+ch(0xE9), mech:"match", impl:"match", gen:"babies", desc:"Une cada mam"+ACC+" con su beb"+ch(0xE9)},
+      {id:"sci:memory", name:"Memoria", mech:"match", impl:"memory", gen:"babies", desc:"Encuentra las parejas de animales"}
     ]}
   };
   var MECH_ICON = {tap:ch(0x1F446)?"":"", }; // fallback set below
@@ -95,11 +98,11 @@
       var mech=el("div","pa34-m-"+g.mech+" mech", mechEmoji(g.mech));
       var nm=el("div","gn",g.name);
       var pr;
-      if(g.impl==="drag"||g.impl==="match"||g.impl==="sort"||g.impl==="trace"||g.impl==="classify"){ var u=unlocked(g.id); pr=el("div","gp","Nivel "+(u+1)+" de 5"); }
+      if(g.impl==="drag"||g.impl==="match"||g.impl==="sort"||g.impl==="trace"||g.impl==="classify"||g.impl==="memory"){ var u=unlocked(g.id); pr=el("div","gp","Nivel "+(u+1)+" de 5"); }
       else if(g.impl==="app"){ pr=el("div","gp","Con voz de Rufo"); }
       else { pr=el("div","gp","Pronto"); }
       b.appendChild(mech); b.appendChild(nm); b.appendChild(pr);
-      if(g.impl==="soon"){ b.appendChild(el("div","lock",String.fromCodePoint(0x1F512))); }
+      if(g.impl==="soon"){ b.appendChild(el("div","lock",'<span class="pa34-lock-badge"></span>')); }
       b.addEventListener("click",function(){ pickGame(g); });
       grid.appendChild(b);
     });
@@ -112,9 +115,9 @@
       if(typeof window.startGame==="function"){ try{ window.startGame(g.app); }catch(e){} }
       return;
     }
-    if(g.impl==="drag"||g.impl==="match"||g.impl==="sort"||g.impl==="trace"||g.impl==="classify"){ openLevels(g); return; }
+    if(g.impl==="drag"||g.impl==="match"||g.impl==="sort"||g.impl==="trace"||g.impl==="classify"||g.impl==="memory"){ openLevels(g); return; }
     // soon
-    toast(INV+"Pronto"+"! Este juego llega muy prontito "+String.fromCodePoint(0x1F98A));
+    toast(INV+"Pronto"+"! Este juego llega muy prontito <span class=\"pa34-icon pa34-ic-soon\"></span>");
   }
 
   function toast(msg){
@@ -136,13 +139,15 @@
       if(i>0){ wrap.appendChild(el("div","pa34-link")); }
       var row=el("div","pa34-lvlwrap");
       var state = i<u? "done" : (i===u? "cur":"lock");
-      var b=el("button","pa34-lvl "+state, String(i+1));
+      var b=el("button","pa34-lvl "+state);
+      b.appendChild(el("span","pa34-lvl-ic"));
+      b.appendChild(el("span","pa34-lvl-num", String(i+1)));
       if(state!=="lock" || i===u){
         b.addEventListener("click",function(){ launchLevel(g,i); });
       } else {
-        b.innerHTML=String.fromCodePoint(0x1F512); b.disabled=true;
+        b.disabled=true;
       }
-      if(state==="done"){ b.appendChild(el("span","st",String.fromCodePoint(0x2B50))); }
+      if(state==="done"){ var stB=el("span","st"); stB.appendChild(el("span","pa34-pstar-ic")); b.appendChild(stB); }
       var caps=["Muy f"+ACC+"cil","F"+ACC+"cil","Normal","Un reto","Experto"];
       var cap=el("div","cap",caps[i]);
       // alternate side for a path feel
@@ -172,7 +177,7 @@
     play.innerHTML=
       '<div class="pa34-ptop"><button class="pa34-x" id="pa34pX" aria-label="Salir">&times;</button>'+
         '<div class="pa34-prompt" id="pa34prompt"></div>'+
-        '<div class="pa34-pstar">'+String.fromCodePoint(0x2B50)+' <span id="pa34score">0</span></div></div>'+
+        '<div class="pa34-pstar"><span class="pa34-pstar-ic"></span> <span id="pa34score">0</span></div></div>'+
       '<div class="pa34-field" id="pa34field">'+
         '<div class="pa34-basket" id="pa34basket"><div class="count" id="pa34count">0 / 0</div>'+basketSVG()+'</div>'+
         '<div class="pa34-hint" id="pa34hint">Tocá una bellota y llevala a la canasta</div>'+
@@ -205,12 +210,12 @@
     G.need=cfg[0]; var pool=cfg[0]+cfg[1]; G.placed=0;
     play.classList.add("show"); pEls.win.classList.remove("show");
     pEls.rufo.innerHTML=rufoSVG(false);
-    pEls.prompt.innerHTML="Arrastra <b>"+G.need+"</b> bellotas "+String.fromCodePoint(0x1F330)+" a la canasta";
+    pEls.prompt.innerHTML="Arrastra <b>"+G.need+"</b> bellotas a la canasta";
     pEls.count.textContent="0 / "+G.need;
     pEls.cta.textContent="Sigue arrastrando..."; pEls.cta.disabled=true;
     pEls.hint.style.display="";
     // progress leaves
-    pEls.prog.innerHTML=""; for(var i=0;i<G.need;i++){ var lf=el("div","pa34-leaf"); lf.id="pa34lf"+i; pEls.prog.appendChild(lf); }
+    pEls.prog.innerHTML=""; for(var i=0;i<G.need;i++){ var lf=el("div","pa34-leaf pa34-ic-leaf"); lf.id="pa34lf"+i; pEls.prog.appendChild(lf); }
     // clear acorns
     G.acorns.forEach(function(a){ a.remove(); }); G.acorns=[];
     var spots=[[18,60],[74,70],[10,150],[80,175],[44,110],[60,230],[26,220],[70,130],[40,40],[86,110],[14,110],[56,60]];
@@ -250,7 +255,7 @@
     // unlock next level & add a star in the app if possible
     setUnlocked(G.gid, Math.min(G.level+1,4));
     try{ if(typeof window.addStar==="function") window.addStar(); }catch(e){}
-    pEls.wp.textContent="Contaste y llevaste "+G.need+" bellotas "+String.fromCodePoint(0x1F330);
+    pEls.wp.textContent="Contaste y llevaste "+G.need+" bellotas";
     var last = G.level>=4;
     pEls.wnext.textContent = last ? INV+"Terminado!" : "Siguiente";
     setTimeout(function(){ burst(); pEls.win.classList.add("show"); },340);
@@ -294,6 +299,7 @@
     else if(g.impl==="sort"){ launchSort(g,level); }
     else if(g.impl==="trace"){ launchTrace(g,level); }
     else if(g.impl==="classify"){ launchClassify(g,level); }
+    else if(g.impl==="memory"){ launchMemory(g,level); }
     else { launchDrag(g,level); }
   }
 
@@ -301,15 +307,16 @@
   var MATCH_PAIRS = [3,3,4,4,5];              // pares por nivel
   var LETTERS_POOL = ["A","B","C","D","E","F","L","M","O","P","S","T","U","N"];
   function cp(n){ return String.fromCodePoint(n); }
-  // parejas mamá/bebé por punto de código (fuente ASCII-safe, ver nota arriba)
-  var BABY_PAIRS = [ [cp(0x1F404),cp(0x1F42E)], [cp(0x1F415),cp(0x1F436)],
-    [cp(0x1F408),cp(0x1F431)], [cp(0x1F416),cp(0x1F437)],
-    [cp(0x1F414),cp(0x1F423)], [cp(0x1F40E),cp(0x1F434)] ];
+  // parejas mamá/bebé (misma especie usa el mismo icono ilustrado)
+  var BABY_PAIRS = [ ["anim-cow","anim-cow"], ["anim-dog","anim-dog"],
+    ["anim-cat","anim-cat"], ["anim-pig","anim-pig"],
+    ["anim-chicken","anim-chicken"], ["anim-horse","anim-horse"] ];
   function shuffle(arr){ var a=arr.slice(); for(var i=a.length-1;i>0;i--){ var j=Math.floor(Math.random()*(i+1)); var t=a[i];a[i]=a[j];a[j]=t; } return a; }
-  function dotsHTML(n){ var s='<div class="pa34-dots">'; for(var i=0;i<n;i++){ s+='<span></span>'; } return s+'</div>'; }
+  function dotsHTML(n){ var s='<div class="pa34-dots">'; for(var i=0;i<n;i++){ s+='<span class="pa34-dotacorn"></span>'; } return s+'</div>'; }
   function tokenHTML(tk){
     if(tk.k==="dots") return dotsHTML(tk.v);
     if(tk.k==="emoji") return '<span class="pa34-emoji">'+tk.v+'</span>';
+    if(tk.k==="icon") return '<span class="pa34-icon pa34-ic-'+tk.v+'"></span>';
     return '<span class="pa34-big">'+tk.v+'</span>';
   }
   // build [{a,b}] pairs for a game+level
@@ -324,7 +331,7 @@
       ls.forEach(function(v){ out.push({a:{k:"text",v:v}, b:{k:"text",v:v.toLowerCase()}}); });
     } else { // babies
       var ps=shuffle(BABY_PAIRS).slice(0,n);
-      ps.forEach(function(p){ out.push({a:{k:"emoji",v:p[0]}, b:{k:"emoji",v:p[1]}}); });
+      ps.forEach(function(p){ out.push({a:{k:"icon",v:p[0]}, b:{k:"icon",v:p[1]}}); });
     }
     return out;
   }
@@ -336,7 +343,7 @@
     mplay.innerHTML=
       '<div class="pa34-ptop"><button class="pa34-x" id="pa34mX" aria-label="Salir">&times;</button>'+
         '<div class="pa34-prompt" id="pa34mprompt"></div>'+
-        '<div class="pa34-pstar">'+String.fromCodePoint(0x2B50)+' <span id="pa34mscore">0</span></div></div>'+
+        '<div class="pa34-pstar"><span class="pa34-pstar-ic"></span> <span id="pa34mscore">0</span></div></div>'+
       '<div class="pa34-mcols"><div class="pa34-col" id="pa34mL"></div><div class="pa34-col" id="pa34mR"></div></div>'+
       '<div class="pa34-win" id="pa34mwin"><div class="pa34-wc">'+
         '<div class="rf">'+rufoSVG(true)+'</div><h2 id="pa34mwt">'+INV+'Muy bien!</h2><p id="pa34mwp"></p>'+
@@ -397,7 +404,7 @@
     setUnlocked(M.gid, Math.min(M.level+1,4));
     M.score=(M.score||0)+1; mEls.score.textContent=M.score;
     try{ if(typeof window.addStar==="function") window.addStar(); }catch(e){}
-    mEls.wp.textContent="Uniste "+M.total+" parejas "+String.fromCodePoint(0x1F31F);
+    mEls.wp.textContent="Uniste "+M.total+" parejas";
     mEls.wnext.textContent = M.level>=4 ? INV+"Terminado!" : "Siguiente";
     setTimeout(function(){ if(typeof burstIn==="function") burstIn(mplay); mEls.win.classList.add("show"); },300);
   }
@@ -415,13 +422,13 @@
 
   // ================= SORT GAME ENGINE =================
   var SORT_LEVELS = [3,3,4,4,5];
-  // ranking chico -> grande (puntos de código)
-  var ANIMAL_SIZES = [0x1F41C,0x1F401,0x1F407,0x1F408,0x1F415,0x1F416,0x1F40E,0x1F404,0x1F418];
+  // ranking chico -> grande (iconos papercraft ilustrados, ver ig-anim2-*.css)
+  var ANIMAL_SIZES = ["anim2-ant","anim2-mouse","anim2-rabbit","anim2-cat","anim2-dog","anim2-deer","anim2-moose","anim2-cow","anim2-elephant"];
   function buildSort(g,level){
     var n=SORT_LEVELS[level]||3, out=[];
     if(g.gen==="ordersize"){
       var idx=shuffle(ANIMAL_SIZES.map(function(_,i){return i;})).slice(0,n).sort(function(a,b){return a-b;});
-      idx.forEach(function(ai,rank){ out.push({tok:{k:"emoji",v:cp(ANIMAL_SIZES[ai])}, rank:rank}); });
+      idx.forEach(function(ai,rank){ out.push({tok:{k:"icon",v:ANIMAL_SIZES[ai]}, rank:rank}); });
     } else {
       var maxN=[5,6,7,8,9][level]||n;
       var nums=shuffle(function(){var r=[];for(var i=1;i<=maxN;i++)r.push(i);return r;}()).slice(0,n).sort(function(a,b){return a-b;});
@@ -436,7 +443,7 @@
     splay.innerHTML=
       '<div class="pa34-ptop"><button class="pa34-x" id="pa34sX" aria-label="Salir">&times;</button>'+
         '<div class="pa34-prompt" id="pa34sprompt"></div>'+
-        '<div class="pa34-pstar">'+String.fromCodePoint(0x2B50)+' <span id="pa34sscore">0</span></div></div>'+
+        '<div class="pa34-pstar"><span class="pa34-pstar-ic"></span> <span id="pa34sscore">0</span></div></div>'+
       '<div class="pa34-sarea" id="pa34sarea"></div>'+
       '<div class="pa34-win" id="pa34swin"><div class="pa34-wc">'+
         '<div class="rf">'+rufoSVG(true)+'</div><h2>'+INV+'Muy bien!</h2><p id="pa34swp"></p>'+
@@ -484,7 +491,7 @@
     setUnlocked(ST.gid, Math.min(ST.level+1,4));
     ST.score=(ST.score||0)+1; sEls.score.textContent=ST.score;
     try{ if(typeof window.addStar==="function") window.addStar(); }catch(e){}
-    sEls.wp.textContent="Ordenaste "+ST.total+" del m"+ACC+"s chico al m"+ACC+"s grande "+String.fromCodePoint(0x1F31F);
+    sEls.wp.textContent="Ordenaste "+ST.total+" del m"+ACC+"s chico al m"+ACC+"s grande";
     sEls.wnext.textContent = ST.level>=4 ? INV+"Terminado!" : "Siguiente";
     setTimeout(function(){ burstIn(splay); sEls.win.classList.add("show"); },300);
   }
@@ -504,7 +511,7 @@
     tplay.innerHTML=
       '<div class="pa34-ptop"><button class="pa34-x" id="pa34tX" aria-label="Salir">&times;</button>'+
         '<div class="pa34-prompt" id="pa34tprompt"></div>'+
-        '<div class="pa34-pstar">'+String.fromCodePoint(0x2B50)+' <span id="pa34tscore">0</span></div></div>'+
+        '<div class="pa34-pstar"><span class="pa34-pstar-ic"></span> <span id="pa34tscore">0</span></div></div>'+
       '<div class="pa34-tarea"><svg class="pa34-tsvg" id="pa34tsvg" viewBox="0 0 100 100"></svg></div>'+
       '<div class="pa34-win" id="pa34twin"><div class="pa34-wc">'+
         '<div class="rf">'+rufoSVG(true)+'</div><h2>'+INV+'Muy bien!</h2><p id="pa34twp"></p>'+
@@ -589,7 +596,7 @@
     TR.score=(TR.score||0)+1; tEls.score.textContent=TR.score;
     try{ if(typeof window.addStar==="function") window.addStar(); }catch(e){}
     var L=TRACE_LETTERS[TR.level]||TRACE_LETTERS[0];
-    tEls.wp.textContent="Trazaste la letra "+L.ch+" "+String.fromCodePoint(0x270F,0xFE0F);
+    tEls.wp.textContent="Trazaste la letra "+L.ch;
     tEls.wnext.textContent = TR.level>=4 ? INV+"Terminado!" : "Siguiente";
     setTimeout(function(){ burstIn(tplay); tEls.win.classList.add("show"); },300);
   }
@@ -598,23 +605,25 @@
   var SHADOW_LETTERS = ["A","B","C","D","E","F","L","M","O","S","T","U"];
   var CLASS_LET_LEVELS = [2,3,4,4,5];
   var CLASS_HAB_LEVELS = [3,4,4,5,6];
+  // iconos papercraft ilustrados de habitat (no emoji crudo)
   var HAB_BINS = [
-    { key:"agua", label:"Agua", tok:cp(0x1F30A) },
-    { key:"tierra", label:"Tierra", tok:cp(0x1F333) },
-    { key:"cielo", label:"Cielo", tok:cp(0x2601,0xFE0F) }
+    { key:"agua", label:"Agua", tok:"hab-water" },
+    { key:"tierra", label:"Tierra", tok:"hab-land" },
+    { key:"cielo", label:"Cielo", tok:"hab-sky" }
   ];
   // animal -> índice de HAB_BINS (0 agua, 1 tierra, 2 cielo)
+  // animal -> ícono papercraft ilustrado (hab-*), no emoji crudo
   var ANIMAL_HAB = [
-    [0x1F41F,0],[0x1F422,0],[0x1F419,0],[0x1F433,0],[0x1F980,0],
-    [0x1F415,1],[0x1F408,1],[0x1F407,1],[0x1F981,1],[0x1F418,1],
-    [0x1F426,2],[0x1F98B,2],[0x1F41D,2],[0x1F989,2]
+    ["hab-fish",0],["hab-turtle",0],["hab-octopus",0],["hab-whale",0],["hab-crab",0],
+    ["hab-dog",1],["hab-cat",1],["hab-rabbit",1],["hab-lion",1],["hab-elephant",1],
+    ["hab-bird",2],["hab-butterfly",2],["hab-bee",2],["hab-owl",2]
   ];
   function buildClassify(g,level){
     if(g.gen==="habitat"){
       var n=CLASS_HAB_LEVELS[level]||3;
       var pool=shuffle(ANIMAL_HAB).slice(0,n);
-      return { bins:HAB_BINS.map(function(b){ return {kind:"hab", label:b.label, tok:{k:"emoji",v:b.tok}}; }),
-        items:pool.map(function(p){ return {tok:{k:"emoji",v:cp(p[0])}, bin:p[1]}; }) };
+      return { bins:HAB_BINS.map(function(b){ return {kind:"hab", label:b.label, tok:{k:"icon",v:b.tok}}; }),
+        items:pool.map(function(p){ return {tok:{k:"icon",v:p[0]}, bin:p[1]}; }) };
     }
     // shadow (letras)
     var m=CLASS_LET_LEVELS[level]||2;
@@ -634,7 +643,7 @@
     cplay.innerHTML=
       '<div class="pa34-ptop"><button class="pa34-x" id="pa34cX" aria-label="Salir">&times;</button>'+
         '<div class="pa34-prompt" id="pa34cprompt"></div>'+
-        '<div class="pa34-pstar">'+String.fromCodePoint(0x2B50)+' <span id="pa34cscore">0</span></div></div>'+
+        '<div class="pa34-pstar"><span class="pa34-pstar-ic"></span> <span id="pa34cscore">0</span></div></div>'+
       '<div class="pa34-citems" id="pa34citems"></div>'+
       '<div class="pa34-cbins" id="pa34cbins"></div>'+
       '<div class="pa34-win" id="pa34cwin"><div class="pa34-wc">'+
@@ -665,7 +674,7 @@
       bin.setAttribute("data-bin",idx);
       var head=el("div","bh");
       if(b.kind==="shadow"){ head.appendChild(el("span","pa34-shadow",b.letter)); }
-      else { head.appendChild(el("span","pa34-emoji",b.tok.v)); head.appendChild(el("span","bl",b.label)); }
+      else { var hic=el("span","pa34-icon pa34-ic-"+b.tok.v); head.appendChild(hic); head.appendChild(el("span","bl",b.label)); }
       var slot=el("div","bslot");
       bin.appendChild(head); bin.appendChild(slot);
       bin.addEventListener("click",function(){ onBin(bin,slot); });
@@ -705,9 +714,188 @@
     setUnlocked(C.gid, Math.min(C.level+1,4));
     C.score=(C.score||0)+1; cEls.score.textContent=C.score;
     try{ if(typeof window.addStar==="function") window.addStar(); }catch(e){}
-    cEls.wp.textContent="Colocaste "+C.total+" en su lugar "+String.fromCodePoint(0x1F31F);
+    cEls.wp.textContent="Colocaste "+C.total+" en su lugar";
     cEls.wnext.textContent = C.level>=4 ? INV+"Terminado!" : "Siguiente";
     setTimeout(function(){ burstIn(cplay); cEls.win.classList.add("show"); },300);
+  }
+
+  // ================= MEMORY GAME ENGINE (memoria: arrastrar para revelar y unir) =================
+  var MEMORY_LEVELS = [3,4,5,6,8]; // pares por nivel
+  function buildMemPairs(g,level){
+    var n=MEMORY_LEVELS[level]||3, out=[];
+    if(g.gen==="countnum"){
+      var maxN=[4,6,7,8,9][level]||n;
+      var nums=shuffle(function(){var r=[];for(var i=1;i<=maxN;i++)r.push(i);return r;}()).slice(0,n);
+      nums.forEach(function(v){ out.push({a:{k:"dots",v:v}, b:{k:"text",v:String(v)}}); });
+    } else if(g.gen==="caseAa"){
+      var ls=shuffle(LETTERS_POOL).slice(0,n);
+      ls.forEach(function(v){ out.push({a:{k:"text",v:v}, b:{k:"text",v:v.toLowerCase()}}); });
+    } else { // babies
+      var ps=shuffle(BABY_PAIRS).slice(0,n);
+      ps.forEach(function(p){ out.push({a:{k:"icon",v:p[0]}, b:{k:"icon",v:p[1]}}); });
+    }
+    return out;
+  }
+  var mmplay=null, mmEls={}, MM={ gid:null, level:0, g:null, cards:[], active:[], matchedCount:0, total:0, score:0 };
+  var MM_REVEAL_PX = 34;      // arrastre vertical mínimo para revelar
+  var MM_OVERLAP_PX = 46;     // distancia máxima entre centros para considerar "juntas"
+  function ensureMMPlay(){
+    if(mmplay) return;
+    mmplay=el("div","pa34-mmplay");
+    mmplay.innerHTML=
+      '<div class="pa34-ptop"><button class="pa34-x" id="pa34mmX" aria-label="Salir">&times;</button>'+
+        '<div class="pa34-prompt" id="pa34mmprompt"></div>'+
+        '<div class="pa34-pstar"><span class="pa34-pstar-ic"></span> <span id="pa34mmscore">0</span></div></div>'+
+      '<div class="pa34-mmhint" id="pa34mmhint">Arrastra una carta hacia arriba para verla</div>'+
+      '<div class="pa34-mmgrid" id="pa34mmgrid"></div>'+
+      '<div class="pa34-win" id="pa34mmwin"><div class="pa34-wc">'+
+        '<div class="rf">'+rufoSVG(true)+'</div><h2>'+INV+'Muy bien!</h2><p id="pa34mmwp"></p>'+
+        '<div class="row"><button class="pa34-cta ghost" id="pa34mmwmap">Mapa</button><button class="pa34-cta" id="pa34mmwnext">Siguiente</button></div>'+
+      '</div></div>';
+    document.body.appendChild(mmplay);
+    mmEls={ grid:$("pa34mmgrid"), prompt:$("pa34mmprompt"), score:$("pa34mmscore"), hint:$("pa34mmhint"),
+      win:$("pa34mmwin"), wp:$("pa34mmwp"), wnext:$("pa34mmwnext"), wmap:$("pa34mmwmap") };
+    $("pa34mmX").addEventListener("click",function(){ mmplay.classList.remove("show"); });
+    mmEls.wnext.onclick=function(){
+      mmEls.win.classList.remove("show");
+      if(MM.level>=4){ mmplay.classList.remove("show"); if(MM.g) openLevels(MM.g); }
+      else { launchMemory(MM.g, MM.level+1); }
+    };
+    mmEls.wmap.onclick=function(){ mmEls.win.classList.remove("show"); mmplay.classList.remove("show"); if(MM.g) openLevels(MM.g); };
+  }
+  function launchMemory(g,level){
+    ensureMMPlay(); closeOv();
+    MM.gid=g.id; MM.level=level; MM.g=g; MM.active=[]; MM.matchedCount=0; MM.cards=[];
+    var pairs=buildMemPairs(g,level); MM.total=pairs.length;
+    mmplay.classList.add("show"); mmEls.win.classList.remove("show");
+    mmEls.prompt.innerHTML=g.desc || "Encuentra las parejas";
+    mmEls.hint.style.display="";
+    mmEls.grid.innerHTML="";
+    var totalCards = pairs.length*2;
+    var MM_COLS = {6:3,8:4,10:5,12:4,16:4};
+    var cols = MM_COLS[totalCards] || 4;
+    mmEls.grid.style.gridTemplateColumns="repeat("+cols+",1fr)";
+    var deck=[];
+    pairs.forEach(function(p,idx){ deck.push({tok:p.a,pid:idx}); deck.push({tok:p.b,pid:idx}); });
+    deck=shuffle(deck);
+    deck.forEach(function(cardData,i){
+      var card=el("div","pa34-memcard");
+      card.setAttribute("data-pid", cardData.pid);
+      card.setAttribute("data-idx", i);
+      var inner=el("div","pa34-memcard-inner");
+      var back=el("div","pa34-memface pa34-memback", '<span class="pa34-icon pa34-ic-leaf"></span>');
+      var frontHTML = tokenHTML(cardData.tok);
+      if(g.gen==="caseAa"){ frontHTML += '<span class="pa34-icon pa34-mm-accent pa34-ic-'+(i%2===0?"leaf":"mushroom")+'"></span>'; }
+      var front=el("div","pa34-memface pa34-memfront", frontHTML);
+      inner.appendChild(back); inner.appendChild(front);
+      card.appendChild(inner);
+      mmEls.grid.appendChild(card);
+      MM.cards.push({ el:card, inner:inner, pid:cardData.pid, revealed:false, matched:false });
+      wireMemCard(MM.cards[i]);
+    });
+  }
+  function wireMemCard(c){
+    var dragging=false, mode=null, startX=0, startY=0, dy=0;
+    var homeRect=null;
+    function start(e){
+      if(c.matched) return;
+      dragging=true; dy=0;
+      var p=pointXY(e);
+      startX=p.x; startY=p.y;
+      mode = c.revealed ? "move" : "reveal";
+      if(mode==="reveal"){ c.el.classList.add("dragging"); }
+      else { c.el.classList.add("dragging"); homeRect=c.el.getBoundingClientRect(); }
+      e.preventDefault();
+    }
+    function move(e){
+      if(!dragging) return;
+      var p=pointXY(e);
+      if(mode==="reveal"){
+        dy = startY - p.y;
+        var clamped = Math.max(0, Math.min(dy, MM_REVEAL_PX));
+        var deg = (clamped/MM_REVEAL_PX)*180;
+        c.inner.style.transform = "translateY("+(-clamped*0.5)+"px) rotateY("+deg+"deg)";
+      } else if(mode==="move"){
+        var dx=p.x-startX, ddy=p.y-startY;
+        c.el.style.transform = "translate("+dx+"px,"+ddy+"px)";
+        c.el.style.zIndex = "30";
+        var target=findMatchable(c);
+        if(target){ target.el.classList.toggle("hot", isNear(c.el, target.el)); }
+      }
+      e.preventDefault();
+    }
+    function end(e){
+      if(!dragging) return;
+      dragging=false; c.el.classList.remove("dragging");
+      if(mode==="reveal"){
+        c.inner.style.transform="";
+        if(dy>=MM_REVEAL_PX){ revealCard(c); }
+      } else if(mode==="move"){
+        var target=findMatchable(c);
+        var matched=false;
+        if(target && isNear(c.el, target.el)){ matched=true; }
+        c.el.style.transform=""; c.el.style.zIndex="";
+        if(target) target.el.classList.remove("hot");
+        if(matched && target){ lockPair(c, target); }
+        else { /* snap back, stays revealed/matchable */ }
+      }
+      mode=null;
+    }
+    c.el.addEventListener("mousedown",start); c.el.addEventListener("touchstart",start,{passive:false});
+    window.addEventListener("mousemove",move); window.addEventListener("touchmove",move,{passive:false});
+    window.addEventListener("mouseup",end); window.addEventListener("touchend",end);
+  }
+  function isNear(elA,elB){
+    var ra=elA.getBoundingClientRect(), rb=elB.getBoundingClientRect();
+    var cax=ra.left+ra.width/2, cay=ra.top+ra.height/2, cbx=rb.left+rb.width/2, cby=rb.top+rb.height/2;
+    var d=Math.sqrt((cax-cbx)*(cax-cbx)+(cay-cby)*(cay-cby));
+    return d < (ra.width*0.9 + MM_OVERLAP_PX);
+  }
+  function findMatchable(c){
+    for(var i=0;i<MM.cards.length;i++){
+      var o=MM.cards[i];
+      if(o!==c && o.el.classList.contains("matchable") && !o.matched) return o;
+    }
+    return null;
+  }
+  function revealCard(c){
+    if(c.revealed || c.matched) return;
+    c.revealed=true;
+    c.el.classList.add("face-up");
+    mmEls.hint.style.display="none";
+    MM.active.push(c);
+    if(MM.active.length===2){
+      var a=MM.active[0], b=MM.active[1];
+      if(a.pid===b.pid){
+        a.el.classList.add("matchable"); b.el.classList.add("matchable");
+        MM.active=[];
+      } else {
+        a.el.classList.add("mismatch"); b.el.classList.add("mismatch");
+        setTimeout(function(){
+          if(!a.matched){ a.revealed=false; a.el.classList.remove("face-up","mismatch"); }
+          if(!b.matched){ b.revealed=false; b.el.classList.remove("face-up","mismatch"); }
+          MM.active=[];
+        },900);
+      }
+    }
+  }
+  function lockPair(c,target){
+    c.matched=true; target.matched=true;
+    c.el.classList.remove("matchable","dragging"); target.el.classList.remove("matchable","dragging");
+    c.el.classList.add("matched"); target.el.classList.add("matched");
+    c.el.classList.add("sparkle"); target.el.classList.add("sparkle");
+    try{ if(typeof window.playSfx==="function") window.playSfx("ok"); }catch(e){}
+    setTimeout(function(){ c.el.classList.remove("sparkle"); target.el.classList.remove("sparkle"); },700);
+    MM.matchedCount++;
+    if(MM.matchedCount>=MM.total) memoryWin();
+  }
+  function memoryWin(){
+    setUnlocked(MM.gid, Math.min(MM.level+1,4));
+    MM.score=(MM.score||0)+1; mmEls.score.textContent=MM.score;
+    try{ if(typeof window.addStar==="function") window.addStar(); }catch(e){}
+    mmEls.wp.textContent="Encontraste "+MM.total+" parejas";
+    mmEls.wnext.textContent = MM.level>=4 ? INV+"Terminado!" : "Siguiente";
+    setTimeout(function(){ burstIn(mmplay); mmEls.win.classList.add("show"); },300);
   }
 
   // ---------- hook subject cards ----------
