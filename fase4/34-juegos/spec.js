@@ -139,11 +139,13 @@
       if(i>0){ wrap.appendChild(el("div","pa34-link")); }
       var row=el("div","pa34-lvlwrap");
       var state = i<u? "done" : (i===u? "cur":"lock");
-      var b=el("button","pa34-lvl "+state, String(i+1));
+      var b=el("button","pa34-lvl "+state);
+      b.appendChild(el("span","pa34-lvl-ic"));
+      b.appendChild(el("span","pa34-lvl-num", String(i+1)));
       if(state!=="lock" || i===u){
         b.addEventListener("click",function(){ launchLevel(g,i); });
       } else {
-        b.innerHTML=String.fromCodePoint(0x1F512); b.disabled=true;
+        b.disabled=true;
       }
       if(state==="done"){ b.appendChild(el("span","st",String.fromCodePoint(0x2B50))); }
       var caps=["Muy f"+ACC+"cil","F"+ACC+"cil","Normal","Un reto","Experto"];
