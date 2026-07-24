@@ -4,6 +4,11 @@
 @import url("img/ig-acorn.css");
 @import url("img/ig-basket.css");
 @import url("img/ig-fox.css");
+@import url("img/ig-leaf.css");
+@import url("img/ig-mushroom.css");
+@import url("img/ig-pinecone.css");
+@import url("img/ig-feather.css");
+@import url("img/ig-flower.css");
 .pa34-ov{position:fixed;inset:0;z-index:1400;display:none;align-items:stretch;justify-content:center;
   background:rgba(46,59,44,.42);backdrop-filter:saturate(1.1);}
 .pa34-ov.show{display:flex;animation:pa34fade .22s ease;}
@@ -104,7 +109,7 @@
 .pa34-big{font-size:34px;font-weight:800;color:#2E3B2C;font-family:'Fredoka',sans-serif;}
 .pa34-emoji{font-size:38px;line-height:1;}
 .pa34-dots{display:grid;grid-template-columns:repeat(3,1fr);gap:6px;padding:2px;}
-.pa34-dots span{width:15px;height:15px;border-radius:50%;background:#E8843A;box-shadow:0 2px 0 rgba(46,59,44,.18);}
+.pa34-dots span{width:15px;height:15px;}
 /* ===== sort game ===== */
 .pa34-splay{position:fixed;inset:0;z-index:1500;display:none;flex-direction:column;
   background-color:#DDEFD6;}
@@ -172,7 +177,10 @@
   backface-visibility:hidden;-webkit-backface-visibility:hidden;
   box-shadow:0 5px 0 rgba(46,59,44,.15),0 8px 14px rgba(46,59,44,.08);}
 .pa34-memback{background:#57C596;font-size:26px;}
-.pa34-memfront{background:#FFFDF7;transform:rotateY(180deg);padding:6px;}
+.pa34-memback .pa34-icon{width:52%;height:52%;}
+.pa34-mm-accent{position:absolute;bottom:5px;right:5px;width:20px;height:20px;opacity:.9;z-index:1;}
+.pa34-icon{display:inline-block;}
+.pa34-memfront{background:#FFFDF7;transform:rotateY(180deg);padding:6px;position:relative;}
 .pa34-memcard.matchable .pa34-memface{outline:4px solid #FDBA4D;box-shadow:0 0 0 5px rgba(253,186,77,.3),0 5px 0 rgba(46,59,44,.15);}
 .pa34-memcard.mismatch .pa34-memface{outline:4px solid #F2748C;}
 .pa34-memcard.hot .pa34-memface{outline:4px solid #57C596;box-shadow:0 0 16px rgba(87,197,150,.8);}
