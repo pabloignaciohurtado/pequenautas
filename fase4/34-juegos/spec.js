@@ -422,13 +422,13 @@
 
   // ================= SORT GAME ENGINE =================
   var SORT_LEVELS = [3,3,4,4,5];
-  // ranking chico -> grande (puntos de código)
-  var ANIMAL_SIZES = [0x1F41C,0x1F401,0x1F407,0x1F408,0x1F415,0x1F416,0x1F40E,0x1F404,0x1F418];
+  // ranking chico -> grande (iconos papercraft ilustrados, ver ig-anim2-*.css)
+  var ANIMAL_SIZES = ["anim2-ant","anim2-mouse","anim2-rabbit","anim2-cat","anim2-dog","anim2-deer","anim2-moose","anim2-cow","anim2-elephant"];
   function buildSort(g,level){
     var n=SORT_LEVELS[level]||3, out=[];
     if(g.gen==="ordersize"){
       var idx=shuffle(ANIMAL_SIZES.map(function(_,i){return i;})).slice(0,n).sort(function(a,b){return a-b;});
-      idx.forEach(function(ai,rank){ out.push({tok:{k:"emoji",v:cp(ANIMAL_SIZES[ai])}, rank:rank}); });
+      idx.forEach(function(ai,rank){ out.push({tok:{k:"icon",v:ANIMAL_SIZES[ai]}, rank:rank}); });
     } else {
       var maxN=[5,6,7,8,9][level]||n;
       var nums=shuffle(function(){var r=[];for(var i=1;i<=maxN;i++)r.push(i);return r;}()).slice(0,n).sort(function(a,b){return a-b;});
