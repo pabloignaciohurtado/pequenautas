@@ -102,7 +102,7 @@
       else if(g.impl==="app"){ pr=el("div","gp","Con voz de Rufo"); }
       else { pr=el("div","gp","Pronto"); }
       b.appendChild(mech); b.appendChild(nm); b.appendChild(pr);
-      if(g.impl==="soon"){ b.appendChild(el("div","lock",String.fromCodePoint(0x1F512))); }
+      if(g.impl==="soon"){ b.appendChild(el("div","lock",'<span class="pa34-lock-badge"></span>')); }
       b.addEventListener("click",function(){ pickGame(g); });
       grid.appendChild(b);
     });
@@ -117,7 +117,7 @@
     }
     if(g.impl==="drag"||g.impl==="match"||g.impl==="sort"||g.impl==="trace"||g.impl==="classify"||g.impl==="memory"){ openLevels(g); return; }
     // soon
-    toast(INV+"Pronto"+"! Este juego llega muy prontito "+String.fromCodePoint(0x1F98A));
+    toast(INV+"Pronto"+"! Este juego llega muy prontito <span class=\"pa34-icon pa34-ic-soon\"></span>");
   }
 
   function toast(msg){
