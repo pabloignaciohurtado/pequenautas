@@ -1,23 +1,47 @@
-/* ===== Fase 4 #43 · Barra de progreso de descarga/instalación =====
-   Píldora pequeña, no bloqueante, cerca del borde inferior. Tono papercraft
-   cálido (kraft/ámbar), en línea con el resto de la identidad visual. Usa
-   las variables de :root definidas en index.html (--card, --shadow-lg,
-   --ink) igual que otros módulos de Fase 4. */
-.pa43wrap{position:fixed;left:50%;bottom:18px;transform:translateX(-50%) translateY(10px);
-  z-index:70;opacity:0;pointer-events:none;transition:opacity 260ms ease, transform 260ms ease;}
-.pa43wrap.show{opacity:1;transform:translateX(-50%) translateY(0);pointer-events:auto;}
-.pa43wrap.done{opacity:0;transform:translateX(-50%) translateY(-6px);}
-.pa43pill{display:flex;align-items:center;gap:10px;background:var(--card,#fff);
+/* ===== Fase 4 #43 · Portón de carga (blocking gate) =====
+   Overlay de pantalla completa, on-brand papercraft / tonos bosque, que
+   bloquea TODA interacción con lo que hay debajo (perfil, tarjetas de
+   materia, lo que sea) hasta que el precache real llegue a 100%. z-index
+   muy alto para quedar por encima de cualquier otra capa de la app
+   (sheets .sheet usan z-index 60, coach usa 50). Usa las variables de
+   :root definidas en index.html para mantenerse en la misma identidad
+   visual que el resto de Fase 4. */
+html.pa43lock, html.pa43lock body{overflow:hidden !important;}
+
+.pa43gate{position:fixed;inset:0;z-index:9999;display:flex;align-items:center;justify-content:center;
+  padding:24px;
+  background:
+    radial-gradient(1200px 600px at 15% -10%, #FFF2D6 0%, transparent 55%),
+    radial-gradient(1000px 700px at 110% 10%, #E8F3FF 0%, transparent 50%),
+    var(--bg,#FDF6EC);
+  opacity:1;transition:opacity 380ms ease;}
+.pa43gate.pa43out{opacity:0;pointer-events:none;}
+
+.pa43card{max-width:420px;width:100%;display:flex;flex-direction:column;align-items:center;gap:10px;
+  background:var(--card,#fff);border-radius:var(--radius,30px);
   box-shadow:var(--shadow-lg,0 22px 50px rgba(59,51,85,.16));
-  border:2px solid rgba(253,186,77,.5);border-radius:22px;padding:10px 16px;
-  max-width:min(90vw,340px);}
-.pa43ico{font-size:20px;line-height:1;}
-.pa43txt{font-size:13.5px;font-weight:600;color:var(--ink,#3B3355);
-  white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
-.pa43track{width:64px;flex:0 0 auto;height:8px;border-radius:6px;background:#EEE9F6;overflow:hidden;}
-.pa43fill{height:100%;width:0%;border-radius:6px;background:linear-gradient(90deg,#FDBA4D,#F59E3C);
+  padding:38px 28px 32px;text-align:center;
+  transform:translateY(0);animation:pa43in 420ms cubic-bezier(0.23,1,0.32,1) both;}
+@keyframes pa43in{from{opacity:0;transform:translateY(14px) scale(.98);}to{opacity:1;transform:none;}}
+
+.pa43mascota{font-size:64px;line-height:1;margin-bottom:4px;
+  animation:pa43bob 2.6s cubic-bezier(0.77,0,0.175,1) infinite;
+  filter:drop-shadow(0 6px 8px rgba(0,0,0,.12));}
+@keyframes pa43bob{0%,100%{transform:translateY(0) rotate(-2deg);}50%{transform:translateY(-8px) rotate(2deg);}}
+
+.pa43title{font-size:clamp(20px,4.4vw,26px);font-weight:700;color:var(--ink,#3B3355);margin:2px 0 6px;}
+
+.pa43track{width:100%;height:16px;border-radius:10px;background:#EEE9F6;overflow:hidden;margin:6px 0 2px;}
+.pa43fill{height:100%;width:0%;border-radius:10px;
+  background:linear-gradient(90deg,#FDBA4D,#F59E3C);
   transition:width .35s ease;}
+
+.pa43pct{font-size:15px;font-weight:600;color:var(--ink-soft,#6C6685);}
+.pa43hint{font-size:13.5px;color:var(--ink-soft,#6C6685);margin-top:6px;}
+
 @media (prefers-reduced-motion: reduce){
-  .pa43wrap{transition:none;}
+  .pa43gate{transition:none;}
+  .pa43card{animation:none;}
+  .pa43mascota{animation:none;}
   .pa43fill{transition:none;}
 }
