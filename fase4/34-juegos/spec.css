@@ -16,6 +16,7 @@
 @import url("img/ig-anim-pig.css");
 @import url("img/ig-anim-chicken.css");
 @import url("img/ig-anim-horse.css");
+@import url("img/ig-star.css");
 .pa34-ov{position:fixed;inset:0;z-index:1400;display:none;align-items:stretch;justify-content:center;
   background:rgba(46,59,44,.42);backdrop-filter:saturate(1.1);}
 .pa34-ov.show{display:flex;animation:pa34fade .22s ease;}
@@ -65,7 +66,7 @@
 .pa34-ptop{display:flex;align-items:center;gap:10px;padding:14px 16px 6px;max-width:440px;margin:0 auto;width:100%;}
 .pa34-prompt{flex:1;background:#FFFDF7;border-radius:18px;padding:10px 14px;box-shadow:0 3px 0 rgba(46,59,44,.13);
   font-weight:700;font-size:16px;text-align:center;color:#2E3B2C;}
-.pa34-pstar{background:#FFFDF7;border-radius:14px;padding:8px 12px;box-shadow:0 3px 0 rgba(46,59,44,.13);font-weight:800;color:#2E3B2C;}
+.pa34-pstar{background:#FFFDF7;border-radius:14px;padding:8px 12px;box-shadow:0 3px 0 rgba(46,59,44,.13);font-weight:800;color:#2E3B2C;display:flex;align-items:center;gap:2px;}
 .pa34-field{flex:1;position:relative;max-width:440px;margin:0 auto;width:100%;}
 .pa34-acorn{position:absolute;width:58px;height:58px;touch-action:none;z-index:3;transition:transform .12s;}
 .pa34-acorn.grab{z-index:9;transform:scale(1.16);}
