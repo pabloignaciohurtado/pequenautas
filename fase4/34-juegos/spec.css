@@ -110,8 +110,8 @@
   font-weight:800;font-size:18px;padding:4px 16px;border-radius:16px;box-shadow:0 3px 0 #369468;white-space:nowrap;}
 .pa34-pbot{padding:0 16px 22px;max-width:440px;margin:0 auto;width:100%;position:relative;z-index:6;}
 .pa34-prog{display:flex;gap:8px;justify-content:center;margin-bottom:12px;}
-.pa34-leaf{width:24px;height:24px;border-radius:50% 8% 50% 8%;background:#cbdcc0;transform:rotate(45deg);}
-.pa34-leaf.on{background:#3D7A4A;}
+.pa34-leaf{width:24px;height:24px;display:inline-block;filter:grayscale(1) saturate(0) opacity(.42) brightness(1.2);transition:filter .18s;}
+.pa34-leaf.on{filter:none;}
 .pa34-cta{width:100%;padding:16px;border:0;border-radius:22px;background:#E8843A;color:#fff;font-family:'Fredoka',sans-serif;
   font-weight:800;font-size:19px;box-shadow:0 6px 0 #C6672A;cursor:pointer;}
 .pa34-cta:active{transform:translateY(3px);box-shadow:0 3px 0 #C6672A;}

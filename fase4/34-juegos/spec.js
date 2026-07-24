@@ -215,7 +215,7 @@
     pEls.cta.textContent="Sigue arrastrando..."; pEls.cta.disabled=true;
     pEls.hint.style.display="";
     // progress leaves
-    pEls.prog.innerHTML=""; for(var i=0;i<G.need;i++){ var lf=el("div","pa34-leaf"); lf.id="pa34lf"+i; pEls.prog.appendChild(lf); }
+    pEls.prog.innerHTML=""; for(var i=0;i<G.need;i++){ var lf=el("div","pa34-leaf pa34-ic-leaf"); lf.id="pa34lf"+i; pEls.prog.appendChild(lf); }
     // clear acorns
     G.acorns.forEach(function(a){ a.remove(); }); G.acorns=[];
     var spots=[[18,60],[74,70],[10,150],[80,175],[44,110],[60,230],[26,220],[70,130],[40,40],[86,110],[14,110],[56,60]];
