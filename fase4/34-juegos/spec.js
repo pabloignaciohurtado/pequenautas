@@ -611,17 +611,18 @@
     { key:"cielo", label:"Cielo", tok:cp(0x2601,0xFE0F) }
   ];
   // animal -> índice de HAB_BINS (0 agua, 1 tierra, 2 cielo)
+  // animal -> ícono papercraft ilustrado (hab-*), no emoji crudo
   var ANIMAL_HAB = [
-    [0x1F41F,0],[0x1F422,0],[0x1F419,0],[0x1F433,0],[0x1F980,0],
-    [0x1F415,1],[0x1F408,1],[0x1F407,1],[0x1F981,1],[0x1F418,1],
-    [0x1F426,2],[0x1F98B,2],[0x1F41D,2],[0x1F989,2]
+    ["hab-fish",0],["hab-turtle",0],["hab-octopus",0],["hab-whale",0],["hab-crab",0],
+    ["hab-dog",1],["hab-cat",1],["hab-rabbit",1],["hab-lion",1],["hab-elephant",1],
+    ["hab-bird",2],["hab-butterfly",2],["hab-bee",2],["hab-owl",2]
   ];
   function buildClassify(g,level){
     if(g.gen==="habitat"){
       var n=CLASS_HAB_LEVELS[level]||3;
       var pool=shuffle(ANIMAL_HAB).slice(0,n);
       return { bins:HAB_BINS.map(function(b){ return {kind:"hab", label:b.label, tok:{k:"emoji",v:b.tok}}; }),
-        items:pool.map(function(p){ return {tok:{k:"emoji",v:cp(p[0])}, bin:p[1]}; }) };
+        items:pool.map(function(p){ return {tok:{k:"icon",v:p[0]}, bin:p[1]}; }) };
     }
     // shadow (letras)
     var m=CLASS_LET_LEVELS[level]||2;
