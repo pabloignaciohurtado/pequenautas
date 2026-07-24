@@ -175,7 +175,7 @@
     play.innerHTML=
       '<div class="pa34-ptop"><button class="pa34-x" id="pa34pX" aria-label="Salir">&times;</button>'+
         '<div class="pa34-prompt" id="pa34prompt"></div>'+
-        '<div class="pa34-pstar">'+String.fromCodePoint(0x2B50)+' <span id="pa34score">0</span></div></div>'+
+        '<div class="pa34-pstar"><span class="pa34-pstar-ic"></span> <span id="pa34score">0</span></div></div>'+
       '<div class="pa34-field" id="pa34field">'+
         '<div class="pa34-basket" id="pa34basket"><div class="count" id="pa34count">0 / 0</div>'+basketSVG()+'</div>'+
         '<div class="pa34-hint" id="pa34hint">Tocá una bellota y llevala a la canasta</div>'+
@@ -341,7 +341,7 @@
     mplay.innerHTML=
       '<div class="pa34-ptop"><button class="pa34-x" id="pa34mX" aria-label="Salir">&times;</button>'+
         '<div class="pa34-prompt" id="pa34mprompt"></div>'+
-        '<div class="pa34-pstar">'+String.fromCodePoint(0x2B50)+' <span id="pa34mscore">0</span></div></div>'+
+        '<div class="pa34-pstar"><span class="pa34-pstar-ic"></span> <span id="pa34mscore">0</span></div></div>'+
       '<div class="pa34-mcols"><div class="pa34-col" id="pa34mL"></div><div class="pa34-col" id="pa34mR"></div></div>'+
       '<div class="pa34-win" id="pa34mwin"><div class="pa34-wc">'+
         '<div class="rf">'+rufoSVG(true)+'</div><h2 id="pa34mwt">'+INV+'Muy bien!</h2><p id="pa34mwp"></p>'+
@@ -441,7 +441,7 @@
     splay.innerHTML=
       '<div class="pa34-ptop"><button class="pa34-x" id="pa34sX" aria-label="Salir">&times;</button>'+
         '<div class="pa34-prompt" id="pa34sprompt"></div>'+
-        '<div class="pa34-pstar">'+String.fromCodePoint(0x2B50)+' <span id="pa34sscore">0</span></div></div>'+
+        '<div class="pa34-pstar"><span class="pa34-pstar-ic"></span> <span id="pa34sscore">0</span></div></div>'+
       '<div class="pa34-sarea" id="pa34sarea"></div>'+
       '<div class="pa34-win" id="pa34swin"><div class="pa34-wc">'+
         '<div class="rf">'+rufoSVG(true)+'</div><h2>'+INV+'Muy bien!</h2><p id="pa34swp"></p>'+
@@ -509,7 +509,7 @@
     tplay.innerHTML=
       '<div class="pa34-ptop"><button class="pa34-x" id="pa34tX" aria-label="Salir">&times;</button>'+
         '<div class="pa34-prompt" id="pa34tprompt"></div>'+
-        '<div class="pa34-pstar">'+String.fromCodePoint(0x2B50)+' <span id="pa34tscore">0</span></div></div>'+
+        '<div class="pa34-pstar"><span class="pa34-pstar-ic"></span> <span id="pa34tscore">0</span></div></div>'+
       '<div class="pa34-tarea"><svg class="pa34-tsvg" id="pa34tsvg" viewBox="0 0 100 100"></svg></div>'+
       '<div class="pa34-win" id="pa34twin"><div class="pa34-wc">'+
         '<div class="rf">'+rufoSVG(true)+'</div><h2>'+INV+'Muy bien!</h2><p id="pa34twp"></p>'+
@@ -639,7 +639,7 @@
     cplay.innerHTML=
       '<div class="pa34-ptop"><button class="pa34-x" id="pa34cX" aria-label="Salir">&times;</button>'+
         '<div class="pa34-prompt" id="pa34cprompt"></div>'+
-        '<div class="pa34-pstar">'+String.fromCodePoint(0x2B50)+' <span id="pa34cscore">0</span></div></div>'+
+        '<div class="pa34-pstar"><span class="pa34-pstar-ic"></span> <span id="pa34cscore">0</span></div></div>'+
       '<div class="pa34-citems" id="pa34citems"></div>'+
       '<div class="pa34-cbins" id="pa34cbins"></div>'+
       '<div class="pa34-win" id="pa34cwin"><div class="pa34-wc">'+
@@ -741,7 +741,7 @@
     mmplay.innerHTML=
       '<div class="pa34-ptop"><button class="pa34-x" id="pa34mmX" aria-label="Salir">&times;</button>'+
         '<div class="pa34-prompt" id="pa34mmprompt"></div>'+
-        '<div class="pa34-pstar">'+String.fromCodePoint(0x2B50)+' <span id="pa34mmscore">0</span></div></div>'+
+        '<div class="pa34-pstar"><span class="pa34-pstar-ic"></span> <span id="pa34mmscore">0</span></div></div>'+
       '<div class="pa34-mmhint" id="pa34mmhint">Arrastra una carta hacia arriba para verla</div>'+
       '<div class="pa34-mmgrid" id="pa34mmgrid"></div>'+
       '<div class="pa34-win" id="pa34mmwin"><div class="pa34-wc">'+
