@@ -45,6 +45,8 @@
 @import url("img/ig-hab-land.css");
 @import url("img/ig-hab-sky.css");
 @import url("img/ig-habframe.css");
+@import url("img/ig-lock-badge.css");
+@import url("img/ig-soon.css");
 .pa34-ov{position:fixed;inset:0;z-index:1400;display:none;align-items:stretch;justify-content:center;
   background:rgba(46,59,44,.42);backdrop-filter:saturate(1.1);}
 .pa34-ov.show{display:flex;animation:pa34fade .22s ease;}
@@ -68,7 +70,7 @@
 .pa34-game .mech{width:42px;height:42px;border-radius:13px;display:flex;align-items:center;justify-content:center;font-size:22px;color:#fff;}
 .pa34-game .gn{font-weight:800;font-size:14.5px;color:#2E3B2C;line-height:1.15;}
 .pa34-game .gp{font-size:11.5px;color:#6B7A5E;font-weight:600;}
-.pa34-game .lock{position:absolute;top:12px;right:12px;font-size:15px;opacity:.5;}
+.pa34-game .lock{position:absolute;top:12px;right:12px;opacity:.7;}
 .pa34-m-tap{background:#8E7CC3;} .pa34-m-drag{background:#E8843A;} .pa34-m-sort{background:#369468;}
 .pa34-m-match{background:#4EA8DE;} .pa34-m-trace{background:#C94D68;}
 .pa34-soon{opacity:.62;}
