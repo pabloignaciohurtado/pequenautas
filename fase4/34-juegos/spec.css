@@ -27,6 +27,20 @@
 @import url("img/ig-anim2-elephant.css");
 @import url("img/ig-star.css");
 @import url("img/ig-lvlnode.css");
+@import url("img/ig-hab-fish.css");
+@import url("img/ig-hab-turtle.css");
+@import url("img/ig-hab-octopus.css");
+@import url("img/ig-hab-whale.css");
+@import url("img/ig-hab-crab.css");
+@import url("img/ig-hab-dog.css");
+@import url("img/ig-hab-cat.css");
+@import url("img/ig-hab-rabbit.css");
+@import url("img/ig-hab-lion.css");
+@import url("img/ig-hab-elephant.css");
+@import url("img/ig-hab-bird.css");
+@import url("img/ig-hab-butterfly.css");
+@import url("img/ig-hab-bee.css");
+@import url("img/ig-hab-owl.css");
 .pa34-ov{position:fixed;inset:0;z-index:1400;display:none;align-items:stretch;justify-content:center;
   background:rgba(46,59,44,.42);backdrop-filter:saturate(1.1);}
 .pa34-ov.show{display:flex;animation:pa34fade .22s ease;}
@@ -201,6 +215,7 @@
 .pa34-icon{display:inline-block;}
 [class*="pa34-ic-anim-"]{width:40px;height:40px;}
 [class*="pa34-ic-anim2-"]{width:46px;height:46px;}
+[class*="pa34-ic-hab-"]{width:44px;height:44px;}
 .pa34-scard [class*="pa34-ic-anim2-"]{width:60%;height:60%;}
 .pa34-memfront{transform:rotateY(180deg);padding:6px;position:relative;}
 .pa34-memfront .pa34-icon{width:56%;height:56%;}
