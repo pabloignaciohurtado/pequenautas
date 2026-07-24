@@ -1,9 +1,36 @@
 /* Aventuras en el Bosque - Service Worker
    network-first (mismo origen) para que las actualizaciones lleguen siempre que haya red;
-   cache como respaldo offline. Fuentes en cache-first. Bump de version para purgar cache viejo. */
+   cache como respaldo offline. Fuentes en cache-first. Bump de version para purgar cache viejo.
+
+   Precache progresivo en segundo plano (feat/carga-progresiva): tras activarse,
+   el SW descarga y cachea en background TODOS los módulos de fase4/ (spec.css +
+   spec.js + los archivos que sus spec.css importan vía @import, p.ej. img/*.css
+   con imágenes en base64) para que la app quede completamente disponible offline
+   sin que el peque tenga que visitar cada pantalla primero. Reporta progreso real
+   (no simulado) a las páginas controladas vía postMessage, para alimentar una
+   barra de progreso en el primer pintado (ver fase4/43-progreso-carga). Un fetch
+   que falla no detiene el resto: reintenta un par de veces y sigue. */
 const CACHE='pequenautas-v3';
 const SHELL=['./','./index.html','./app.js','./manifest.webmanifest'];
 const FONT_HOSTS=['fonts.googleapis.com','fonts.gstatic.com'];
+
+// Mismo listado (y mismo orden de referencia) que fase4/fase4.js. El orden no
+// importa aquí -el precache es puramente una optimización de background/offline,
+// no una dependencia de arranque- pero se mantiene la lista completa para que
+// nada quede sin cachear.
+const FASE4_MODULES=[
+  '01-eval-pre-post','02-ab-testing','03-repaso-espaciado','04-indice-dominio','05-deteccion-frustracion',
+  '11-materias-nuevas','12-mates-avanzadas','13-lectura-avanzada','14-ciencias-avanzada','15-cms-json',
+  '07-secuenciacion','06-motor-adaptativo','08-zdp-dinamica','09-recomendador',
+  '17-accesibilidad','18-dislexia','16-voces-mascota','20-animaciones-personaje','30-controles-parentales',
+  '19-album-logros','21-reporte-semanal','22-metas-semanales','23-modo-aula',
+  '28-pwa-tiendas',
+  '31-identidad-visual','32-pantallas-bosque','33-hero-diorama','34-juegos','35-cajas3d',
+  '36-gate-esquina','37-nav-iconos','38-bosque-arte','39-fondo-vivo','40-secciones-fondo',
+  '41-fondo-juego','42-pantallas-fondo','43-progreso-carga'
+];
+
+const PRECACHE_STATE={status:'idle',done:0,total:0,failed:[]};
 
 self.addEventListener('install',(e)=>{
   e.waitUntil(
@@ -15,7 +42,7 @@ self.addEventListener('activate',(e)=>{
   e.waitUntil(
     caches.keys().then(keys=>Promise.all(
       keys.filter(k=>k!==CACHE && k.indexOf('pequenautas-')===0).map(k=>caches.delete(k))
-    )).then(()=>self.clients.claim())
+    )).then(()=>self.clients.claim()).then(()=>{ runPrecache(); })
   );
 });
 
@@ -57,3 +84,95 @@ self.addEventListener('fetch',(e)=>{
     )
   );
 });
+
+self.addEventListener('message',(e)=>{
+  const d=e && e.data;
+  if(!d || !d.type) return;
+  if(d.type==='PA_QUERY_PRECACHE'){
+    try{
+      e.source && e.source.postMessage(
+        PRECACHE_STATE.status==='done'
+          ? {type:'precache-complete', failed:PRECACHE_STATE.failed}
+          : {type:'precache-progress', done:PRECACHE_STATE.done, total:PRECACHE_STATE.total}
+      );
+    }catch(err){}
+  }
+});
+
+function fase4Assets(){
+  const base='./fase4/';
+  const urls=[];
+  FASE4_MODULES.forEach(m=>{ urls.push(base+m+'/spec.css'); urls.push(base+m+'/spec.js'); });
+  return urls;
+}
+
+function fetchWithRetry(url,attempts){
+  attempts = attempts || 3;
+  return fetch(url,{cache:'no-cache'}).then(res=>{
+    if(!res || !(res.ok || res.type==='opaque')) throw new Error('bad-response');
+    return res;
+  }).catch(err=>{
+    if(attempts>1) return fetchWithRetry(url, attempts-1);
+    throw err;
+  });
+}
+
+function extractImports(cssText, cssUrl){
+  const out=[];
+  const re=/@import\s+url\(["']?([^"')]+)["']?\)/g;
+  let m;
+  while((m=re.exec(cssText))){
+    try{ out.push(new URL(m[1], cssUrl).href); }catch(e){}
+  }
+  return out;
+}
+
+function broadcast(msg){
+  return self.clients.matchAll({includeUncontrolled:true}).then(list=>{
+    list.forEach(c=>{ try{ c.postMessage(msg); }catch(e){} });
+  }).catch(()=>{});
+}
+
+// Descarga+cachea cada módulo (y los archivos que su spec.css importa vía
+// @import, p.ej. img/*.css con las imágenes base64) uno a uno para reportar
+// progreso granular. Un fallo puntual no detiene el resto (se reintenta y,
+// si sigue fallando, se salta y se registra en PRECACHE_STATE.failed).
+function precacheOne(cache, url){
+  return fetchWithRetry(url,3).then(res=>{
+    const copy=res.clone();
+    return cache.put(url, copy).then(()=>res);
+  }).then(res=>{
+    if(!/\.css($|\?)/.test(url)) return;
+    return res.clone().text().then(txt=>{
+      const imports = extractImports(txt, url);
+      return Promise.all(imports.map(iu=>
+        fetchWithRetry(iu,2).then(ires=>cache.put(iu, ires)).catch(()=>{ PRECACHE_STATE.failed.push(iu); })
+      ));
+    }).catch(()=>{});
+  }).catch(()=>{ PRECACHE_STATE.failed.push(url); });
+}
+
+function runPrecache(){
+  if(PRECACHE_STATE.status==='running' || PRECACHE_STATE.status==='done') return Promise.resolve();
+  const urls = fase4Assets();
+  PRECACHE_STATE.status='running';
+  PRECACHE_STATE.total=urls.length;
+  PRECACHE_STATE.done=0;
+  PRECACHE_STATE.failed=[];
+  return caches.open(CACHE).then(cache=>{
+    let chain = Promise.resolve();
+    urls.forEach(u=>{
+      chain = chain.then(()=>precacheOne(cache, u)).then(()=>{
+        PRECACHE_STATE.done++;
+        return broadcast({type:'precache-progress', done:PRECACHE_STATE.done, total:PRECACHE_STATE.total});
+      });
+    });
+    return chain;
+  }).then(()=>{
+    PRECACHE_STATE.status='done';
+    return broadcast({type:'precache-complete', failed:PRECACHE_STATE.failed});
+  }).catch(()=>{
+    PRECACHE_STATE.status='done';
+    return broadcast({type:'precache-complete', failed:PRECACHE_STATE.failed});
+  });
+}
