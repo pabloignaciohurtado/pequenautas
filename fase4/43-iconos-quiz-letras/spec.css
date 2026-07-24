@@ -1,0 +1,51 @@
+/* Fase 4 #43 - Iconos ilustrados (papercraft) para el quiz de fonetica
+   "Que empieza con L?" (roundReading, dentro de #game > #stage > .choices
+   > .choice > .cface) y para el emoji zorro crudo del chip de perfil en la
+   topbar mientras esa pantalla esta activa. 100% aditivo: solo agrega clases
+   pa43-* a elementos ya renderizados por app.js (via spec.js) y las estiliza
+   aqui. No redefine .cface/.av/.choice globalmente: los selectores exigen
+   la clase pa43-ico-on (añadida solo por spec.js, solo en el quiz de letras)
+   para no afectar el emoji en math/science/otras pantallas. */
+
+@import url("img/ig-tree.css");
+@import url("img/ig-elephant.css");
+@import url("img/ig-bear.css");
+@import url("img/ig-apple.css");
+@import url("img/ig-sun.css");
+@import url("img/ig-moon.css");
+@import url("img/ig-dog.css");
+@import url("img/ig-house.css");
+@import url("img/ig-ball.css");
+@import url("img/ig-cat.css");
+@import url("img/ig-fish.css");
+@import url("img/ig-octopus.css");
+@import url("img/ig-fox-reuse.css"); /* reusa fase4/34-juegos/img/ig-fox.css */
+
+/* Oculta el glifo de texto del emoji (font-size:0 funciona: los emoji no
+   respetan `color`, pero si respetan font-size) y reserva una caja del
+   mismo tamaño visual que antes ocupaba el emoji, rellena con el icono. */
+.choice .cface.pa43-ico-on{
+  font-size:0;
+  line-height:0;
+  display:inline-block;
+  width:clamp(46px,8vw,68px);
+  height:clamp(46px,8vw,68px);
+  background-size:contain;
+  background-position:center;
+  background-repeat:no-repeat;
+  border-radius:14px;
+}
+
+/* Chip de perfil (topbar): solo se activa mientras el quiz de letras esta
+   en pantalla (spec.js agrega/quita la clase segun la ronda actual). */
+#profileChip .av.pa43-fox-on{
+  font-size:0;
+  line-height:0;
+  display:inline-block;
+  width:30px;
+  height:30px;
+  background-size:contain;
+  background-position:center;
+  background-repeat:no-repeat;
+  border-radius:50%;
+}
