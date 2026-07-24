@@ -1,81 +1,160 @@
-/* Fase 4 #43 - Barra de progreso de descarga/instalación de recursos.
-   100% aditivo. Escucha los mensajes postMessage del Service Worker (sw.js)
-   que reporta el avance real del precache en segundo plano de todos los
-   módulos de fase4/ (ver runPrecache en sw.js) y muestra una píldora
-   pequeña y amistosa, no bloqueante, cerca del borde inferior de la
-   pantalla. No interfiere con la interacción: el peque puede elegir perfil
-   y jugar mientras la descarga sigue en background. Si el navegador no
-   soporta Service Worker (o falla el registro), simplemente no se muestra
-   nada: la app sigue funcionando igual que hoy vía carga on-demand. */
+/* Fase 4 #43 - Portón de carga (blocking gate) de recursos.
+   Por pedido explícito del product owner: TODOS los recursos deben
+   descargarse bloqueando el acceso al juego antes de poder usar la app.
+   Se reemplazó la píldora no-bloqueante original por un overlay de
+   pantalla completa (papercraft, tonos bosque) que cubre TODO —incluida
+   la pantalla "¿Quién juega?" y las tarjetas de materia— hasta que el
+   precache real del Service Worker (ver runPrecache en sw.js) llega a
+   100% (mensaje 'precache-complete').
+
+   Primera visita vs. visitas repetidas:
+   - Solo se muestra el portón si no existe la marca persistida en
+     localStorage (PA_DONE_KEY). Esa marca solo se escribe cuando el SW
+     confirma 'precache-complete' de verdad (o al consultar el estado
+     actual vía PA_QUERY_PRECACHE y recibir que ya está listo).
+   - En visitas siguientes, con la marca puesta, el portón NUNCA se
+     construye: el peque entra directo a la app (offline-first).
+
+   Fail-open (nunca debe atrapar al peque en un 0% eterno):
+   - Si el navegador no soporta Service Worker, o el registro/consulta
+     falla, no se muestra portón (o se retira de inmediato si ya se
+     había mostrado).
+   - Si no llega ningún mensaje de progreso en WATCHDOG_MS desde que se
+     mostró el portón, se retira igual (sin marcar como completo, para
+     reintentar en la próxima visita).
+   - Si el total de recursos reportado es 0, se retira de inmediato. */
 (function () {
   "use strict";
   if (window.__pa43) return; window.__pa43 = true;
 
-  var elWrap, elBar, elTxt;
+  var PA_DONE_KEY = 'pa_precache_done_v3'; // v3 = coincide con CACHE de sw.js
+
+  var elWrap, elBar, elPct, elTxt;
+  var watchdogTimer = null;
+  var hardCapTimer = null;
+  var dismissed = false;
+
+  var WATCHDOG_MS = 20000; // sin ningún mensaje del SW en 20s -> fail-open
+  var HARD_CAP_MS = 90000; // tope absoluto por si el progreso avanza a cuentagotas
+
+  function alreadyDone() {
+    try { return localStorage.getItem(PA_DONE_KEY) === '1'; } catch (e) { return false; }
+  }
+
+  function markDone() {
+    try { localStorage.setItem(PA_DONE_KEY, '1'); } catch (e) {}
+  }
 
   function build() {
-    if (document.getElementById('pa43wrap')) return;
+    if (elWrap || document.getElementById('pa43gate')) return;
     elWrap = document.createElement('div');
-    elWrap.id = 'pa43wrap';
-    elWrap.className = 'pa43wrap';
-    elWrap.setAttribute('aria-hidden', 'true');
+    elWrap.id = 'pa43gate';
+    elWrap.className = 'pa43gate';
+    elWrap.setAttribute('role', 'alertdialog');
+    elWrap.setAttribute('aria-modal', 'true');
+    elWrap.setAttribute('aria-label', 'Preparando tu bosque');
     elWrap.innerHTML =
-      '<div class="pa43pill">' +
-        '<span class="pa43ico">🌲</span>' +
-        '<span class="pa43txt" id="pa43txt">Preparando tu bosque…</span>' +
+      '<div class="pa43card">' +
+        '<div class="pa43mascota">🦉</div>' +
+        '<div class="pa43title" id="pa43title">Preparando tu bosque…</div>' +
         '<div class="pa43track"><div class="pa43fill" id="pa43fill"></div></div>' +
+        '<div class="pa43pct" id="pa43pct">Descargando recursos… 0%</div>' +
+        '<div class="pa43hint">Un momento, casi listo para jugar 🌲</div>' +
       '</div>';
     (document.body || document.documentElement).appendChild(elWrap);
     elBar = document.getElementById('pa43fill');
-    elTxt = document.getElementById('pa43txt');
+    elPct = document.getElementById('pa43pct');
+    elTxt = document.getElementById('pa43title');
+    // bloquea scroll de fondo mientras el portón está activo
+    if (document.documentElement) document.documentElement.classList.add('pa43lock');
   }
 
-  function show(pct) {
+  function clearTimers() {
+    if (watchdogTimer) { clearTimeout(watchdogTimer); watchdogTimer = null; }
+    if (hardCapTimer) { clearTimeout(hardCapTimer); hardCapTimer = null; }
+  }
+
+  function armWatchdog() {
+    if (watchdogTimer) clearTimeout(watchdogTimer);
+    watchdogTimer = setTimeout(function () {
+      dismiss(false); // sin progreso -> fail-open, no marcar como completo
+    }, WATCHDOG_MS);
+  }
+
+  function armHardCap() {
+    if (hardCapTimer) return;
+    hardCapTimer = setTimeout(function () {
+      dismiss(false); // tope absoluto de seguridad -> fail-open
+    }, HARD_CAP_MS);
+  }
+
+  function update(pct) {
     build();
-    requestAnimationFrame(function () { elWrap.classList.add('show'); });
+    armWatchdog();
+    armHardCap();
     var p = Math.max(0, Math.min(100, pct));
     if (elBar) elBar.style.width = p + '%';
-    if (elTxt) elTxt.textContent = 'Descargando recursos… ' + p + '%';
+    if (elPct) elPct.textContent = 'Descargando recursos… ' + p + '%';
   }
 
-  function hide() {
+  function dismiss(complete) {
+    if (dismissed) return;
+    dismissed = true;
+    clearTimers();
+    if (complete) markDone();
+    if (document.documentElement) document.documentElement.classList.remove('pa43lock');
     if (!elWrap) return;
-    elWrap.classList.add('done');
+    elWrap.classList.add('pa43out');
     setTimeout(function () {
-      if (!elWrap) return;
-      elWrap.classList.remove('show');
-      setTimeout(function () {
-        if (elWrap && elWrap.parentNode) elWrap.parentNode.removeChild(elWrap);
-      }, 500);
-    }, 500);
+      if (elWrap && elWrap.parentNode) elWrap.parentNode.removeChild(elWrap);
+      elWrap = null;
+    }, 420);
   }
 
   function onMessage(e) {
     var d = e && e.data;
     if (!d || !d.type) return;
     if (d.type === 'precache-progress') {
-      var pct = d.total ? Math.round((d.done / d.total) * 100) : 0;
-      show(pct);
+      if (!d.total) { dismiss(false); return; } // total 0: nada que esperar
+      var pct = Math.round((d.done / d.total) * 100);
+      update(pct);
     } else if (d.type === 'precache-complete') {
-      hide();
+      update(100);
+      dismiss(true);
     }
   }
 
+  if (alreadyDone()) {
+    // visita repetida con precache ya confirmado: entra directo, sin portón.
+    return;
+  }
+
   try {
-    if (!('serviceWorker' in navigator)) return; // sin soporte: fallback silencioso
+    if (!('serviceWorker' in navigator)) return; // sin soporte: fail-open, sin portón
+
+    build();
+    armWatchdog();
+    armHardCap();
+
     navigator.serviceWorker.addEventListener('message', onMessage);
+
     function queryStatus() {
       try {
         if (navigator.serviceWorker.controller) {
           navigator.serviceWorker.controller.postMessage({ type: 'PA_QUERY_PRECACHE' });
         }
-      } catch (e) {}
+        // si no hay controller todavía, seguimos esperando controllerchange/
+        // ready más abajo; el watchdog libera si nunca llega.
+      } catch (e) { dismiss(false); }
     }
+
     if (navigator.serviceWorker.controller) {
       queryStatus();
     } else {
       navigator.serviceWorker.addEventListener('controllerchange', queryStatus);
-      navigator.serviceWorker.ready.then(queryStatus).catch(function () {});
+      navigator.serviceWorker.ready.then(queryStatus).catch(function () { dismiss(false); });
     }
-  } catch (e) { /* SW no soportado / bloqueado: sin barra, la app funciona igual */ }
+  } catch (e) {
+    dismiss(false); // SW bloqueado/no disponible: nunca atrapar al peque
+  }
 })();
