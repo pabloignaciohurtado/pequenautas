@@ -310,10 +310,11 @@
     [cp(0x1F408),cp(0x1F431)], [cp(0x1F416),cp(0x1F437)],
     [cp(0x1F414),cp(0x1F423)], [cp(0x1F40E),cp(0x1F434)] ];
   function shuffle(arr){ var a=arr.slice(); for(var i=a.length-1;i>0;i--){ var j=Math.floor(Math.random()*(i+1)); var t=a[i];a[i]=a[j];a[j]=t; } return a; }
-  function dotsHTML(n){ var s='<div class="pa34-dots">'; for(var i=0;i<n;i++){ s+='<span></span>'; } return s+'</div>'; }
+  function dotsHTML(n){ var s='<div class="pa34-dots">'; for(var i=0;i<n;i++){ s+='<span class="pa34-dotacorn"></span>'; } return s+'</div>'; }
   function tokenHTML(tk){
     if(tk.k==="dots") return dotsHTML(tk.v);
     if(tk.k==="emoji") return '<span class="pa34-emoji">'+tk.v+'</span>';
+    if(tk.k==="icon") return '<span class="pa34-icon pa34-ic-'+tk.v+'"></span>';
     return '<span class="pa34-big">'+tk.v+'</span>';
   }
   // build [{a,b}] pairs for a game+level
@@ -776,8 +777,10 @@
       card.setAttribute("data-pid", cardData.pid);
       card.setAttribute("data-idx", i);
       var inner=el("div","pa34-memcard-inner");
-      var back=el("div","pa34-memface pa34-memback", String.fromCodePoint(0x1F343));
-      var front=el("div","pa34-memface pa34-memfront", tokenHTML(cardData.tok));
+      var back=el("div","pa34-memface pa34-memback", '<span class="pa34-icon pa34-ic-leaf"></span>');
+      var frontHTML = tokenHTML(cardData.tok);
+      if(g.gen==="caseAa"){ frontHTML += '<span class="pa34-icon pa34-mm-accent pa34-ic-'+(i%2===0?"leaf":"mushroom")+'"></span>'; }
+      var front=el("div","pa34-memface pa34-memfront", frontHTML);
       inner.appendChild(back); inner.appendChild(front);
       card.appendChild(inner);
       mmEls.grid.appendChild(card);
