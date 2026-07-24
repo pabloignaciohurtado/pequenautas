@@ -97,7 +97,13 @@
     // todo: solo CSS + capa de fondo en runtime; imagenes data-URI en img/*.css.
     // No envuelven globales de juego, no tocan app.js ni STORE_KEY.
     "41-fondo-juego",
-    "42-pantallas-fondo"
+    "42-pantallas-fondo",
+    // Oleada 13 - #43 iconos ilustrados (papercraft) para las opciones del
+    // quiz de fonetica "Que empieza con L?" (#game / roundReading, dentro de
+    // #stage) y para el emoji zorro crudo del chip de perfil en la topbar.
+    // 100% aditivo: MutationObserver sobre #stage y #chipAv, sin tocar
+    // app.js. Va al final para no interferir con fondos de las oleadas 11/12.
+    "43-iconos-quiz-letras"
   ];
   MODULES.forEach(function (m) {
     var l = document.createElement("link");
