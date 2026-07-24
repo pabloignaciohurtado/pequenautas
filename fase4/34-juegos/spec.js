@@ -605,10 +605,11 @@
   var SHADOW_LETTERS = ["A","B","C","D","E","F","L","M","O","S","T","U"];
   var CLASS_LET_LEVELS = [2,3,4,4,5];
   var CLASS_HAB_LEVELS = [3,4,4,5,6];
+  // iconos papercraft ilustrados de habitat (no emoji crudo)
   var HAB_BINS = [
-    { key:"agua", label:"Agua", tok:cp(0x1F30A) },
-    { key:"tierra", label:"Tierra", tok:cp(0x1F333) },
-    { key:"cielo", label:"Cielo", tok:cp(0x2601,0xFE0F) }
+    { key:"agua", label:"Agua", tok:"hab-water" },
+    { key:"tierra", label:"Tierra", tok:"hab-land" },
+    { key:"cielo", label:"Cielo", tok:"hab-sky" }
   ];
   // animal -> índice de HAB_BINS (0 agua, 1 tierra, 2 cielo)
   // animal -> ícono papercraft ilustrado (hab-*), no emoji crudo
@@ -621,7 +622,7 @@
     if(g.gen==="habitat"){
       var n=CLASS_HAB_LEVELS[level]||3;
       var pool=shuffle(ANIMAL_HAB).slice(0,n);
-      return { bins:HAB_BINS.map(function(b){ return {kind:"hab", label:b.label, tok:{k:"emoji",v:b.tok}}; }),
+      return { bins:HAB_BINS.map(function(b){ return {kind:"hab", label:b.label, tok:{k:"icon",v:b.tok}}; }),
         items:pool.map(function(p){ return {tok:{k:"icon",v:p[0]}, bin:p[1]}; }) };
     }
     // shadow (letras)
@@ -673,7 +674,7 @@
       bin.setAttribute("data-bin",idx);
       var head=el("div","bh");
       if(b.kind==="shadow"){ head.appendChild(el("span","pa34-shadow",b.letter)); }
-      else { head.appendChild(el("span","pa34-emoji",b.tok.v)); head.appendChild(el("span","bl",b.label)); }
+      else { var hic=el("span","pa34-icon pa34-ic-"+b.tok.v); head.appendChild(hic); head.appendChild(el("span","bl",b.label)); }
       var slot=el("div","bslot");
       bin.appendChild(head); bin.appendChild(slot);
       bin.addEventListener("click",function(){ onBin(bin,slot); });
