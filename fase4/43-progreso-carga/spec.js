@@ -16,12 +16,17 @@
      construye: el peque entra directo a la app (offline-first).
 
    Fail-open (nunca debe atrapar al peque en un 0% eterno):
-   - Si el navegador no soporta Service Worker, o el registro/consulta
-     falla, no se muestra portón (o se retira de inmediato si ya se
-     había mostrado).
-   - Si no llega ningún mensaje de progreso en WATCHDOG_MS desde que se
-     mostró el portón, se retira igual (sin marcar como completo, para
-     reintentar en la próxima visita).
+   - Si el navegador no soporta Service Worker, o el contexto no es
+     "seguro" (mismo criterio que registerPWA en app.js: https o
+     localhost/127.0.0.1 — en file:// o http normal el SW ni se registra),
+     directamente no se muestra portón: nunca habría precache que esperar.
+   - Si ya hay un controller pero pasan CONTROLLER_TIMEOUT_MS sin obtener
+     ningún mensaje del SW, se retira igual (fail-open, sin marcar como
+     completo, para reintentar en la próxima visita).
+   - Si luego de recibir progreso el SW se queda callado más de
+     STALL_TIMEOUT_MS, también se retira (fail-open).
+   - Tope absoluto HARD_CAP_MS por si el progreso avanza a cuentagotas
+     para siempre.
    - Si el total de recursos reportado es 0, se retira de inmediato. */
 (function () {
   "use strict";
@@ -33,9 +38,22 @@
   var watchdogTimer = null;
   var hardCapTimer = null;
   var dismissed = false;
+  var gotAnyMessage = false;
 
-  var WATCHDOG_MS = 20000; // sin ningún mensaje del SW en 20s -> fail-open
-  var HARD_CAP_MS = 90000; // tope absoluto por si el progreso avanza a cuentagotas
+  var CONTROLLER_TIMEOUT_MS = 8000;  // sin ni un solo mensaje del SW -> fail-open
+  var STALL_TIMEOUT_MS = 20000;      // progreso empezó pero se detuvo -> fail-open
+  var HARD_CAP_MS = 90000;           // tope absoluto de seguridad
+
+  function isSecureRegistrableContext() {
+    // Mismo criterio que registerPWA() en app.js: si el SW ni se va a
+    // registrar ahí, esperar su progreso aquí sería atrapar al peque
+    // sin motivo (p.ej. tests/QA cargando index.html vía file://).
+    try {
+      return location.protocol === 'https:' ||
+        location.hostname === 'localhost' ||
+        location.hostname === '127.0.0.1';
+    } catch (e) { return false; }
+  }
 
   function alreadyDone() {
     try { return localStorage.getItem(PA_DONE_KEY) === '1'; } catch (e) { return false; }
@@ -74,11 +92,18 @@
     if (hardCapTimer) { clearTimeout(hardCapTimer); hardCapTimer = null; }
   }
 
-  function armWatchdog() {
+  function armControllerTimeout() {
     if (watchdogTimer) clearTimeout(watchdogTimer);
     watchdogTimer = setTimeout(function () {
-      dismiss(false); // sin progreso -> fail-open, no marcar como completo
-    }, WATCHDOG_MS);
+      dismiss(false); // nunca llegó ni un mensaje del SW -> fail-open
+    }, CONTROLLER_TIMEOUT_MS);
+  }
+
+  function armStallTimeout() {
+    if (watchdogTimer) clearTimeout(watchdogTimer);
+    watchdogTimer = setTimeout(function () {
+      dismiss(false); // hubo progreso y se detuvo -> fail-open
+    }, STALL_TIMEOUT_MS);
   }
 
   function armHardCap() {
@@ -90,7 +115,7 @@
 
   function update(pct) {
     build();
-    armWatchdog();
+    armStallTimeout();
     armHardCap();
     var p = Math.max(0, Math.min(100, pct));
     if (elBar) elBar.style.width = p + '%';
@@ -114,6 +139,7 @@
   function onMessage(e) {
     var d = e && e.data;
     if (!d || !d.type) return;
+    gotAnyMessage = true;
     if (d.type === 'precache-progress') {
       if (!d.total) { dismiss(false); return; } // total 0: nada que esperar
       var pct = Math.round((d.done / d.total) * 100);
@@ -130,10 +156,11 @@
   }
 
   try {
-    if (!('serviceWorker' in navigator)) return; // sin soporte: fail-open, sin portón
+    if (!('serviceWorker' in navigator)) return;      // sin soporte: sin portón
+    if (!isSecureRegistrableContext()) return;         // el SW ni se registrará: sin portón
 
     build();
-    armWatchdog();
+    armControllerTimeout();
     armHardCap();
 
     navigator.serviceWorker.addEventListener('message', onMessage);
@@ -144,7 +171,7 @@
           navigator.serviceWorker.controller.postMessage({ type: 'PA_QUERY_PRECACHE' });
         }
         // si no hay controller todavía, seguimos esperando controllerchange/
-        // ready más abajo; el watchdog libera si nunca llega.
+        // ready más abajo; el timeout de arriba libera si nunca llega.
       } catch (e) { dismiss(false); }
     }
 
