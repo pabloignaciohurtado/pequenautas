@@ -16,6 +16,15 @@
 @import url("img/ig-anim-pig.css");
 @import url("img/ig-anim-chicken.css");
 @import url("img/ig-anim-horse.css");
+@import url("img/ig-anim2-ant.css");
+@import url("img/ig-anim2-mouse.css");
+@import url("img/ig-anim2-rabbit.css");
+@import url("img/ig-anim2-cat.css");
+@import url("img/ig-anim2-dog.css");
+@import url("img/ig-anim2-deer.css");
+@import url("img/ig-anim2-moose.css");
+@import url("img/ig-anim2-cow.css");
+@import url("img/ig-anim2-elephant.css");
 @import url("img/ig-star.css");
 @import url("img/ig-lvlnode.css");
 .pa34-ov{position:fixed;inset:0;z-index:1400;display:none;align-items:stretch;justify-content:center;
@@ -191,6 +200,8 @@
 .pa34-mm-accent{position:absolute;bottom:5px;right:5px;width:20px;height:20px;opacity:.9;z-index:1;}
 .pa34-icon{display:inline-block;}
 [class*="pa34-ic-anim-"]{width:40px;height:40px;}
+[class*="pa34-ic-anim2-"]{width:46px;height:46px;}
+.pa34-scard [class*="pa34-ic-anim2-"]{width:60%;height:60%;}
 .pa34-memfront{transform:rotateY(180deg);padding:6px;position:relative;}
 .pa34-memfront .pa34-icon{width:56%;height:56%;}
 .pa34-memcard.matchable .pa34-memface{outline:4px solid #FDBA4D;box-shadow:0 0 0 5px rgba(253,186,77,.3),0 5px 0 rgba(46,59,44,.15);}
