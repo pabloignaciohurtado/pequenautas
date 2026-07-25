@@ -33,12 +33,22 @@
 
    Aditivo: no toca app.js, ni index.html, ni STORE_KEY. */
 
-/* Las doce viñetas, repartidas en tres hojas (una por sección) para que
-   ningún archivo se vuelva inmanejable. El sw las precachea solo con que
-   estén importadas desde aquí. */
-@import url("img/ig-letras.css");
-@import url("img/ig-numeros.css");
-@import url("img/ig-animales.css");
+/* Las doce viñetas, una hoja cada una: el WebP viaja embebido en base64
+   (el repo no admite binarios) y así ningún archivo se vuelve inmanejable
+   ni hay que tocar doce dibujos para corregir uno. El sw las precachea
+   solo con que estén importadas desde aquí. */
+@import url("img/ig-read-tap.css");
+@import url("img/ig-read-drag.css");
+@import url("img/ig-read-match.css");
+@import url("img/ig-read-trace.css");
+@import url("img/ig-math-count.css");
+@import url("img/ig-math-tap.css");
+@import url("img/ig-math-sort.css");
+@import url("img/ig-math-match.css");
+@import url("img/ig-sci-tap.css");
+@import url("img/ig-sci-drag.css");
+@import url("img/ig-sci-sort.css");
+@import url("img/ig-sci-match.css");
 
 /* ---------- 1 · La rejilla respira ---------- */
 html.pa52 .pa34-games{gap:15px 13px;}
