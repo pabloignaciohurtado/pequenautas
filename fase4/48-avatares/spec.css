@@ -1,0 +1,98 @@
+/* ===== Fase 4 #48 · Avatares papercraft =====
+   Los diez avatares de app.js (AVATARS) se pintaban como emoji del sistema
+   y, desde el modulo #31, como SVG planos de trazo simple. Ninguna de las
+   dos versiones encaja con la direccion de arte del bosque.
+
+   Aqui se sustituyen por diez retratos papercraft generados con Grok
+   (recortados, 120x120 WebP) que se aplican como background-image sobre el
+   nodo que ya existe. spec.js solo etiqueta cada nodo con data-pa48="nombre";
+   todo el pintado es CSS.
+
+   Aditivo: no toca app.js, ni index.html, ni STORE_KEY. El valor guardado en
+   el perfil sigue siendo el emoji original, asi que desactivar el modulo
+   devuelve la app a su aspecto anterior sin migracion de datos. */
+
+@import url("img/ig-av-zorro.css");
+@import url("img/ig-av-panda.css");
+@import url("img/ig-av-conejo.css");
+@import url("img/ig-av-rana.css");
+@import url("img/ig-av-leon.css");
+@import url("img/ig-av-tigre.css");
+@import url("img/ig-av-pinguino.css");
+@import url("img/ig-av-koala.css");
+@import url("img/ig-av-mono.css");
+@import url("img/ig-av-cerdo.css");
+
+/* --- base comun: el nodo se convierte en lienzo y su contenido (emoji del
+   sistema o SVG inyectado por #31) deja de verse. Se oculta el contenido en
+   vez de vaciarlo para no pelear con el MutationObserver de #31. --- */
+[data-pa48]{
+  background-repeat:no-repeat;
+  background-position:center;
+  background-size:contain;
+  color:transparent !important;
+  text-shadow:none !important;
+}
+[data-pa48] > *{display:none !important;}
+
+/* Cada nombre solo declara una custom property: las custom properties no
+   las borra el shorthand `background` de #31, a diferencia de
+   background-image. El pintado real va en la regla de abajo. */
+[data-pa48="zorro"]{--pa48-img:var(--pa48-zorro);}
+[data-pa48="panda"]{--pa48-img:var(--pa48-panda);}
+[data-pa48="conejo"]{--pa48-img:var(--pa48-conejo);}
+[data-pa48="rana"]{--pa48-img:var(--pa48-rana);}
+[data-pa48="leon"]{--pa48-img:var(--pa48-leon);}
+[data-pa48="tigre"]{--pa48-img:var(--pa48-tigre);}
+[data-pa48="pinguino"]{--pa48-img:var(--pa48-pinguino);}
+[data-pa48="koala"]{--pa48-img:var(--pa48-koala);}
+[data-pa48="mono"]{--pa48-img:var(--pa48-mono);}
+[data-pa48="cerdo"]{--pa48-img:var(--pa48-cerdo);}
+
+/* Selector triplicado a proposito (especificidad 0,3,0 + !important): #31
+   pinta `.avopt.sel{background:#EAF6EE!important}` (0,2,0 con !important),
+   que si no borraria el retrato del avatar seleccionado. */
+[data-pa48][data-pa48][data-pa48]{background-image:var(--pa48-img) !important;}
+
+/* --- selector de avatar (#avpick): la ficha de papel de #31 se queda como
+   fondo y el retrato va encima. Tamano y color tambien con !important por el
+   mismo motivo que arriba: el shorthand `background` de #31 los resetea. --- */
+#avpick .avopt[data-pa48]{
+  background-size:46px 46px !important;
+  background-color:#F4F1E4 !important;
+}
+#avpick .avopt[data-pa48].sel{
+  background-size:50px 50px !important;
+  background-color:#EAF6EE !important;
+}
+
+/* --- tarjeta de perfil del home: el nodo es un <span> dimensionado por
+   font-size, asi que al ocultar el contenido hay que darle caja propia. --- */
+.pcard .av[data-pa48]{
+  display:block;
+  width:88px;
+  height:88px;
+  margin:0 auto;
+  filter:drop-shadow(0 6px 8px rgba(0,0,0,.14));
+}
+
+/* --- chip del perfil en la barra superior --- */
+.pchip .av[data-pa48]{
+  display:inline-block;
+  width:32px;
+  height:32px;
+  vertical-align:middle;
+}
+
+/* --- otros sitios donde app.js/fase4 reutilizan el avatar (panel de
+   adultos, celebracion, mascota educativa): tamano heredado del contexto. --- */
+.eduAv[data-pa48],
+#celebrate [data-pa48]{
+  display:inline-block;
+  width:1.15em;
+  height:1.15em;
+}
+
+@media (max-width:400px){
+  .pcard .av[data-pa48]{width:74px;height:74px;}
+}
