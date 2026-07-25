@@ -97,7 +97,15 @@
     // todo: solo CSS + capa de fondo en runtime; imagenes data-URI en img/*.css.
     // No envuelven globales de juego, no tocan app.js ni STORE_KEY.
     "41-fondo-juego",
-    "42-pantallas-fondo"
+    "42-pantallas-fondo",
+    // Oleada 13 - #46 iconos del HUD: sustituye los emoji del sistema de la
+    // barra superior (casa, atras, estrella, sonido), del boton de escuchar y
+    // de la pildora de instalacion por ilustraciones papercraft generadas con
+    // Grok, en linea con la direccion de arte del bosque. Al final de todo:
+    // CSS + un MutationObserver para el toggle mute (app.js cambia el texto del
+    // boton y CSS no puede seleccionar por contenido). No toca app.js ni
+    // index.html ni STORE_KEY.
+    "46-hud-iconos"
   ];
   MODULES.forEach(function (m) {
     var l = document.createElement("link");
