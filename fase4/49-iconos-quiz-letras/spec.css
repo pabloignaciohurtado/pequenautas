@@ -1,0 +1,74 @@
+/* ===== Fase 4 #49 · Iconos papercraft del quiz de fonetica =====
+   El quiz "¿Que empieza con L?" (roundReading en app.js) pinta las tres
+   opciones como emoji del sistema dentro de .choice > .cface. Este modulo
+   los sustituye por ilustraciones papercraft generadas con Grok, en linea
+   con la direccion de arte del bosque.
+
+   Cambios respecto al intento anterior (#43, nunca integrado):
+   - Las ilustraciones se regeneraron sobre fondo cromatico y se recortaron
+     con canal alfa: ya no traen la tarjeta de papel blanca incrustada que
+     producia el "doble marco blanco" sobre la tarjeta de opcion.
+   - Se elimino la parte que ilustraba el zorro del chip de perfil: desde el
+     modulo #48 ese avatar ya es un retrato papercraft, asi que sobraba.
+
+   Aditivo: spec.js solo anade clases pa49-* a nodos que ya renderiza
+   app.js. No toca app.js, ni index.html, ni STORE_KEY. */
+
+@import url("img/ig-tree.css");
+@import url("img/ig-elephant.css");
+@import url("img/ig-bear.css");
+@import url("img/ig-apple.css");
+@import url("img/ig-sun.css");
+@import url("img/ig-moon.css");
+@import url("img/ig-dog.css");
+@import url("img/ig-house.css");
+@import url("img/ig-ball.css");
+@import url("img/ig-cat.css");
+@import url("img/ig-fish.css");
+@import url("img/ig-octopus.css");
+
+/* El glifo emoji no respeta `color`, pero si `font-size`: a 0 desaparece y
+   la caja queda libre para el icono. Se reserva un tamano equivalente al
+   que ocupaba el emoji para no mover el layout de la tarjeta. */
+.choice .cface.pa49-ico-on{
+  font-size:0;
+  line-height:0;
+  display:inline-block;
+  width:clamp(46px,8vw,68px);
+  height:clamp(46px,8vw,68px);
+  background-repeat:no-repeat;
+  background-position:center;
+  background-size:contain;
+}
+
+/* Cada slug declara solo una custom property. Las custom properties no las
+   borra un shorthand `background` de otro modulo (leccion de #48), a
+   diferencia de background-image. El pintado real va en la regla de abajo,
+   con selector triplicado (0,3,0) + !important para ganar a los degradados
+   que algunas rondas aplican sobre .choice/.cface. */
+.pa49-tree    {--pa49-img:var(--pa49-tree);}
+.pa49-elephant{--pa49-img:var(--pa49-elephant);}
+.pa49-bear    {--pa49-img:var(--pa49-bear);}
+.pa49-apple   {--pa49-img:var(--pa49-apple);}
+.pa49-sun     {--pa49-img:var(--pa49-sun);}
+.pa49-moon    {--pa49-img:var(--pa49-moon);}
+.pa49-dog     {--pa49-img:var(--pa49-dog);}
+.pa49-house   {--pa49-img:var(--pa49-house);}
+.pa49-ball    {--pa49-img:var(--pa49-ball);}
+.pa49-cat     {--pa49-img:var(--pa49-cat);}
+.pa49-fish    {--pa49-img:var(--pa49-fish);}
+.pa49-octopus {--pa49-img:var(--pa49-octopus);}
+
+.cface.pa49-ico-on.pa49-ico-on.pa49-ico-on{
+  background-image:var(--pa49-img) !important;
+}
+
+/* Los recortes llevan alfa, asi que la sombra la pone el CSS y no la
+   imagen: nada de tarjeta blanca detras del dibujo. */
+.choice .cface.pa49-ico-on{
+  filter:drop-shadow(0 3px 4px rgba(0,0,0,.16));
+}
+
+@media (max-width:400px){
+  .choice .cface.pa49-ico-on{width:46px;height:46px;}
+}
