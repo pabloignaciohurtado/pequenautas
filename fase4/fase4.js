@@ -114,7 +114,12 @@
     // #49 iconos papercraft del quiz de fonética: solo aparecen dentro de
     // una ronda de lectura, mucho después del arranque, y su spec.js
     // reintenta con un intervalo hasta encontrar #stage — se difiere.
-    "49-iconos-quiz-letras"
+    "49-iconos-quiz-letras",
+    // #52 rediseño de las tarjetas de "Elige un juego": una ilustración por
+    // juego en vez de un icono por mecánica. Solo se ve dentro del overlay
+    // de #34, así que se difiere igual que él, y va DESPUÉS: #34 es quien
+    // construye los botones que #52 reestiliza.
+    "52-juegos-tarjetas"
   ];
 
   var injected = Object.create(null);
