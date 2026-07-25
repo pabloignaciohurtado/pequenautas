@@ -1,0 +1,168 @@
+/* ===== Fase 4 #52 · Tarjetas de "Elige un juego" =====
+
+   Tres quejas concretas sobre la pantalla de selección de juegos:
+
+   1. "los iconos son muy pequeños" — eran chips de 42px con un dibujo de
+      30px dentro. Aquí la ilustración pasa a ocupar la mitad superior de la
+      tarjeta (112px de alto), que es lo primero que se lee.
+
+   2. "son poco explicativos de las actividades" — la causa real es que #34
+      solo tenía CINCO iconos, uno por MECÁNICA (tap/drag/sort/match/trace),
+      compartidos por los doce juegos: los cuatro juegos de Letras se veían
+      con cuatro pictogramas genéricos que no contaban nada. Aquí hay una
+      viñeta por JUEGO, doce en total, cada una mostrando literalmente lo
+      que el peque va a hacer (la bellota junto a su sombra, el lápiz
+      dejando un rastro de puntos, la mamá pata con su patito...). Se
+      enganchan por el atributo data-pa34-game que #34 ya estampaba en cada
+      botón, así que este módulo no toca ni una línea de #34.
+
+   3. "visualmente no los siento integrado" — la tarjeta era un rectángulo
+      blanco puro (#FFFDF7) con esquinas duras flotando sobre el diorama de
+      bosque que pintan #39/#40. Aquí pasa a ser un recorte de papel: crema
+      cálido, contorno de tinta suave, esquinas desparejas, una leve
+      inclinación alternada como si estuvieran pegadas a mano, y un halo del
+      color de la mecánica detrás de la ilustración que conserva el código
+      de color anterior sin necesidad del chip.
+
+   Las letras y cifras NUNCA vienen dentro de la imagen —el generador las
+   deforma—: las viñetas que las necesitan traen la tarjeta o la ficha en
+   blanco y aquí se les superpone tipografía real.
+
+   Todo cuelga de html.pa52, que solo pone spec.js: si el módulo no carga,
+   las tarjetas de #34 se ven exactamente como antes.
+
+   Aditivo: no toca app.js, ni index.html, ni STORE_KEY. */
+
+/* Las doce viñetas, una hoja cada una: el WebP viaja embebido en base64
+   (el repo no admite binarios) y así ningún archivo se vuelve inmanejable
+   ni hay que tocar doce dibujos para corregir uno. El sw las precachea
+   solo con que estén importadas desde aquí. */
+@import url("img/ig-read-tap.css");
+@import url("img/ig-read-drag.css");
+@import url("img/ig-read-match.css");
+@import url("img/ig-read-trace.css");
+@import url("img/ig-math-count.css");
+@import url("img/ig-math-tap.css");
+@import url("img/ig-math-sort.css");
+@import url("img/ig-math-match.css");
+@import url("img/ig-sci-tap.css");
+@import url("img/ig-sci-drag.css");
+@import url("img/ig-sci-sort.css");
+@import url("img/ig-sci-match.css");
+
+/* ---------- 1 · La rejilla respira ---------- */
+html.pa52 .pa34-games{gap:15px 13px;}
+
+/* ---------- 2 · La tarjeta como recorte de papel ---------- */
+html.pa52 .pa34-game{
+  background:linear-gradient(180deg,#FFFCF2 0%,#FBF3E0 100%) !important;
+  border:2px solid rgba(46,59,44,.16);
+  /* esquinas desparejas: recortada a mano, no vectorial */
+  border-radius:22px 26px 20px 24px;
+  padding:10px 11px 12px;
+  gap:5px;
+  align-items:center;
+  text-align:center;
+  box-shadow:0 3px 0 rgba(46,59,44,.10), 0 9px 18px rgba(46,59,44,.13);
+  transition:transform .14s ease;
+}
+/* pegadas a mano: se inclinan un pelo, alternando */
+html.pa52 .pa34-games .pa34-game:nth-child(odd){transform:rotate(-.7deg);}
+html.pa52 .pa34-games .pa34-game:nth-child(even){transform:rotate(.7deg);}
+html.pa52 .pa34-games .pa34-game:active{transform:translateY(2px) rotate(0deg);}
+
+/* ---------- 3 · La ilustración manda ---------- */
+html.pa52 .pa34-game .mech{
+  width:100% !important;
+  height:112px !important;
+  border-radius:0 !important;
+  background-color:transparent !important;
+  background-repeat:no-repeat !important;
+  background-position:center bottom !important;
+  background-size:contain !important;
+  color:transparent !important;
+  font-size:0 !important;
+  position:relative;
+  /* z-index propio para que el halo (::before, z-index:-1) quede detrás del
+     dibujo pero DELANTE del papel de la tarjeta, no debajo de ella. */
+  z-index:0;
+  display:block !important;
+  filter:drop-shadow(1px 3px 3px rgba(46,59,44,.20));
+}
+/* Halo del color de la mecánica: conserva el código de color que daban los
+   chips de #34 sin volver a encerrar el dibujo en una caja. */
+html.pa52 .pa34-game .mech::before{
+  content:"";position:absolute;left:50%;top:52%;
+  width:92px;height:92px;margin:-46px 0 0 -46px;
+  border-radius:50%;z-index:-1;
+  background:radial-gradient(circle,var(--pa52-halo,rgba(140,150,120,.16)) 0%,rgba(255,255,255,0) 68%);
+}
+html.pa52 .pa34-m-tap  {--pa52-halo:rgba(142,124,195,.17);}
+html.pa52 .pa34-m-drag {--pa52-halo:rgba(232,132,58,.16);}
+html.pa52 .pa34-m-sort {--pa52-halo:rgba(54,148,104,.15);}
+html.pa52 .pa34-m-match{--pa52-halo:rgba(78,168,222,.16);}
+html.pa52 .pa34-m-trace{--pa52-halo:rgba(201,77,104,.14);}
+
+/* ---------- 4 · Una viñeta por juego ---------- */
+html.pa52 [data-pa34-game="read:tap"]   .mech{background-image:var(--pa52-read-tap) !important;}
+html.pa52 [data-pa34-game="read:drag"]  .mech{background-image:var(--pa52-read-drag) !important;}
+html.pa52 [data-pa34-game="read:match"] .mech{background-image:var(--pa52-read-match) !important;}
+html.pa52 [data-pa34-game="read:trace"] .mech{background-image:var(--pa52-read-trace) !important;}
+html.pa52 [data-pa34-game="math:count"] .mech{background-image:var(--pa52-math-count) !important;}
+html.pa52 [data-pa34-game="math:tap"]   .mech{background-image:var(--pa52-math-tap) !important;}
+html.pa52 [data-pa34-game="math:sort"]  .mech{background-image:var(--pa52-math-sort) !important;}
+html.pa52 [data-pa34-game="math:match"] .mech{background-image:var(--pa52-math-match) !important;}
+html.pa52 [data-pa34-game="sci:tap"]    .mech{background-image:var(--pa52-sci-tap) !important;}
+html.pa52 [data-pa34-game="sci:drag"]   .mech{background-image:var(--pa52-sci-drag) !important;}
+html.pa52 [data-pa34-game="sci:sort"]   .mech{background-image:var(--pa52-sci-sort) !important;}
+html.pa52 [data-pa34-game="sci:match"]  .mech{background-image:var(--pa52-sci-match) !important;}
+
+/* ---------- 5 · Tipografía encima del papel en blanco ---------- */
+/* Las viñetas de "Mayúscula y minúscula" y "Une cantidad y número" traen la
+   tarjeta y la ficha vacías a propósito. La letra y la cifra se dibujan
+   aquí, con la fuente de la app, para que se lean de verdad. */
+html.pa52 [data-pa34-game="read:match"] .mech::after{
+  content:"A a";
+  position:absolute;left:0;right:0;top:44%;
+  font-family:'Baloo 2','Fredoka',system-ui,sans-serif;
+  font-weight:800;font-size:23px;word-spacing:44px;text-align:center;
+  color:#2F6B3C;line-height:1;
+}
+html.pa52 [data-pa34-game="math:match"] .mech::after{
+  content:"3";
+  position:absolute;right:11%;top:46%;
+  font-family:'Baloo 2','Fredoka',system-ui,sans-serif;
+  font-weight:800;font-size:26px;color:#8A5A2B;line-height:1;
+}
+
+/* ---------- 6 · Nombre y progreso ---------- */
+html.pa52 .pa34-game .gn{
+  font-family:'Baloo 2','Fredoka',system-ui,sans-serif;
+  font-size:14px;font-weight:800;color:#2E3B2C;line-height:1.15;
+  text-align:center;
+}
+html.pa52 .pa34-game .gp{
+  font-size:11px;font-weight:700;color:#6B7A5E;text-align:center;
+  background:rgba(46,59,44,.07);border-radius:999px;padding:2px 9px;
+}
+html.pa52 .pa34-game .lock{top:8px;right:10px;}
+
+/* ---------- 7 · Cabecera un poco más presente ---------- */
+html.pa52 .pa34-hd .t{
+  font-family:'Baloo 2','Fredoka',system-ui,sans-serif;font-size:21px;
+}
+
+@media (max-width:380px){
+  html.pa52 .pa34-game .mech{height:94px !important;}
+  html.pa52 .pa34-game .mech::before{width:80px;height:80px;margin:-40px 0 0 -40px;}
+  html.pa52 .pa34-game .gn{font-size:13px;}
+}
+
+/* Alto contraste (#17): el papel se aplana y el contorno se hace tinta. */
+html.a11y-hc.pa52 .pa34-game{
+  background:#fff !important;border-color:#000 !important;
+}
+html.a11y-hc.pa52 .pa34-game .mech::before{display:none;}
+@media (prefers-reduced-motion: reduce){
+  html.pa52 .pa34-games .pa34-game{transform:none !important;}
+}
