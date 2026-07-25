@@ -28,7 +28,8 @@ const FASE4_MODULES=[
   '31-identidad-visual','32-pantallas-bosque','33-hero-diorama','34-juegos','35-cajas3d',
   '36-gate-esquina','37-nav-iconos','38-bosque-arte','39-fondo-vivo','40-secciones-fondo',
   '41-fondo-juego','42-pantallas-fondo',
-  '46-hud-iconos','47-opciones-layout','48-avatares','49-iconos-quiz-letras','50-progreso-carga'
+  '46-hud-iconos','47-opciones-layout','48-avatares','49-iconos-quiz-letras','50-progreso-carga',
+  '51-hero-globo'
 ];
 
 const PRECACHE_STATE={status:'idle',done:0,total:0,failed:[]};

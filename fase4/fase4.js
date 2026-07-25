@@ -49,9 +49,13 @@
     // #48 avatares papercraft: la pantalla "¿Quién juega?" es literalmente
     // lo primero que ve el peque, no puede llegar tarde.
     "48-avatares",
-    // #50 portón de carga: tiene que estar en pantalla antes que nada,
-    // por eso cierra la fase crítica.
-    "50-progreso-carga"
+    // #50 portón de carga: tiene que estar en pantalla antes que nada.
+    "50-progreso-carga",
+    // #51 rediseño del hero (título de portada, Rufo suelto sin marco y
+    // globo de cómic): es la primera pantalla que ve el peque al entrar a
+    // Home, así que no puede llegar tarde. Va DESPUÉS de #33, que es quien
+    // construye el .pa33-hero sobre el que #51 aplica sus reglas.
+    "51-hero-globo"
   ];
 
   // ---- Fase 2: diferido ------------------------------------------------
