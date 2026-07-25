@@ -105,7 +105,13 @@
     // CSS + un MutationObserver para el toggle mute (app.js cambia el texto del
     // boton y CSS no puede seleccionar por contenido). No toca app.js ni
     // index.html ni STORE_KEY.
-    "46-hud-iconos"
+    "46-hud-iconos",
+    // #47 layout de las opciones de respuesta: en moviles estrechos las tres
+    // tarjetas .choice no cabian en una fila y la tercera saltaba de linea,
+    // quedando recortada por el overflow de .screen y tapada por los puntos
+    // de progreso. Solo CSS, todo bajo #stage para no afectar a los grupos
+    // .choices de los paneles de ajustes. No toca app.js ni index.html.
+    "47-opciones-layout"
   ];
   MODULES.forEach(function (m) {
     var l = document.createElement("link");
