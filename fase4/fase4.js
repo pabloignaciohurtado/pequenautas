@@ -111,7 +111,15 @@
     // quedando recortada por el overflow de .screen y tapada por los puntos
     // de progreso. Solo CSS, todo bajo #stage para no afectar a los grupos
     // .choices de los paneles de ajustes. No toca app.js ni index.html.
-    "47-opciones-layout"
+    "47-opciones-layout",
+    // #48 avatares papercraft: los diez avatares de app.js (emoji del sistema,
+    // convertidos en SVG planos por #31) pasan a ser retratos papercraft
+    // generados con Grok. spec.js solo etiqueta cada nodo con data-pa48 a
+    // partir del emoji original o del rastro data-pa31-swapped de #31; el
+    // pintado es CSS con imagenes data-URI en img/*.css. El perfil sigue
+    // guardando el emoji, asi que no hay migracion de datos. No toca app.js
+    // ni index.html ni STORE_KEY.
+    "48-avatares"
   ];
   MODULES.forEach(function (m) {
     var l = document.createElement("link");
