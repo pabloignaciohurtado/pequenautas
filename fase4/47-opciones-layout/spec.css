@@ -1,0 +1,49 @@
+/* ===== Fase 4 #47 · Layout de las opciones de respuesta =====
+   En moviles estrechos las tres tarjetas .choice (min-width:120px + padding
+   ancho + gap 18px) no caben en una fila: la tercera saltaba de linea y
+   quedaba tapada por la pildora de instalar y por los puntos de progreso,
+   porque .screen tiene overflow:hidden y .stage centra en vertical.
+
+   Solucion: dentro del escenario de juego las opciones dejan de envolver y
+   se reparten el ancho disponible (flex-basis comodo, encogible hasta 0).
+   Funciona con 2 o con 3 opciones sin conocer el numero de antemano.
+
+   Aditivo: solo CSS, y todo va bajo #stage para no tocar los grupos
+   .choices de los paneles de ajustes (sessMins, bilMode) ni el home. */
+
+#stage .choices:not(.compare){
+  flex-wrap:nowrap;
+  gap:12px;
+  width:100%;
+  align-items:stretch;
+}
+
+#stage .choices:not(.compare) > .choice{
+  flex:1 1 0;
+  min-width:0;
+  max-width:220px;
+  padding:14px 8px;
+}
+
+/* No se toca ningun fondo: las tarjetas de habitat, dieta, estacion y
+   contenedor traen su propio degradado con texto blanco, y pisarlos desde
+   aqui dejaba las etiquetas ilegibles. El "doble marco blanco" bajo las
+   ilustraciones se resuelve en el arte, no en el layout. */
+
+/* las etiquetas (habitat, dieta) se aprietan antes que la ilustracion */
+#stage .choices:not(.compare) > .choice > .clabel{
+  font-size:14px;
+  line-height:1.15;
+  max-width:100%;
+  overflow-wrap:anywhere;
+}
+
+/* margen inferior para que la ultima fila nunca quede bajo los puntos
+   de progreso ni bajo la pildora flotante de instalar */
+#game .stage{padding-bottom:8px;}
+
+@media (max-width:400px){
+  #stage .choices:not(.compare){gap:8px;}
+  #stage .choices:not(.compare) > .choice{padding:12px 6px;}
+  #stage .choices:not(.compare) > .choice > .clabel{font-size:13px;}
+}
