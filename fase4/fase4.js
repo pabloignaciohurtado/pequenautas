@@ -2,21 +2,68 @@
    Carga los módulos de Fase 4 DESPUÉS de app.js, preservando el ORDEN de
    envoltura de globales (window.afterCorrect/nextRound/roundMath/... — ver
    MASTER_PLAN.md). Cada mejora vive en fase4/NN-slug/{spec.js,spec.css}.
-   Para añadir una oleada: agrega sus carpetas a MODULES en el orden indicado
-   por el plan. Aditivo, offline, sin red. Un módulo que falte o falle no
-   detiene a los demás (onerror → next). */
+   Para añadir una oleada: agrega su carpeta a la lista que corresponda, en
+   el orden indicado por el plan. Aditivo, offline, sin red. Un módulo que
+   falte o falle no detiene a los demás (onerror → next).
+
+   Carga progresiva (#50): en vez de inyectar los ~40 módulos en una sola
+   cadena secuencial, se separan en dos fases:
+   - CRITICAL_MODULES: identidad visual + pantalla Home + HUD (lo que el
+     peque ve de inmediato). Se cargan primero, en su ORDEN RELATIVO
+     original.
+   - DEFERRED_MODULES: analítica, motor adaptativo, accesibilidad, panel
+     familiar/educador, tiendas, juegos nuevos y fondos de pantallas
+     secundarias. Se cargan justo después, en segundo plano
+     (requestIdleCallback/setTimeout), SIN bloquear el primer pintado y
+     preservando también su ORDEN RELATIVO original: las envolturas de
+     globals como refreshHome/roundMathCount se aplican en la misma
+     secuencia que antes, solo unos instantes más tarde.
+
+   En paralelo, sw.js hace un precache en segundo plano de TODOS los
+   módulos (spec.css + spec.js + los archivos que sus spec.css importan vía
+   @import) reportando progreso real por postMessage — en la práctica esta
+   segunda cadena casi siempre resuelve desde caché. */
 (function () {
   "use strict";
   var BASE = "fase4/";
-  // Orden de carga = orden de oleadas del MASTER_PLAN (la última envoltura gana).
-  var MODULES = [
+
+  // ---- Fase 1: crítico para el primer pintado --------------------------
+  // Oleadas 7-13 de identidad visual y Home. Puramente aditivo (CSS +
+  // retoques DOM en runtime); ninguno envuelve globals de juego, así que
+  // es seguro adelantarlos.
+  var CRITICAL_MODULES = [
+    "31-identidad-visual",
+    "32-pantallas-bosque",
+    "33-hero-diorama",
+    "35-cajas3d",
+    "36-gate-esquina",
+    "37-nav-iconos",
+    "38-bosque-arte",
+    "39-fondo-vivo",
+    "40-secciones-fondo",
+    // #46 iconos papercraft del HUD (barra superior, botón de escuchar,
+    // píldora de instalación) y #47 layout de las tarjetas de opción: los
+    // dos se ven en el primer pintado, así que van en la fase crítica.
+    "46-hud-iconos",
+    "47-opciones-layout",
+    // #48 avatares papercraft: la pantalla "¿Quién juega?" es literalmente
+    // lo primero que ve el peque, no puede llegar tarde.
+    "48-avatares",
+    // #50 portón de carga: tiene que estar en pantalla antes que nada,
+    // por eso cierra la fase crítica.
+    "50-progreso-carga"
+  ];
+
+  // ---- Fase 2: diferido ------------------------------------------------
+  // El resto de módulos, en su mismo orden relativo original.
+  var DEFERRED_MODULES = [
     // Oleada 1 — medición y analítica (offline, observacional)
     "01-eval-pre-post",
     "02-ab-testing",
     "03-repaso-espaciado",
     "04-indice-dominio",
     "05-deteccion-frustracion",
-    // Oleada 2 — contenido curricular + CMS (dispatchers ampliados)
+    // Oleada 2 — contenido curricular + CMS (dispatchers ampliados).
     // 11 antes de 12/13/14 (aporta eduFaceOf del panel que ellos envuelven);
     // 15 al final (muta el contenido; badge depende de #11).
     "11-materias-nuevas",
@@ -24,125 +71,90 @@
     "13-lectura-avanzada",
     "14-ciencias-avanzada",
     "15-cms-json",
-    // Oleada 3 — motor adaptativo, secuenciación y ZDP (dispatchers ya ampliados por Oleada 2)
+    // Oleada 3 — motor adaptativo, secuenciación y ZDP.
     // 7 antes de 6 (6 envuelve roundMathCount sobre el duplicado de 7);
-    // 8 tras 6/12/13/14 (envuelve y delega los dispatchers ampliados); 9 último (cadena refreshHome).
+    // 8 tras 6/12/13/14 (delega los dispatchers ampliados); 9 último
+    // (cadena refreshHome).
     "07-secuenciacion",
     "06-motor-adaptativo",
     "08-zdp-dinamica",
     "09-recomendador",
-    // Oleada 4 — UX, accesibilidad y personaje
-    // 17,18 puramente aditivos (filas Ajustes); 16 (mascota, voces gated) ANTES de 20
-    // (20 detecta #peqMascot y entra en modo enhance, sin doble personaje); 30 AL FINAL
-    // (applySubjectVisibility el wrapper más externo de refreshHome/passGate/startGame; PIN off por defecto).
+    // Oleada 4 — UX, accesibilidad y personaje.
+    // 17,18 puramente aditivos (filas Ajustes); 16 (mascota, voces gated)
+    // ANTES de 20 (20 detecta #peqMascot y entra en modo enhance); 30 al
+    // final del grupo (applySubjectVisibility es el wrapper más externo de
+    // refreshHome/passGate/startGame; PIN off por defecto).
     "17-accesibilidad",
     "18-dislexia",
     "16-voces-mascota",
     "20-animaciones-personaje",
     "30-controles-parentales",
-    // Oleada 5 — familia y educador (grupo del panel de adultos, tras las
-    // oleadas de flujo de juego). Orden interno 19→21→22→23:
-    // 19 y 21 encadenan sobre window.logRound (cada uno delega primero al
-    // anterior); 21 y 22 encadenan sobre window.renderProgress2 (22 tras 21,
-    // antepone #weekGoalCard como primer hijo de #progBody sin pisar la
-    // sección #assessHead de la Oleada 1, que se repinta al final vía
-    // MutationObserver); 23 añade una 4ª/5ª pestaña (#tabAula) al mismo
-    // .tabs que ya comparten #tabAlbum (19) y #tabParental (30) sin
-    // colisión de IDs. #24 "biblioteca-cojuego" NO se integra: su contenido
-    // (más preguntas para var COPLAY_Q) requeriría editar app.js porque
-    // COPLAY_Q vive dentro de una IIFE y no es alcanzable desde fuera (a
-    // diferencia de LETTERS/ANIMALS/MATH_* del wrap de #15, que son const
-    // de nivel superior) — se deja fuera del loader, ver fase4/MASTER_PLAN.md.
+    // Oleada 5 — familia y educador. Orden interno 19→21→22→23:
+    // 19 y 21 encadenan sobre window.logRound; 21 y 22 sobre
+    // window.renderProgress2; 23 añade una pestaña más al mismo .tabs que
+    // comparten #tabAlbum (19) y #tabParental (30). #24 NO se integra: su
+    // contenido vive dentro de una IIFE en app.js y no es alcanzable desde
+    // fuera — ver fase4/MASTER_PLAN.md.
     "19-album-logros",
     "21-reporte-semanal",
     "22-metas-semanales",
     "23-modo-aula",
-    // Oleada 6 — backend/scaffolds sin wiring (25,26,27,29 solo referencia, no en MODULES);
-    // #28 (código TWA/atajos ?game=, wrap de paintInstall) SÍ se integra, al final de todo.
+    // Oleada 6 — empaquetado a tiendas (código TWA/atajos ?game=, wrap de
+    // paintInstall). 25,26,27,29 son scaffolds sin wiring, fuera del loader.
     "28-pwa-tiendas",
-    // Oleada 7 — identidad visual "Aventuras en el Bosque" (skin papel recortado).
-    // Al final de todo: solo CSS + retoques DOM en runtime (mascota Rufo, rename
-    // del home); no envuelve globales de juego, no toca STORE_KEY.
-    "31-identidad-visual",
-    // Oleada 8 - #32 pantallas del bosque (overlays mapa de aventuras y
-    // mochila de logros, cableados a botones inyectados en el home; pausa y
-    // gate listos como window.PEQ32.* sin cablear) + fix del boton duplicado
-    // del modal "Nuevo peque". Al final de todo: solo CSS + overlays y
-    // retoques DOM en runtime; no envuelve globales de juego, no toca STORE_KEY.
-    "32-pantallas-bosque",
-    // Oleada 9 - #33 hero diorama 3D + rediseño del home. Banda hero (fondo de
-    // bosque + Rufo saludando + saludo con el nombre), barra de navegación
-    // inferior de 4 items (Inicio/Mapa/Mochila/Adultos) cableada a window.PEQ32
-    // (#32) y al gate de adultos, y Rufo celebrando en el logro. Al final de
-    // todo: solo CSS + retoques DOM en runtime; imágenes embebidas como data-URI
-    // en img/*.css (los binarios no se pueden subir byte-exactos con las
-    // herramientas MCP). No envuelve globales de juego, no toca STORE_KEY.
-    "33-hero-diorama",
+    // Juegos nuevos y fondos de pantallas secundarias: no se ven en el
+    // primer pintado de Home, así que se difieren.
     "34-juegos",
-    // Oleada 10 - #35 cajas de menu 3D: reemplaza el aspecto plano de las
-    // tarjetas .subject por casas del bosque de papel (fondo diorama, marco de
-    // color, etiqueta de papel, chevron). Al final de todo: SOLO CSS; imagenes
-    // embebidas como data-URI en img/*.css. No toca app.js ni STORE_KEY.
-    "35-cajas3d",
-    // Oleada 11 - #36 reubica el acceso de adultos: lo saca de la barra inferior
-    // (alto riesgo de toque accidental) y lo pone como engranaje discreto en la
-    // esquina. Al final de todo: solo CSS + un botón; no toca app.js ni STORE_KEY.
-    "36-gate-esquina",
-    "37-nav-iconos",
-    "38-bosque-arte",
-    "39-fondo-vivo",
-    "40-secciones-fondo",
-    // Oleada 12 - #41 fondo HD del claro del bosque para la pantalla de juego
-    // (#game) y #42 fondos HD para los overlays Mapa/Mochila (#32). Al final de
-    // todo: solo CSS + capa de fondo en runtime; imagenes data-URI en img/*.css.
-    // No envuelven globales de juego, no tocan app.js ni STORE_KEY.
     "41-fondo-juego",
     "42-pantallas-fondo",
-    // Oleada 13 - #46 iconos del HUD: sustituye los emoji del sistema de la
-    // barra superior (casa, atras, estrella, sonido), del boton de escuchar y
-    // de la pildora de instalacion por ilustraciones papercraft generadas con
-    // Grok, en linea con la direccion de arte del bosque. Al final de todo:
-    // CSS + un MutationObserver para el toggle mute (app.js cambia el texto del
-    // boton y CSS no puede seleccionar por contenido). No toca app.js ni
-    // index.html ni STORE_KEY.
-    "46-hud-iconos",
-    // #47 layout de las opciones de respuesta: en moviles estrechos las tres
-    // tarjetas .choice no cabian en una fila y la tercera saltaba de linea,
-    // quedando recortada por el overflow de .screen y tapada por los puntos
-    // de progreso. Solo CSS, todo bajo #stage para no afectar a los grupos
-    // .choices de los paneles de ajustes. No toca app.js ni index.html.
-    "47-opciones-layout",
-    // #48 avatares papercraft: los diez avatares de app.js (emoji del sistema,
-    // convertidos en SVG planos por #31) pasan a ser retratos papercraft
-    // generados con Grok. spec.js solo etiqueta cada nodo con data-pa48 a
-    // partir del emoji original o del rastro data-pa31-swapped de #31; el
-    // pintado es CSS con imagenes data-URI en img/*.css. El perfil sigue
-    // guardando el emoji, asi que no hay migracion de datos. No toca app.js
-    // ni index.html ni STORE_KEY.
-    "48-avatares",
-    // #49 iconos del quiz de fonetica: las tres opciones de roundReading se
-    // pintaban como emoji del sistema. Aqui pasan a ser ilustraciones
-    // papercraft generadas con Grok, recortadas con canal alfa (sin la
-    // tarjeta de papel blanca que producia el "doble marco" del intento
-    // anterior). spec.js solo anade clases pa49-* cuando el quiz de letras
-    // esta en pantalla; el pintado es CSS con imagenes data-URI en
-    // img/*.css. No toca app.js ni index.html ni STORE_KEY.
+    // #49 iconos papercraft del quiz de fonética: solo aparecen dentro de
+    // una ronda de lectura, mucho después del arranque, y su spec.js
+    // reintenta con un intervalo hasta encontrar #stage — se difiere.
     "49-iconos-quiz-letras"
   ];
-  MODULES.forEach(function (m) {
+
+  var injected = Object.create(null);
+
+  function injectCss(m) {
+    if (injected[m + ":css"]) return;
+    injected[m + ":css"] = true;
     var l = document.createElement("link");
     l.rel = "stylesheet"; l.href = BASE + m + "/spec.css";
     (document.head || document.documentElement).appendChild(l);
-  });
-  var i = 0;
-  (function next() {
-    if (i >= MODULES.length) return;
-    var m = MODULES[i++];
+  }
+
+  // Carga aditiva e idempotente de un módulo (CSS + JS). Segura de llamar
+  // más de una vez o desde cualquier lugar: si ya se inyectó, no repite
+  // nada. Sirve de fallback on-demand: si el peque navega a algo que
+  // depende de un módulo diferido antes de que termine de cargar solo,
+  // llamar a esto garantiza que cargue en ese momento igual.
+  function loadModule(m, cb) {
+    injectCss(m);
+    if (injected[m + ":js"]) { if (cb) cb(); return; }
+    injected[m + ":js"] = true;
     var s = document.createElement("script");
     s.src = BASE + m + "/spec.js";
     s.async = false;
-    s.onload = next;
-    s.onerror = function () { next(); };
+    s.onload = function () { if (cb) cb(); };
+    s.onerror = function () { if (cb) cb(); };
     (document.body || document.documentElement).appendChild(s);
-  })();
+  }
+
+  function loadChain(list, done) {
+    var i = 0;
+    (function next() {
+      if (i >= list.length) { if (done) done(); return; }
+      loadModule(list[i++], next);
+    })();
+  }
+
+  loadChain(CRITICAL_MODULES, function () {
+    var kick = function () { loadChain(DEFERRED_MODULES, function () {}); };
+    if (window.requestIdleCallback) window.requestIdleCallback(kick, { timeout: 1500 });
+    else setTimeout(kick, 60);
+  });
+
+  // Expuesto por si una pantalla futura necesita forzar la carga anticipada
+  // de un módulo puntual concreto (misma función idempotente de arriba).
+  window.PA_loadModule = loadModule;
 })();
