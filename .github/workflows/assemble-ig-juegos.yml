@@ -1,0 +1,26 @@
+name: assemble-ig-juegos
+on:
+  workflow_dispatch:
+permissions:
+  contents: write
+jobs:
+  assemble:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: feat/52-juegos-tarjetas
+      - name: Assemble
+        run: |
+          set -e
+          mkdir -p fase4/52-juegos-tarjetas/img
+          : > fase4/52-juegos-tarjetas/img/ig-juegos.css
+          for f in $(ls .pa52-parts/part-* | sort); do
+            cat "$f" >> fase4/52-juegos-tarjetas/img/ig-juegos.css
+          done
+          rm -rf .pa52-parts .github/workflows/assemble-ig-juegos.yml
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git add -A
+          git commit -m "feat(#52): 12 ilustraciones de juego papercraft embebidas en WebP base64"
+          git push origin feat/52-juegos-tarjetas
