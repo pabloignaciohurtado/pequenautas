@@ -43,7 +43,7 @@
     var t = (el.textContent || "").trim();
     if(MAP[t]) return MAP[t];
     // por si el nodo trae (o pierde) el selector de variacion U+FE0F
-    var bare = t.replace(/️/g, "");
+    var bare = t.replace(/\uFE0F/g, "");
     return MAP[bare] || null;
   }
 
