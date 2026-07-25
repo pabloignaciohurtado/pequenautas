@@ -119,7 +119,15 @@
     // pintado es CSS con imagenes data-URI en img/*.css. El perfil sigue
     // guardando el emoji, asi que no hay migracion de datos. No toca app.js
     // ni index.html ni STORE_KEY.
-    "48-avatares"
+    "48-avatares",
+    // #49 iconos del quiz de fonetica: las tres opciones de roundReading se
+    // pintaban como emoji del sistema. Aqui pasan a ser ilustraciones
+    // papercraft generadas con Grok, recortadas con canal alfa (sin la
+    // tarjeta de papel blanca que producia el "doble marco" del intento
+    // anterior). spec.js solo anade clases pa49-* cuando el quiz de letras
+    // esta en pantalla; el pintado es CSS con imagenes data-URI en
+    // img/*.css. No toca app.js ni index.html ni STORE_KEY.
+    "49-iconos-quiz-letras"
   ];
   MODULES.forEach(function (m) {
     var l = document.createElement("link");
