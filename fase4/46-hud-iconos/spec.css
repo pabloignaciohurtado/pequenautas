@@ -1,0 +1,49 @@
+/* ===== Fase 4 #46 · Iconos del HUD (papel recortado, arte Grok) =====
+   Sustituye los emoji del sistema de la barra superior, del boton de
+   escuchar y de la pildora de instalacion por ilustraciones papercraft.
+   Aditivo: no toca app.js ni index.html. */
+@import url("img/ig-home.css");
+@import url("img/ig-back.css");
+@import url("img/ig-star.css");
+@import url("img/ig-snd.css");
+@import url("img/ig-mute.css");
+@import url("img/ig-rocket.css");
+
+#homeBtn,
+#backBtn,
+#soundBtn,
+#replayBtn,
+.stars .s,
+.installPill .ip-ico{
+  font-size:0!important;
+  color:transparent!important;
+  text-shadow:none!important;
+}
+
+#homeBtn::before,
+#backBtn::before,
+#soundBtn::before,
+#replayBtn::before,
+.stars .s::before,
+.installPill .ip-ico::before{
+  content:"";
+  display:block;
+  background-repeat:no-repeat;
+  background-position:center;
+  background-size:contain;
+  filter:drop-shadow(1px 2px 0 rgba(46,59,44,.14));
+}
+
+#homeBtn::before{width:32px;height:32px;background-image:var(--pa46-home);}
+#backBtn::before{width:30px;height:30px;background-image:var(--pa46-back);}
+#soundBtn::before{width:30px;height:30px;background-image:var(--pa46-snd);}
+#soundBtn.pa46-mute::before{background-image:var(--pa46-mute);}
+#replayBtn::before{width:30px;height:30px;background-image:var(--pa46-snd);}
+.stars .s::before{width:26px;height:26px;background-image:var(--pa46-star);}
+.installPill .ip-ico::before{width:24px;height:24px;background-image:var(--pa46-rocket);}
+
+/* la estrella ya trae su propio drop-shadow ambar en index.html */
+.stars .s{filter:none!important;}
+
+/* el boton de escuchar tenia un lila que no pertenece a la paleta del bosque */
+.prompt .speak{background:#F6F1E4!important;}
