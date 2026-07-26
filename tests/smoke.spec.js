@@ -19,7 +19,7 @@ test('la pantalla de perfiles crea un perfil y lleva al hub con las 3 materias b
   const errors = [];
   page.on('pageerror', (e) => errors.push(e.message));
   await createProfile(page, 'Sofia');
-  await expect(page.locator('.subject:not(.pa53-card):not(.pa54-card)')).toHaveCount(3);
+  await expect(page.locator('.subject:not(.pa53-card):not(.pa54-card):not(.pa55-card)')).toHaveCount(3);
   await expect(page.locator('#chipNm')).toHaveText('Sofia');
   expect(errors).toEqual([]);
 });
