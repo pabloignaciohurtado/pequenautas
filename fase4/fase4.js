@@ -126,7 +126,8 @@
     // contenido y aparece con la misma animación de entrada que las otras
     // tres. Va DESPUÉS de #52: reutiliza sus tarjetas papercraft y le añade
     // las cuatro viñetas nuevas.
-    "53-formas-colores"
+    "53-formas-colores",
+    "54-ingenio"
   ];
 
   var injected = Object.create(null);
