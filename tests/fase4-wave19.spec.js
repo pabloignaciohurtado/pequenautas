@@ -53,7 +53,7 @@ test('Fase 4 · #54: la quinta tarjeta existe y no roba el tap a las demás', as
   const cards = await page.evaluate(() =>
     [...document.querySelectorAll('#home .subject')].map((c) => c.getAttribute('data-game'))
   );
-  expect(cards).toEqual(['math', 'reading', 'science', 'shapes', 'brain']);
+  expect(cards).toEqual(['math', 'reading', 'science', 'shapes', 'brain', 'music']);
 
   await page.locator('.subject').nth(1).click();
   await page.waitForTimeout(700);
@@ -72,7 +72,7 @@ test('Fase 4 · #54: cinco casas en dos filas, ninguna huérfana', async ({ page
     const set = [...new Set(tops)];
     return set.map((t) => tops.filter((x) => x === t).length);
   });
-  expect(filas).toEqual([3, 2]); // tres arriba, dos abajo
+  expect(filas).toEqual([3, 3]); // con #55 son seis: tres arriba, tres abajo
 });
 
 test('Fase 4 · #54: abre su propia sección con cuatro juegos ilustrados', async ({ page }) => {
