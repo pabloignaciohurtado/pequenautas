@@ -54,7 +54,7 @@ test('Fase 4 · Oleada 3: por defecto solo UN motor de best.math activo (#6 ON, 
 test('Fase 4 · Oleada 3: 3 materias por defecto (regresión) y nivel-0 de Números con .cnum + estrella', async ({ page }) => {
   await page.goto(fileUrl);
   await page.waitForTimeout(1400);
-  await expect(page.locator('.subject:not(.pa53-card):not(.pa54-card)')).toHaveCount(3);
+  await expect(page.locator('.subject:not(.pa53-card):not(.pa54-card):not(.pa55-card)')).toHaveCount(3);
   await mk(page, 'W3reg');
   await page.click('.subject[data-game="math"]');
   await page.click('[data-pa34-app="math"]');

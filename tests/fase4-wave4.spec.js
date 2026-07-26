@@ -65,7 +65,7 @@ test('Fase 4 · #30: PIN OFF por defecto (parent-gate no-op) y pestaña Control 
 test('Fase 4 · Oleada 4: 3 materias (regresión), filas de Ajustes inyectadas y estrella al acertar', async ({ page }) => {
   await page.goto(fileUrl);
   await page.waitForTimeout(1600);
-  await expect(page.locator('.subject:not(.pa53-card):not(.pa54-card)')).toHaveCount(3);
+  await expect(page.locator('.subject:not(.pa53-card):not(.pa54-card):not(.pa55-card)')).toHaveCount(3);
   await mk(page, 'W4reg');
   // abrir Ajustes y comprobar que las 5 filas de Oleada 4 están presentes
   const rows = await page.evaluate(() => {
