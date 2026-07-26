@@ -119,7 +119,14 @@
     // juego en vez de un icono por mecánica. Solo se ve dentro del overlay
     // de #34, así que se difiere igual que él, y va DESPUÉS: #34 es quien
     // construye los botones que #52 reestiliza.
-    "52-juegos-tarjetas"
+    "52-juegos-tarjetas",
+    // #53 sección "Formas y Colores": una cuarta materia completa (formas,
+    // colores y patrones) con cuatro juegos propios. Inyecta su tarjeta en
+    // Home, así que podría parecer crítica, pero llega con el resto del
+    // contenido y aparece con la misma animación de entrada que las otras
+    // tres. Va DESPUÉS de #52: reutiliza sus tarjetas papercraft y le añade
+    // las cuatro viñetas nuevas.
+    "53-formas-colores"
   ];
 
   var injected = Object.create(null);
