@@ -127,7 +127,7 @@
     // tres. Va DESPUÉS de #52: reutiliza sus tarjetas papercraft y le añade
     // las cuatro viñetas nuevas.
     "53-formas-colores",
-    "54-ingenio"
+    "54-ingenio", "55-musica"
   ];
 
   var injected = Object.create(null);
