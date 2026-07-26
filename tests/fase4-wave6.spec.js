@@ -63,7 +63,7 @@ test('Fase 4 · Oleada 6: seguridad de red — cero peticiones nuevas fuera de f
 test('Fase 4 · Oleada 6: 3 materias (regresión), nivel 0 Números .cnum y estrella al acertar', async ({ page }) => {
   await page.goto(fileUrl);
   await page.waitForTimeout(1600);
-  await expect(page.locator('.subject:not(.pa53-card)')).toHaveCount(3);
+  await expect(page.locator('.subject:not(.pa53-card):not(.pa54-card)')).toHaveCount(3);
   await mk(page, 'W6reg');
   await page.click('.subject[data-game="math"]');
   await page.click('[data-pa34-app="math"]');
