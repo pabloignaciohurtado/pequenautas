@@ -15,11 +15,11 @@ async function createProfile(page, name) {
   await expect(page.locator('#home')).toBeVisible();
 }
 
-test('la pantalla de perfiles crea un perfil y lleva al hub con 3 materias', async ({ page }) => {
+test('la pantalla de perfiles crea un perfil y lleva al hub con las 3 materias base', async ({ page }) => {
   const errors = [];
   page.on('pageerror', (e) => errors.push(e.message));
   await createProfile(page, 'Sofia');
-  await expect(page.locator('.subject')).toHaveCount(3);
+  await expect(page.locator('.subject:not(.pa53-card)')).toHaveCount(3);
   await expect(page.locator('#chipNm')).toHaveText('Sofia');
   expect(errors).toEqual([]);
 });
