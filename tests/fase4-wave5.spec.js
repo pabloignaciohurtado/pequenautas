@@ -95,7 +95,7 @@ test('Fase 4 · #21/#22: #weekGoalCard antepuesto en #progBody sin pisar #assess
 test('Fase 4 · Oleada 5: 3 materias (regresión), level-0 Números con .cnum y estrella al acertar', async ({ page }) => {
   await page.goto(fileUrl);
   await page.waitForTimeout(1600);
-  await expect(page.locator('.subject:not(.pa53-card)')).toHaveCount(3);
+  await expect(page.locator('.subject:not(.pa53-card):not(.pa54-card)')).toHaveCount(3);
   await mk(page, 'W5reg');
   await page.click('.subject[data-game="math"]');
   await page.click('[data-pa34-app="math"]');

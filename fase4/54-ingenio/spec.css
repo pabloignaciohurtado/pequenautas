@@ -1,0 +1,234 @@
+/* ===== Fase 4 #54 · Sección "Ingenio" (aspecto) =====
+
+   Mismo reparto de trabajo que #53, con una diferencia de rejilla:
+
+   1. Home pasa a CINCO casas. #53 había forzado 2×2 porque con cuatro
+      tarjetas la última se quedaba huérfana; con cinco, 2×2 deja otra vez
+      una sola abajo. Tres columnas reparte 3+2, que se lee equilibrado, y
+      además es la rejilla original de index.html —volvemos a ella a
+      propósito, no por accidente. Este archivo carga después de #53, así
+      que su !important gana.
+
+   2. La quinta tarjeta trae su propio par de colores: #35 solo define
+      :nth-child(1..3) y #53 se quedó con el morado.
+
+   3. Overlay propio (.pa54-ov) por la misma razón de siempre: #40 hace
+      querySelector(".pa34-ov") y se llevaría el overlay equivocado si
+      hubiera dos. Todo lo de dentro reutiliza .pa34-* para heredar gratis
+      el papercraft de #52.
+
+   Lo nuevo aquí son cuatro tableros que #53 no necesitaba: el marco del
+   rompecabezas, las dos columnas de sombras, el claro con huellas y la
+   balanza. Cada uno tiene su bloque comentado más abajo.
+
+   Aditivo: no toca app.js, ni index.html, ni STORE_KEY. */
+
+@import url("img/ig-home.css");
+@import url("img/ig-puzzle.css");
+@import url("img/ig-shadow.css");
+@import url("img/ig-path.css");
+@import url("img/ig-scale.css");
+
+/* ---------- 1 · Home: cinco casas, 3 columnas ---------- */
+.cards{grid-template-columns:repeat(3,1fr) !important;max-width:1020px !important;}
+@media (max-width:820px){
+  .cards{grid-template-columns:repeat(2,1fr) !important;max-width:760px !important;}
+}
+@media (max-width:640px){
+  .cards{grid-template-columns:1fr !important;max-width:420px !important;}
+}
+.subject.pa54-card{--pa35c:#2F7FA8;--pa35cd:#1F5C7C;}
+.subject.pa54-card::before{background-image:var(--pa54-home);}
+.screen.active .subject.pa54-card{animation:pa35in 460ms var(--ease-out,cubic-bezier(.2,.8,.3,1)) 290ms forwards !important;opacity:0;}
+@media (prefers-reduced-motion:reduce){
+  .screen.active .subject.pa54-card{animation:none !important;opacity:1 !important;transform:none !important;}
+}
+
+/* ---------- 2 · Viñeta por juego (misma banda que #52) ---------- */
+html.pa52 [data-pa34-game="brain:puzzle"] .mech{background-image:var(--pa54-puzzle) !important;}
+html.pa52 [data-pa34-game="brain:shadow"] .mech{background-image:var(--pa54-shadow) !important;}
+html.pa52 [data-pa34-game="brain:path"]   .mech{background-image:var(--pa54-path) !important;}
+html.pa52 [data-pa34-game="brain:scale"]  .mech{background-image:var(--pa54-scale) !important;}
+.pa54-games .mech{background-size:contain;background-position:center;background-repeat:no-repeat;}
+
+/* ---------- 3 · Overlay propio ---------- */
+.pa54-ov{
+  position:fixed;inset:0;z-index:1400;
+  background:rgba(31,42,30,.52);
+  display:flex;align-items:flex-end;justify-content:center;
+  opacity:0;pointer-events:none;transition:opacity .22s ease;
+}
+.pa54-ov.show{opacity:1;pointer-events:auto;}
+.pa54-ov .pa34-sheet{transform:translateY(18px);transition:transform .24s cubic-bezier(.2,.8,.3,1);}
+.pa54-ov.show .pa34-sheet{transform:none;}
+
+/* ---------- 4 · Superficie de juego ---------- */
+.pa54-play{
+  position:fixed;inset:0;z-index:1500;
+  background:radial-gradient(120% 70% at 50% 0%, #FBF6E6 0%, #F1E9D4 55%, #E4DCC2 100%);
+  display:flex;flex-direction:column;
+  font-family:'Plus Jakarta Sans',system-ui,sans-serif;
+  opacity:0;pointer-events:none;transition:opacity .2s ease;
+}
+.pa54-play.show{opacity:1;pointer-events:auto;}
+.pa54-ptop{
+  flex:0 0 auto;display:flex;align-items:center;gap:10px;
+  padding:12px 14px;background:#FFFCF2;
+  box-shadow:0 2px 10px rgba(46,59,44,.10);
+}
+.pa54-prompt{flex:1 1 auto;text-align:center;font-weight:800;font-size:17px;color:#2E3B2C;line-height:1.25;}
+.pa54-pstar{flex:0 0 auto;font-weight:800;color:#2E3B2C;font-size:15px;white-space:nowrap;}
+.pa54-field{
+  flex:1 1 auto;overflow-y:auto;
+  display:flex;flex-direction:column;align-items:center;justify-content:center;
+  gap:20px;padding:18px 14px;
+}
+.pa54-field > *{width:100%;max-width:620px;}
+.pa54-pbot{
+  flex:0 0 auto;display:flex;align-items:center;gap:12px;
+  padding:12px 16px calc(12px + env(safe-area-inset-bottom,0px));
+  background:#FFFCF2;box-shadow:0 -2px 10px rgba(46,59,44,.10);
+}
+.pa54-prog{flex:1 1 auto;display:flex;gap:7px;flex-wrap:wrap;}
+.pa54-prog i{flex:0 0 auto;width:22px;height:8px;border-radius:5px;background:rgba(46,59,44,.16);transition:background .2s;}
+.pa54-prog i.on{background:#57C596;}
+.pa54-cta{
+  flex:0 0 auto;border:0;border-radius:16px;cursor:pointer;
+  background:#57C596;color:#fff;font-weight:800;font-size:16px;
+  padding:11px 20px;box-shadow:0 4px 0 #369468;font-family:inherit;
+}
+.pa54-cta.ghost{background:#FFFCF2;color:#2E3B2C;box-shadow:0 4px 0 rgba(46,59,44,.16);}
+.pa54-cta:active{transform:translateY(2px);box-shadow:0 2px 0 #369468;}
+.pa54-grid{display:flex;flex-wrap:wrap;gap:14px;justify-content:center;}
+.pa54-svg{width:100%;height:100%;display:block;}
+
+/* ---------- 5 · Rompecabezas ----------
+   El tablero es un marco de papel con huecos hundidos: el niño tiene que
+   ver a simple vista dónde falta algo. La proporción la fija el JS con
+   aspect-ratio, así que aquí no se codifica ningún número de columnas. */
+.pa54-board{
+  display:grid;gap:4px;padding:8px;
+  background:rgba(255,252,242,.80);
+  border:3px solid rgba(46,59,44,.18);
+  border-radius:22px;
+  box-shadow:inset 0 3px 10px rgba(46,59,44,.10),0 8px 18px rgba(46,59,44,.12);
+  max-width:420px !important;margin:0 auto;
+}
+.pa54-slot{
+  border:2px dashed rgba(46,59,44,.28);
+  border-radius:10px;background:rgba(46,59,44,.05);
+  padding:0;overflow:hidden;cursor:pointer;font-family:inherit;
+  transition:background .15s ease,border-color .15s ease;
+}
+.pa54-slot.pa54-filled{border:2px solid transparent;background:transparent;cursor:default;}
+.pa54-tray{
+  display:flex;flex-wrap:wrap;gap:10px;justify-content:center;
+  background:rgba(255,252,242,.72);
+  border:2px dashed rgba(46,59,44,.16);
+  border-radius:26px;padding:12px;
+  box-shadow:inset 0 2px 8px rgba(46,59,44,.06);
+}
+.pa54-piece{
+  width:72px;flex:0 0 auto;padding:0;overflow:hidden;
+  border:2px solid rgba(46,59,44,.14);border-radius:12px;
+  background:#FFFCF2;cursor:pointer;font-family:inherit;
+  box-shadow:0 3px 0 rgba(46,59,44,.10),0 6px 12px rgba(46,59,44,.12);
+  transition:transform .14s ease,box-shadow .14s ease;
+}
+.pa54-piece:active{transform:translateY(2px);}
+
+/* ---------- 6 · Silueta y sombra ---------- */
+.pa54-two{display:flex;gap:24px;justify-content:center;align-items:flex-start;}
+.pa54-row{display:flex;flex-direction:column;gap:12px;}
+.pa54-tile{
+  width:92px;height:92px;flex:0 0 auto;
+  border:2px solid rgba(46,59,44,.14);
+  border-radius:20px 23px 18px 21px;
+  background:linear-gradient(180deg,#FFFCF2 0%,#FBF3E0 100%);
+  box-shadow:0 3px 0 rgba(46,59,44,.10),0 8px 16px rgba(46,59,44,.12);
+  display:flex;align-items:center;justify-content:center;
+  padding:8px;cursor:pointer;font-family:inherit;
+  transition:transform .14s ease,box-shadow .14s ease;
+}
+.pa54-tile:active{transform:translateY(2px);}
+/* La columna de sombras va sobre papel más apagado: así se lee como
+   "el suelo" y no como una segunda colección de figuras. */
+.pa54-shadows .pa54-tile{background:linear-gradient(180deg,#EFE7D2 0%,#E4DCC4 100%);}
+.pa54-tile.pa54-num{width:auto;min-width:78px;height:70px;font-size:28px;font-weight:800;color:#2E3B2C;padding:0 16px;}
+
+/* ---------- 7 · Sendero de un trazo ----------
+   El claro es una caja de proporción fija: las huellas se colocan por
+   porcentaje desde el JS, así que la caja NO puede colapsar en alto. */
+.pa54-trail{
+  position:relative;width:100%;max-width:520px;margin:0 auto;
+  aspect-ratio:300 / 210;
+  background:
+    radial-gradient(70% 60% at 50% 45%, rgba(180,214,168,.55) 0%, rgba(180,214,168,0) 70%),
+    rgba(255,252,242,.66);
+  border:2px dashed rgba(46,59,44,.16);border-radius:28px;
+  box-shadow:inset 0 2px 10px rgba(46,59,44,.07);
+}
+.pa54-trailsvg{position:absolute;inset:0;width:100%;height:100%;pointer-events:none;}
+.pa54-foot{
+  position:absolute;transform:translate(-50%,-50%);
+  width:46px;height:46px;border-radius:50%;
+  border:3px solid rgba(46,59,44,.20);
+  background:#FFFCF2;color:#2E3B2C;
+  font-family:inherit;font-weight:800;font-size:18px;
+  cursor:pointer;box-shadow:0 4px 10px rgba(46,59,44,.18);
+  transition:transform .14s ease,background .14s ease;
+}
+.pa54-foot.pa54-ok{background:#57C596;color:#fff;border-color:#369468;transform:translate(-50%,-50%) scale(1.06);}
+
+/* ---------- 8 · Balanza ----------
+   Los platillos son divs superpuestos al SVG: dibujar N bellotas dentro
+   del propio SVG obligaría a recalcular geometría por cada cantidad. */
+.pa54-scalewrap{position:relative;width:100%;max-width:440px;margin:0 auto;}
+.pa54-scale{width:100%;height:auto;display:block;filter:drop-shadow(0 6px 10px rgba(46,59,44,.20));}
+.pa54-pans{position:absolute;inset:0;display:flex;justify-content:space-between;align-items:flex-start;pointer-events:none;padding:0 4%;}
+.pa54-pan{
+  width:38%;min-height:56px;
+  display:flex;flex-wrap:wrap;gap:3px;align-content:flex-end;justify-content:center;
+  padding-bottom:6px;
+}
+.pa54-w{width:22px;height:22px;display:block;}
+.pa54-w .pa54-svg{width:100%;height:100%;}
+.pa54-new{animation:pa54pop 380ms ease;}
+@keyframes pa54pop{0%{transform:scale(.2);opacity:0;}70%{transform:scale(1.15);}100%{transform:none;opacity:1;}}
+.pa54-side{min-width:120px;}
+
+/* ---------- 9 · Estados compartidos ---------- */
+.pa54-sel{border-color:#E8B22C !important;box-shadow:0 0 0 4px rgba(232,178,44,.35),0 8px 16px rgba(46,59,44,.14) !important;transform:translateY(-3px);}
+.pa54-ok{border-color:#57C596;box-shadow:0 0 0 4px rgba(87,197,150,.40);}
+.pa54-gone{opacity:.18;pointer-events:none;}
+.pa54-no{animation:pa54shake 420ms;}
+@keyframes pa54shake{0%,100%{transform:none;}20%{transform:translateX(-7px);}45%{transform:translateX(6px);}70%{transform:translateX(-4px);}}
+
+/* ---------- 10 · Victoria ---------- */
+.pa54-win{
+  position:absolute;inset:0;z-index:3;
+  background:rgba(31,42,30,.62);
+  display:flex;align-items:center;justify-content:center;padding:22px;
+  opacity:0;pointer-events:none;transition:opacity .24s ease;
+}
+.pa54-win.show{opacity:1;pointer-events:auto;}
+.pa54-wc{
+  background:#FFFCF2;border-radius:26px;padding:24px 22px;text-align:center;
+  max-width:340px;width:100%;box-shadow:0 16px 40px rgba(0,0,0,.3);
+}
+.pa54-wc .rf{width:88px;height:88px;margin:0 auto 8px;}
+.pa54-wc h2{margin:0 0 6px;font-size:24px;color:#2E3B2C;}
+.pa54-wc p{margin:0 0 16px;font-size:15px;color:#5A6657;}
+.pa54-wc .row{display:flex;gap:10px;justify-content:center;}
+
+@media (max-width:400px){
+  .pa54-tile{width:68px;height:68px;}
+  .pa54-piece{width:56px;}
+  .pa54-two{gap:14px;}
+  .pa54-foot{width:38px;height:38px;font-size:15px;}
+  .pa54-w{width:16px;height:16px;}
+}
+@media (prefers-reduced-motion:reduce){
+  .pa54-no,.pa54-new{animation:none;}
+  .pa54-tile,.pa54-piece,.pa54-foot,.pa54-slot{transition:none;}
+}

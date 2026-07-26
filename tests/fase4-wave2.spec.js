@@ -36,7 +36,7 @@ test('Fase 4 · Oleada 2: los 5 módulos cargan, exponen API y no rompen el núc
 test('Fase 4 · Oleada 2: 3 materias por defecto (regresión) y nivel-0 de Números sigue con .cnum', async ({ page }) => {
   await page.goto(fileUrl);
   await page.waitForTimeout(1200);
-  await expect(page.locator('.subject:not(.pa53-card)')).toHaveCount(3);
+  await expect(page.locator('.subject:not(.pa53-card):not(.pa54-card)')).toHaveCount(3);
   expect(await page.evaluate(() => window.__moreSubjects.isOn())).toBe(false);
   await mk(page, 'W2reg');
   await page.click('.subject[data-game="math"]');
@@ -56,7 +56,7 @@ test('Fase 4 · Oleada 2: 3 materias por defecto (regresión) y nivel-0 de Núme
 test('Fase 4 · #11: materias nuevas opt-in (enable agrega 3 → 6)', async ({ page }) => {
   await page.goto(fileUrl);
   await page.waitForTimeout(1200);
-  const n = await page.evaluate(() => { window.__moreSubjects.enable(); return document.querySelectorAll('.subject:not(.pa53-card)').length; });
+  const n = await page.evaluate(() => { window.__moreSubjects.enable(); return document.querySelectorAll('.subject:not(.pa53-card):not(.pa54-card)').length; });
   expect(n).toBe(6);
 });
 
