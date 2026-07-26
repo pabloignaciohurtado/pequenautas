@@ -1,0 +1,197 @@
+/* ===== Fase 4 #53 · Sección "Formas y Colores" (aspecto) =====
+
+   Tres trabajos:
+
+   1. Hacer sitio a una CUARTA tarjeta en Home. La rejilla de index.html es
+      de tres columnas fijas: con cuatro tarjetas, la última se quedaba sola
+      en una segunda fila. Aquí pasa a 2×2 en escritorio, que además agranda
+      cada casa del bosque; en móvil ya era de una columna y no cambia.
+
+   2. Vestir esa tarjeta con el lenguaje de #35 (marco de color, diorama de
+      fondo, etiqueta de papel). #35 solo define colores para :nth-child(1..3),
+      así que la cuarta trae los suyos.
+
+   3. Pintar el overlay propio y las cuatro mecánicas. Por dentro reutiliza
+      las clases .pa34-* (hoja, cabecera, rejilla de juegos, mapa de
+      niveles), que en #34 son globales y no cuelgan de .pa34-ov: así estos
+      juegos heredan gratis el rediseño papercraft de #52 y cualquier ajuste
+      futuro de esa capa. Lo único propio es .pa53-ov —#40 hace
+      querySelector(".pa34-ov") y se quedaría con el overlay equivocado si
+      hubiera dos.
+
+   Las viñetas van embebidas en base64 dentro de img/*.css: el repo no
+   admite binarios. El sw las precachea con solo estar importadas aquí.
+
+   Aditivo: no toca app.js, ni index.html, ni STORE_KEY. */
+
+@import url("img/ig-home.css");
+@import url("img/ig-shape-tap.css");
+@import url("img/ig-shape-match.css");
+@import url("img/ig-color-classify.css");
+@import url("img/ig-pattern-tap.css");
+
+/* ---------- 1 · Home: cuatro casas, 2×2 ---------- */
+.cards{grid-template-columns:repeat(2,1fr) !important;max-width:760px !important;}
+@media (max-width:640px){
+  .cards{grid-template-columns:1fr !important;max-width:420px !important;}
+}
+.subject.pa53-card{--pa35c:#8A5BB0;--pa35cd:#66408A;}
+.subject.pa53-card::before{background-image:var(--pa53-home);}
+.screen.active .subject.pa53-card{animation:pa35in 460ms var(--ease-out,cubic-bezier(.2,.8,.3,1)) 230ms forwards !important;opacity:0;}
+@media (prefers-reduced-motion:reduce){
+  .screen.active .subject.pa53-card{animation:none !important;opacity:1 !important;transform:none !important;}
+}
+
+/* ---------- 2 · Viñeta por juego (misma banda que #52) ---------- */
+html.pa52 [data-pa34-game="shape:tap"] .mech{background-image:var(--pa53-shape-tap) !important;}
+html.pa52 [data-pa34-game="shape:match"] .mech{background-image:var(--pa53-shape-match) !important;}
+html.pa52 [data-pa34-game="color:classify"] .mech{background-image:var(--pa53-color-classify) !important;}
+html.pa52 [data-pa34-game="pattern:tap"] .mech{background-image:var(--pa53-pattern-tap) !important;}
+
+/* Si #52 no cargó, la banda es el chip original de #34 y basta con que la
+   viñeta se vea igual de bien dentro de él. */
+.pa53-games .mech{background-size:contain;background-position:center;background-repeat:no-repeat;}
+
+/* ---------- 3 · Overlay propio ---------- */
+.pa53-ov{
+  position:fixed;inset:0;z-index:1400;
+  background:rgba(31,42,30,.52);
+  display:flex;align-items:flex-end;justify-content:center;
+  opacity:0;pointer-events:none;transition:opacity .22s ease;
+}
+.pa53-ov.show{opacity:1;pointer-events:auto;}
+.pa53-ov .pa34-sheet{transform:translateY(18px);transition:transform .24s cubic-bezier(.2,.8,.3,1);}
+.pa53-ov.show .pa34-sheet{transform:none;}
+
+/* ---------- 4 · Superficie de juego ---------- */
+.pa53-play{
+  position:fixed;inset:0;z-index:1500;
+  /* claro de bosque: el mismo degradado de cielo y suelo que usan las
+     pantallas de juego, para que la mesa de trabajo no aparezca flotando
+     sobre un rectángulo crema vacío */
+  background:
+    radial-gradient(120% 70% at 50% 0%, #FBF6E6 0%, #F1E9D4 55%, #E4DCC2 100%);
+  display:flex;flex-direction:column;
+  font-family:'Plus Jakarta Sans',system-ui,sans-serif;
+  opacity:0;pointer-events:none;transition:opacity .2s ease;
+}
+.pa53-play.show{opacity:1;pointer-events:auto;}
+.pa53-ptop{
+  flex:0 0 auto;display:flex;align-items:center;gap:10px;
+  padding:12px 14px;background:#FFFCF2;
+  box-shadow:0 2px 10px rgba(46,59,44,.10);
+}
+.pa53-prompt{flex:1 1 auto;text-align:center;font-weight:800;font-size:17px;color:#2E3B2C;line-height:1.25;}
+.pa53-pstar{flex:0 0 auto;font-weight:800;color:#2E3B2C;font-size:15px;white-space:nowrap;}
+/* La mesa de trabajo: un tapete de papel centrado, con ancho máximo. Sin
+   él las fichas quedaban perdidas en medio de una pantalla ancha vacía. */
+.pa53-field{
+  flex:1 1 auto;overflow-y:auto;
+  display:flex;flex-direction:column;align-items:center;justify-content:center;
+  gap:22px;padding:20px 14px;
+}
+.pa53-field > *{
+  width:100%;max-width:620px;
+}
+.pa53-tray,.pa53-strip{
+  background:rgba(255,252,242,.72);
+  border:2px dashed rgba(46,59,44,.16);
+  border-radius:26px;
+  padding:14px 12px;
+  box-shadow:inset 0 2px 8px rgba(46,59,44,.06);
+}
+.pa53-pbot{
+  flex:0 0 auto;display:flex;align-items:center;gap:12px;
+  padding:12px 16px calc(12px + env(safe-area-inset-bottom,0px));
+  background:#FFFCF2;box-shadow:0 -2px 10px rgba(46,59,44,.10);
+}
+.pa53-prog{flex:1 1 auto;display:flex;gap:7px;}
+.pa53-prog i{flex:0 0 auto;width:26px;height:8px;border-radius:5px;background:rgba(46,59,44,.16);transition:background .2s;}
+.pa53-prog i.on{background:#57C596;}
+.pa53-cta{
+  flex:0 0 auto;border:0;border-radius:16px;cursor:pointer;
+  background:#57C596;color:#fff;font-weight:800;font-size:16px;
+  padding:11px 20px;box-shadow:0 4px 0 #369468;font-family:inherit;
+}
+.pa53-cta.ghost{background:#FFFCF2;color:#2E3B2C;box-shadow:0 4px 0 rgba(46,59,44,.16);}
+.pa53-cta:active{transform:translateY(2px);box-shadow:0 2px 0 #369468;}
+
+/* fichas */
+.pa53-grid{display:flex;flex-wrap:wrap;gap:16px;justify-content:center;}
+.pa53-two{display:flex;gap:26px;justify-content:center;align-items:flex-start;}
+.pa53-col{display:flex;flex-direction:column;gap:12px;}
+.pa53-tray{display:flex;flex-wrap:wrap;gap:12px;justify-content:center;}
+/* La tira del patrón NO envuelve: si la casilla del "?" cae a una segunda
+   línea, deja de leerse como una secuencia y el juego pierde su sentido.
+   Las fichas de la tira son más pequeñas que las de respuesta justamente
+   para que la secuencia entera quepa de un vistazo. */
+.pa53-strip{display:flex;flex-wrap:nowrap;gap:8px;justify-content:center;align-items:center;overflow-x:auto;}
+.pa53-strip .pa53-tile{width:56px;height:56px;padding:5px;border-radius:14px;}
+.pa53-tile{
+  width:108px;height:108px;flex:0 0 auto;
+  border:2px solid rgba(46,59,44,.14);
+  border-radius:20px 23px 18px 21px;
+  background:linear-gradient(180deg,#FFFCF2 0%,#FBF3E0 100%);
+  box-shadow:0 3px 0 rgba(46,59,44,.10),0 8px 16px rgba(46,59,44,.12);
+  display:flex;align-items:center;justify-content:center;
+  padding:9px;cursor:pointer;font-family:inherit;
+  transition:transform .14s ease,box-shadow .14s ease;
+}
+.pa53-tile.pa53-sm{width:72px;height:72px;padding:7px;border-radius:18px;}
+.pa53-tile.pa53-fix{cursor:default;box-shadow:none;background:transparent;border-color:transparent;}
+.pa53-tile.pa53-hole{
+  border:3px dashed rgba(46,59,44,.38);background:rgba(255,252,242,.65);
+  font-size:30px;font-weight:800;color:rgba(46,59,44,.45);
+}
+.pa53-svg{width:100%;height:100%;display:block;}
+.pa53-tile:active{transform:translateY(2px);}
+.pa53-tile.pa53-sel{border-color:#E8B22C;box-shadow:0 0 0 4px rgba(232,178,44,.35),0 8px 16px rgba(46,59,44,.14);transform:translateY(-3px);}
+.pa53-tile.pa53-ok{border-color:#57C596;box-shadow:0 0 0 4px rgba(87,197,150,.40);}
+.pa53-tile.pa53-gone{opacity:.22;pointer-events:none;}
+.pa53-no{animation:pa53shake 420ms;}
+@keyframes pa53shake{0%,100%{transform:none;}20%{transform:translateX(-7px);}45%{transform:translateX(6px);}70%{transform:translateX(-4px);}}
+
+/* canastas de color */
+.pa53-bins{display:flex;gap:18px;justify-content:center;flex-wrap:wrap;}
+.pa53-bin{
+  width:132px;flex:0 0 auto;border:0;background:transparent;cursor:pointer;
+  display:flex;flex-direction:column;align-items:center;gap:4px;
+  padding:0;font-family:inherit;transition:transform .14s ease;
+}
+.pa53-basket-svg{width:100%;height:auto;display:block;filter:drop-shadow(0 5px 8px rgba(46,59,44,.22));}
+.pa53-bin .bl{
+  font-size:15px;font-weight:800;color:#2E3B2C;
+  background:#FFFCF2;padding:3px 11px;border-radius:12px;
+  box-shadow:0 2px 0 rgba(46,59,44,.14);text-transform:lowercase;
+}
+.pa53-bin:active{transform:translateY(3px);}
+.pa53-bin.pa53-ok{transform:translateY(-5px) scale(1.05);}
+
+/* victoria */
+.pa53-win{
+  position:absolute;inset:0;z-index:3;
+  background:rgba(31,42,30,.62);
+  display:flex;align-items:center;justify-content:center;padding:22px;
+  opacity:0;pointer-events:none;transition:opacity .24s ease;
+}
+.pa53-win.show{opacity:1;pointer-events:auto;}
+.pa53-wc{
+  background:#FFFCF2;border-radius:26px;padding:24px 22px;text-align:center;
+  max-width:340px;width:100%;box-shadow:0 16px 40px rgba(0,0,0,.3);
+}
+.pa53-wc .rf{width:88px;height:88px;margin:0 auto 8px;}
+.pa53-wc h2{margin:0 0 6px;font-size:24px;color:#2E3B2C;}
+.pa53-wc p{margin:0 0 16px;font-size:15px;color:#5A6657;}
+.pa53-wc .row{display:flex;gap:10px;justify-content:center;}
+
+@media (max-width:400px){
+  .pa53-tile{width:78px;height:78px;}
+  .pa53-tile.pa53-sm{width:56px;height:56px;}
+  .pa53-strip .pa53-tile{width:44px;height:44px;}
+  .pa53-bin{width:92px;}
+  .pa53-two{gap:16px;}
+}
+@media (prefers-reduced-motion:reduce){
+  .pa53-no{animation:none;}
+  .pa53-tile,.pa53-bin{transition:none;}
+}
