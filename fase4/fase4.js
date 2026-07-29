@@ -127,7 +127,11 @@
     // tres. Va DESPUÉS de #52: reutiliza sus tarjetas papercraft y le añade
     // las cuatro viñetas nuevas.
     "53-formas-colores",
-    "54-ingenio", "55-musica"
+    "54-ingenio", "55-musica",
+    // #56 no es una materia sino una capa de GESTO: convierte cada elección
+    // por toque en arrastrar y soltar. Va la ÚLTIMA a propósito, porque
+    // delega en los selectores de fichas de todas las materias anteriores.
+    "56-arrastrar"
   ];
 
   var injected = Object.create(null);
