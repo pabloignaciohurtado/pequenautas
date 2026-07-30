@@ -1,0 +1,63 @@
+/* ===== Fase 4 #57 · Ambiente de bosque =====
+   Casi todo el módulo es sonido, así que aquí sólo hay dos cosas: la fila
+   de Ajustes que se clona en JS y la ramita de Grok que la identifica de un
+   vistazo (en una lista de interruptores idénticos, el dibujo es lo que
+   hace que el adulto encuentre el que busca sin leer). */
+@import url("img/amb-sprig.css");
+
+#setAmb .name {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+#setAmb .name::before {
+  content: "";
+  width: 22px;
+  height: 27px;
+  flex: 0 0 22px;
+  background: var(--pa57-sprig) center/contain no-repeat;
+  /* la ramita respira muy despacio, como si la moviera el mismo viento que
+     se está oyendo: es la única pista visual de que hay sonido de fondo. */
+  animation: pa57sway 7s ease-in-out infinite;
+  transform-origin: 50% 100%;
+}
+@keyframes pa57sway {
+  0%, 100% { transform: rotate(-4deg); }
+  50% { transform: rotate(4deg); }
+}
+
+.pa57-ctl {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.pa57-lvl {
+  border: 0;
+  cursor: pointer;
+  font: inherit;
+  font-size: 13px;
+  font-weight: 700;
+  padding: 6px 12px;
+  border-radius: 999px;
+  color: #2f5d3a;
+  background: rgba(120, 170, 130, 0.22);
+  box-shadow: inset 0 0 0 1.5px rgba(90, 140, 100, 0.35);
+  transition: transform 0.12s ease, background 0.16s ease;
+  min-width: 74px;
+}
+.pa57-lvl:active { transform: scale(0.94); }
+.pa57-lvl:disabled {
+  opacity: 0.45;
+  cursor: default;
+  box-shadow: inset 0 0 0 1.5px rgba(120, 120, 120, 0.25);
+}
+
+@media (max-width: 400px) {
+  .pa57-lvl { font-size: 12px; padding: 5px 9px; min-width: 62px; }
+  #setAmb .name::before { width: 18px; height: 22px; flex-basis: 18px; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  #setAmb .name::before { animation: none; }
+}
