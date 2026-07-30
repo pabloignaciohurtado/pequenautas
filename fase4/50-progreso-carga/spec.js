@@ -38,7 +38,7 @@
   "use strict";
   if (window.__pa50) return; window.__pa50 = true;
 
-  var PA_DONE_KEY = 'pa_precache_done_v3'; // v3 = coincide con CACHE de sw.js
+  var PA_DONE_KEY = 'pa_precache_done_v4'; // v4 = coincide con CACHE de sw.js
 
   var elWrap, elBar, elPct, elTxt;
   var watchdogTimer = null;
