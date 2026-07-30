@@ -5,20 +5,25 @@
    auditiva de la que luego cuelga la lectura (distinguir timbre, intensidad
    y altura es el mismo músculo que distingue /p/ de /b/).
 
-   Decisión técnica de fondo: TODO el sonido se sintetiza en vivo con
-   WebAudio. No se sube ni un solo archivo de audio. Tres razones, y las
-   tres importan para este proyecto:
-   - el repo no admite binarios por el canal por el que se sube,
-   - la app es offline-first: un sonido generado siempre está disponible,
-     no depende de precache ni pesa un byte en el Service Worker,
-   - un oscilador es afinable, así que "agudo/grave" es exacto por
-     construcción y no depende de qué muestra se grabó.
+   Corrección de rumbo (#57): esta sección nació sintetizando cada timbre
+   con osciladores. Sonaba mal —un oscilador no suena a tambor, suena a
+   electrodoméstico— así que todo el motor de síntesis se ha eliminado y el
+   sonido de fondo lo pone ahora la cama de bosque de #57. Lo que queda
+   aquí es la narración por voz, que se conserva porque a los 3-5 años el
+   niño no lee y el enunciado hablado es su única instrucción.
 
-   Y una decisión de accesibilidad que condiciona todo el diseño: ningún
-   juego puede depender SOLO del sonido. Cada sonido va acompañado de una
-   animación visible (la ficha late, la onda crece), de modo que un peque
-   con el volumen apagado —o con el móvil en silencio, que es lo normal—
-   sigue viendo qué está pasando. Los tests tampoco dependen del audio.
+   Eso obliga a algo que en realidad mejora los cuatro juegos: cada uno
+   tiene que ser resoluble MIRANDO. Antes dos lo eran (la onda crece, las
+   barras suben) y dos dependían del oído. Ahora los cuatro tienen pista
+   visual honesta:
+   - ¿Qué suena? pasa a ser onomatopeya: el enunciado escribe y dice el
+     sonido ("PUM PUM") y el peque busca quién lo hace. Se sigue entrenando
+     la asociación sonido-objeto, que era el objetivo, y encima se entrena
+     vocabulario.
+   - Agudo o grave dibuja la onda: apretada y con muchas crestas para el
+     agudo, ancha y con pocas para el grave. Es la misma representación que
+     verá en física dentro de diez años.
+   Los tests tampoco dependen del audio.
 
    Sigue el patrón validado en #53 y #54:
    - overlay PROPIO (.pa55-ov): #40 hace querySelector(".pa34-ov").
@@ -55,69 +60,20 @@
   function say(txt) { try { if (typeof window.speak === "function") window.speak(txt, { lang: lang }); } catch (e) {} }
   function star() { try { if (typeof window.addStar === "function") window.addStar(); } catch (e) {} }
 
-  /* ---------- motor de sonido ----------
-     El AudioContext SOLO puede nacer dentro de un gesto del usuario (iOS lo
-     exige y Chrome lo recomienda), por eso se crea perezosamente en el
-     primer toque y nunca en el arranque del módulo. Si el navegador no
-     tiene WebAudio, todas las funciones son no-ops silenciosos: los juegos
-     siguen siendo jugables porque cada sonido tiene su eco visual. */
-  var AC = null;
-  function ac() {
-    try {
-      if (!AC) { var C = window.AudioContext || window.webkitAudioContext; if (C) AC = new C(); }
-      if (AC && AC.state === "suspended" && AC.resume) AC.resume();
-    } catch (e) { AC = null; }
-    return AC;
-  }
-  function tone(o) {
-    var c = ac(); if (!c) return;
-    try {
-      var t0 = c.currentTime + (o.at || 0), dur = o.dur || 0.4, v = (o.vol == null ? 0.22 : o.vol);
-      var osc = c.createOscillator(), g = c.createGain();
-      osc.type = o.type || "sine";
-      osc.frequency.setValueAtTime(o.f || 440, t0);
-      if (o.slide) osc.frequency.exponentialRampToValueAtTime(o.slide, t0 + dur);
-      g.gain.setValueAtTime(0.0001, t0);
-      g.gain.exponentialRampToValueAtTime(v, t0 + (o.atk || 0.012));
-      g.gain.exponentialRampToValueAtTime(0.0001, t0 + dur);
-      osc.connect(g); g.connect(c.destination);
-      osc.start(t0); osc.stop(t0 + dur + 0.06);
-    } catch (e) {}
-  }
-  function hiss(o) {
-    var c = ac(); if (!c) return;
-    try {
-      var dur = o.dur || 0.16, t0 = c.currentTime + (o.at || 0);
-      var n = Math.max(1, Math.floor(c.sampleRate * dur));
-      var buf = c.createBuffer(1, n, c.sampleRate), ch = buf.getChannelData(0), i;
-      for (i = 0; i < n; i++) ch[i] = (Math.random() * 2 - 1) * (1 - i / n);
-      var src = c.createBufferSource(); src.buffer = buf;
-      var f = c.createBiquadFilter(); f.type = "bandpass"; f.frequency.value = o.f || 3000; f.Q.value = 0.9;
-      var g = c.createGain(); g.gain.value = (o.vol == null ? 0.18 : o.vol);
-      src.connect(f); f.connect(g); g.connect(c.destination);
-      src.start(t0);
-    } catch (e) {}
-  }
-
-  /* Cinco voces reconocibles. No imitan al instrumento real: imitan lo que
-     un peque cree que suena como ese instrumento, que es lo que hace que
-     acierte. */
-  var VOICES = {
-    drum: function () { tone({ type: "sine", f: 170, slide: 55, dur: 0.26, vol: 0.34 }); hiss({ f: 900, dur: 0.09, vol: 0.10 }); },
-    flute: function () { tone({ type: "sine", f: 784, dur: 0.72, vol: 0.16, atk: 0.10 }); tone({ type: "sine", f: 1568, dur: 0.55, vol: 0.03, atk: 0.12 }); },
-    bell: function () { tone({ type: "triangle", f: 1046, dur: 1.10, vol: 0.16 }); tone({ type: "triangle", f: 2637, dur: 0.75, vol: 0.06 }); },
-    maraca: function () { hiss({ f: 5200, dur: 0.10, vol: 0.16 }); hiss({ at: 0.16, f: 5200, dur: 0.08, vol: 0.12 }); hiss({ at: 0.30, f: 5200, dur: 0.10, vol: 0.15 }); },
-    xylo: function () { tone({ type: "triangle", f: 1318, dur: 0.34, vol: 0.20 }); tone({ type: "sine", f: 2637, dur: 0.16, vol: 0.05 }); }
-  };
+  /* ---------- ya no hay motor de sonido ----------
+     Aquí vivían el AudioContext perezoso, el oscilador, el ruido filtrado y
+     las cinco "voces" de instrumento. Se han borrado a conciencia: el eco
+     visual que las acompañaba era en realidad lo único que sostenía el
+     juego, así que ahora es lo único que hay. El fondo sonoro lo pone #57. */
   var INSTR = [
-    { id: "drum", es: "Tambor", en: "Drum", emo: "🥁" },
-    { id: "flute", es: "Flauta", en: "Flute", emo: "🎶" },
-    { id: "bell", es: "Campana", en: "Bell", emo: "🔔" },
-    { id: "maraca", es: "Maracas", en: "Maracas", emo: "🪇" },
-    { id: "xylo", es: "Xilófono", en: "Xylophone", emo: "🎹" }
+    { id: "drum", es: "Tambor", en: "Drum", emo: "🥁", ono: "PUM PUM", onoEn: "BOOM BOOM" },
+    { id: "flute", es: "Flauta", en: "Flute", emo: "🎶", ono: "TU-TUUU", onoEn: "TOO-TOOO" },
+    { id: "bell", es: "Campana", en: "Bell", emo: "🔔", ono: "TILÍN TILÍN", onoEn: "DING DONG" },
+    { id: "maraca", es: "Maracas", en: "Maracas", emo: "🪇", ono: "CHIS CHIS", onoEn: "SHAKE SHAKE" },
+    { id: "xylo", es: "Xilófono", en: "Xylophone", emo: "🎹", ono: "TIN TIN TIN", onoEn: "TING TING TING" }
   ];
   function iName(o) { return lang === "en" ? o.en : o.es; }
-  function playVoice(id) { try { (VOICES[id] || VOICES.bell)(); } catch (e) {} }
+  function iOno(o) { return lang === "en" ? o.onoEn : o.ono; }
 
   /* Eco visual: cualquier cosa que suene, late. Es lo que sostiene el juego
      con el volumen apagado. */
@@ -161,7 +117,7 @@
     b.setAttribute("data-game", "music");
     b.innerHTML = '<span class="blob"></span><span class="lv" id="pa55Lv"></span>' +
       '<span class="emoji">🎵</span><span class="label" id="pa55Label"></span>';
-    b.addEventListener("click", function () { detectLang(); ac(); openGames(); });
+    b.addEventListener("click", function () { detectLang(); openGames(); });
     cards.appendChild(b);
     paintCard();
   }
@@ -216,7 +172,7 @@
       b.appendChild(el("div", "pa34-m-" + g.mech + " mech", mechEmoji(g.mech)));
       b.appendChild(el("div", "gn", gName(g)));
       b.appendChild(el("div", "gp", T("Nivel ", "Level ") + (unlocked(g.id) + 1) + T(" de 5", " of 5")));
-      b.addEventListener("click", function () { ac(); openLevels(g); });
+      b.addEventListener("click", function () { openLevels(g); });
       grid.appendChild(b);
     });
     body.appendChild(grid);
@@ -262,7 +218,7 @@
       '<div class="pa55-pstar">' + String.fromCodePoint(0x2B50) + ' <span id="pa55score">0</span></div></div>' +
       '<div class="pa55-field" id="pa55field"></div>' +
       '<div class="pa55-pbot"><div class="pa55-prog" id="pa55prog"></div>' +
-      '<button class="pa55-cta" id="pa55replay" aria-label="Repetir">🔊</button></div>' +
+      '<button class="pa55-cta" id="pa55replay" aria-label="Repetir">🔁</button></div>' +
       '<div class="pa55-win" id="pa55win"><div class="pa55-wc">' +
       '<div class="rf">🎶</div>' +
       '<h2 id="pa55wt"></h2><p id="pa55wp"></p>' +
@@ -311,7 +267,6 @@
     if (!node) return;
     node.classList.add("pa55-no");
     setTimeout(function () { node.classList.remove("pa55-no"); }, 480);
-    tone({ type: "sine", f: 300, slide: 200, dur: 0.22, vol: 0.12 });
   }
   function stepDone() {
     G.done++; setProg();
@@ -320,9 +275,6 @@
   function winLevel() {
     setUnlocked(G.g.id, Math.min(4, G.level + 1));
     star();
-    /* arpegio de victoria: do-mi-sol-do */
-    var notes = [523, 659, 784, 1046], i;
-    for (i = 0; i < notes.length; i++) tone({ type: "triangle", f: notes[i], at: i * 0.12, dur: 0.42, vol: 0.16 });
     P.wt.textContent = T("¡Muy bien!", "Great job!");
     P.wp.textContent = G.level < 4
       ? T("Completaste el nivel " + (G.level + 1), "You finished level " + (G.level + 1))
@@ -335,7 +287,6 @@
 
   function launch(g, level) {
     detectLang();
-    ac();
     closeOv();
     openPlay();
     G = { g: g, level: level, score: 0, done: 0, total: 0, prompt: "", replay: null, busy: false };
@@ -347,9 +298,12 @@
     else roundPitch();
   }
 
-  /* 1 · ¿Qué suena? — timbre.
-     Sube el número de opciones antes que el de rondas: lo que cuesta no es
-     escuchar más veces, es descartar entre más candidatos parecidos. */
+  /* 1 · ¿Qué suena? — asociación sonido-objeto por onomatopeya.
+     El enunciado escribe y dice el sonido ("PUM PUM") y el peque busca
+     quién lo hace. Sube el número de opciones antes que el de rondas: lo
+     que cuesta no es oír más veces el enunciado, es descartar entre más
+     candidatos. Y a diferencia de la versión anterior se puede jugar con el
+     móvil en silencio, que es como está casi siempre. */
   var INSTR_OPTS = [2, 3, 3, 4, 5];
   function roundInstr() {
     G.total = 4 + Math.floor(G.level / 2);
@@ -361,14 +315,18 @@
       wrap.innerHTML = "";
       var opts = sample(INSTR, INSTR_OPTS[G.level]);
       var target = opts[rnd(opts.length)];
-      G.replay = function () { playVoice(target.id); pulse(d.querySelector(".pa55-tile[data-hit='1']") || wrap); };
-      setPrompt(T("¿Qué instrumento suena?", "Which instrument is playing?"));
+      var ono = iOno(target);
+      function promptTxt() { return T("¿Quién hace " + ono + "?", "Who goes " + ono + "?"); }
+      P.prompt.setAttribute("data-ono", ono);
+      G.replay = function () { setPrompt(promptTxt()); pulse(P.prompt); };
+      setPrompt(promptTxt());
       opts.forEach(function (o) {
         var b = el("button", "pa55-tile");
+        b.setAttribute("data-instr", o.id);
         b.innerHTML = '<span class="ic">' + o.emo + '</span><span class="nm">' + iName(o) + '</span>';
         b.addEventListener("click", function () {
           if (G.busy) return;
-          playVoice(o.id); pulse(b);
+          pulse(b);
           if (o.id === target.id) {
             G.busy = true;
             good(b);
@@ -378,7 +336,6 @@
         });
         wrap.appendChild(b);
       });
-      setTimeout(function () { playVoice(target.id); }, 620);
     }
   }
 
@@ -417,7 +374,6 @@
       G.busy = true;
       seq.forEach(function (idx, k) {
         setTimeout(function () {
-          tone({ type: "triangle", f: PADS[idx].f, dur: 0.38, vol: 0.20 });
           pulse(nodes[idx]);
           if (k === seq.length - 1) setTimeout(function () { G.busy = false; }, 420);
         }, k * 520);
@@ -425,7 +381,6 @@
     }
     function hit(i, node) {
       if (G.busy) return;
-      tone({ type: "triangle", f: PADS[i].f, dur: 0.34, vol: 0.20 });
       pulse(node);
       if (i === seq[at]) {
         at++;
@@ -475,18 +430,14 @@
     next();
     function next() {
       target = rnd(2) ? "loud" : "soft";
-      var inst = INSTR[rnd(INSTR.length)];
-      G.replay = fire;
-      setPrompt(T("¿Sonó fuerte o suave?", "Was it loud or soft?"));
+      G.replay = function () { setPrompt(G.prompt); fire(); };
+      setPrompt(T("¿La onda es grande o pequeña?", "Is the wave big or small?"));
       setTimeout(fire, 620);
       function fire() {
         wave.className = "pa55-wave " + (target === "loud" ? "big" : "small");
         void wave.offsetWidth;
         wave.classList.add("go");
         setTimeout(function () { wave.classList.remove("go"); }, 900);
-        var f = { drum: 170, flute: 784, bell: 1046, maraca: 5200, xylo: 1318 }[inst.id] || 660;
-        if (inst.id === "maraca") hiss({ f: f, dur: 0.22, vol: target === "loud" ? 0.24 : 0.04 });
-        else tone({ type: "triangle", f: f, dur: 0.5, vol: target === "loud" ? 0.34 : 0.05 });
       }
     }
   }
@@ -496,9 +447,23 @@
      entre dos (grave = oso abajo, agudo = pájaro arriba) y luego ORDENAR
      tres notas de grave a agudo, que ya es construir una escala mental. */
   var LOWHI = [
-    { k: "low", f: 147, es: "Grave", en: "Low", emo: "🐻" },
-    { k: "high", f: 1318, es: "Agudo", en: "High", emo: "🐦" }
+    { k: "low", es: "Grave", en: "Low", emo: "🐻" },
+    { k: "high", es: "Agudo", en: "High", emo: "🐦" }
   ];
+
+  /* La onda dibujada. Pocas crestas y anchas = grave; muchas y apretadas =
+     agudo. No es un adorno: es la representación con la que se va a
+     encontrar toda su vida, y aquí la aprende de golpe con el animal al
+     lado (oso abajo, pájaro arriba). */
+  function sigSvg(cycles) {
+    var w = 240, h = 64, mid = h / 2, amp = h / 2 - 7, pts = [], i, steps = 120;
+    for (i = 0; i <= steps; i++) {
+      var x = (w * i) / steps;
+      pts.push(x.toFixed(1) + "," + (mid - amp * Math.sin((2 * Math.PI * cycles * i) / steps)).toFixed(1));
+    }
+    return '<svg viewBox="0 0 ' + w + ' ' + h + '" preserveAspectRatio="none" aria-hidden="true">' +
+      '<polyline points="' + pts.join(" ") + '" /></svg>';
+  }
   var SCALE = [262, 330, 392, 523, 659, 784];
   function roundPitch() {
     G.total = 5;
@@ -506,6 +471,8 @@
     if (G.level < 2) pairMode(); else sortMode();
 
     function pairMode() {
+      var stage = el("div", "pa55-sig");
+      P.field.appendChild(stage);
       var row = el("div", "pa55-tiles");
       P.field.appendChild(row);
       var target = "low";
@@ -514,7 +481,7 @@
         b.innerHTML = '<span class="ic">' + o.emo + '</span><span class="nm">' + (lang === "en" ? o.en : o.es) + '</span>';
         b.addEventListener("click", function () {
           if (G.busy) return;
-          tone({ type: "sine", f: o.f, dur: 0.42, vol: 0.20 }); pulse(b);
+          pulse(b);
           if (o.k === target) {
             G.busy = true; good(b); stepDone();
             setTimeout(function () { b.classList.remove("pa55-ok"); G.busy = false; if (G.done < G.total) next(); }, 900);
@@ -525,11 +492,18 @@
       next();
       function next() {
         target = rnd(2) ? "low" : "high";
-        var f = target === "low" ? (110 + rnd(60)) : (1100 + rnd(700));
-        G.replay = fire;
-        setPrompt(T("¿Sonó agudo o grave?", "Was it high or low?"));
-        setTimeout(fire, 620);
-        function fire() { tone({ type: "sine", f: f, dur: 0.62, vol: 0.22 }); }
+        var cycles = target === "low" ? (1 + rnd(2)) : (9 + rnd(5));
+        G.replay = function () { setPrompt(G.prompt); fire(); };
+        setPrompt(T("¿Esta onda es aguda o grave?", "Is this wave high or low?"));
+        fire();
+        function fire() {
+          stage.setAttribute("data-cy", String(cycles));
+          stage.className = "pa55-sig " + (target === "low" ? "low" : "high");
+          stage.innerHTML = sigSvg(cycles);
+          void stage.offsetWidth;
+          stage.classList.add("go");
+          setTimeout(function () { stage.classList.remove("go"); }, 900);
+        }
       }
     }
 
@@ -544,7 +518,13 @@
         picked = 0;
         var freqs = sample(SCALE, n).sort(function (a, b) { return a - b; });
         order = shuffle(freqs.slice());
-        G.replay = function () { freqs.forEach(function (f, i) { setTimeout(function () { tone({ type: "sine", f: f, dur: 0.36, vol: 0.20 }); }, i * 380); }); };
+        /* el repaso recorre las barras en el orden correcto encendiéndolas
+           una a una: es la misma ayuda que daba el arpegio, pero visible. */
+        G.replay = function () {
+          freqs.forEach(function (f, i) {
+            setTimeout(function () { pulse(wrap.querySelector('.pa55-note[data-f="' + f + '"]')); }, i * 380);
+          });
+        };
         setPrompt(T("Toca del más grave al más agudo", "Tap from lowest to highest"));
         order.forEach(function (f) {
           var b = el("button", "pa55-note");
@@ -552,7 +532,7 @@
           b.setAttribute("data-f", String(f));
           b.addEventListener("click", function () {
             if (G.busy || b.classList.contains("pa55-ok")) return;
-            tone({ type: "sine", f: f, dur: 0.36, vol: 0.20 }); pulse(b);
+            pulse(b);
             if (f === freqs[picked]) {
               picked++; b.classList.add("pa55-ok");
               if (picked >= freqs.length) {
