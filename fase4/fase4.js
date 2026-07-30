@@ -173,6 +173,41 @@
     })();
   }
 
+  // ---- Arranque en un solo viaje, no en catorce -------------------------
+  // El síntoma que esto arregla: al reabrir la app se veía "la versión
+  // antigua" durante uno o dos segundos y luego iba morfando al arte nuevo,
+  // pieza por pieza. La causa no era caché sucia: loadChain es ESTRICTAMENTE
+  // serial —el <link> del módulo N+1 no existe hasta que terminó de bajar el
+  // spec.js del módulo N—, así que los 14 módulos críticos costaban 14
+  // viajes encadenados. Mientras tanto lo único pintado era el <style> en
+  // línea de index.html, que es exactamente el diseño viejo. En la primera
+  // visita el portón de #50 tapaba el morfeo; en las siguientes el portón ya
+  // no se construye (marca en localStorage), y por eso se veía SIEMPRE al
+  // volver.
+  //
+  // La cura es separar lo que de verdad necesita orden de lo que no. El CSS
+  // sólo necesita orden de CASCADA, no de descarga: si los 14 <link> se
+  // insertan de golpe en el orden de la lista, el navegador los baja en
+  // paralelo y la cascada resultante es idéntica a la de antes. El JS sí
+  // necesita orden de EJECUCIÓN (envuelve globals como refreshHome), así que
+  // la cadena serial se queda intacta; lo único que cambia es que se precarga
+  // en paralelo, de modo que cada eslabón resuelva desde la caché del
+  // navegador en vez de esperar un viaje nuevo.
+  function preloadCritical(list) {
+    var i;
+    for (i = 0; i < list.length; i++) injectCss(list[i]);
+    for (i = 0; i < list.length; i++) {
+      try {
+        var p = document.createElement("link");
+        p.rel = "preload";
+        p.as = "script";
+        p.href = BASE + list[i] + "/spec.js";
+        (document.head || document.documentElement).appendChild(p);
+      } catch (e) {}
+    }
+  }
+  preloadCritical(CRITICAL_MODULES);
+
   loadChain(CRITICAL_MODULES, function () {
     var kick = function () { loadChain(DEFERRED_MODULES, function () {}); };
     if (window.requestIdleCallback) window.requestIdleCallback(kick, { timeout: 1500 });
