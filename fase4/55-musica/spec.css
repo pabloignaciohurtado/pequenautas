@@ -196,3 +196,27 @@ html.pa52 [data-pa34-game="music:pitch"] .mech{background-image:var(--pa55-pitch
   .pa55-ring{animation-duration:220ms;}
   .pa55-tile,.pa55-note,.pa55-pad{transition:none;}
 }
+
+/* Onda dibujada de "agudo o grave" (#57 quitó el oscilador, así que la
+   altura del sonido tiene que verse). El SVG se estira a lo ancho del campo;
+   lo que distingue agudo de grave es cuántas crestas caben, no el tamaño. */
+.pa55-sig{
+  width:100%;max-width:320px;margin:6px auto 2px;height:78px;
+  display:flex;align-items:center;justify-content:center;
+  border-radius:18px;padding:7px 10px;box-sizing:border-box;
+  background:rgba(255,255,255,.55);
+  box-shadow:inset 0 0 0 2px rgba(120,160,120,.28);
+}
+.pa55-sig svg{width:100%;height:100%;display:block;overflow:visible;}
+.pa55-sig polyline{
+  fill:none;stroke:#3C7A4E;stroke-width:4;stroke-linecap:round;stroke-linejoin:round;
+}
+.pa55-sig.high polyline{stroke:#2F6FA8;stroke-width:3;}
+.pa55-sig.go svg{animation:pa55sigin 620ms ease-out;}
+@keyframes pa55sigin{
+  0%{opacity:0;transform:scaleX(.25);}
+  100%{opacity:1;transform:scaleX(1);}
+}
+@media (prefers-reduced-motion:reduce){
+  .pa55-sig.go svg{animation:none;}
+}

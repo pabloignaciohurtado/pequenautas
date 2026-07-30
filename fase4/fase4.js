@@ -131,7 +131,11 @@
     // #56 no es una materia sino una capa de GESTO: convierte cada elección
     // por toque en arrastrar y soltar. Va la ÚLTIMA a propósito, porque
     // delega en los selectores de fichas de todas las materias anteriores.
-    "56-arrastrar"
+    "56-arrastrar",
+    // #57 es la cama sonora de bosque que sustituye a los efectos
+    // sintetizados. Va después de #56 porque no compite con nada: sólo
+    // escucha el primer gesto y añade su fila en Ajustes.
+    "57-ambiente"
   ];
 
   var injected = Object.create(null);
