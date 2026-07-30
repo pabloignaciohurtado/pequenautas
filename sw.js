@@ -9,8 +9,21 @@
    sin que el peque tenga que visitar cada pantalla primero. Reporta progreso real
    (no simulado) a las páginas controladas vía postMessage, para alimentar una
    barra de progreso en el primer pintado (ver fase4/50-progreso-carga). Un fetch
-   que falla no detiene el resto: reintenta un par de veces y sigue. */
-const CACHE='pequenautas-v3';
+   que falla no detiene el resto: reintenta un par de veces y sigue.
+
+   Dos políticas, no una (v4). El shell —navegación, app.js, manifest— sigue
+   siendo network-first: es donde vive la lógica y una versión vieja ahí sí
+   duele. Los módulos de fase4/ pasan a stale-while-revalidate, y el motivo es
+   que la política anterior era contraproducente: forzaba cache:'reload' en
+   TODO el mismo origen, así que en cada visita se volvían a bajar por red las
+   ~28 piezas críticas de arte y la caché sólo servía de red offline, nunca
+   para ir rápido. Resultado visible: al reabrir la app se veía el diseño en
+   línea de index.html (el viejo) hasta que llegaba el arte. Ahora el arte se
+   sirve de la caché al instante y se revalida por detrás, de modo que un
+   despliegue nuevo entra en la visita siguiente —y de inmediato si cambió la
+   versión de CACHE, porque activate() purga y runPrecache() vuelve a bajarlo
+   todo con el portón de #50 en pantalla. */
+const CACHE='pequenautas-v4';
 const SHELL=['./','./index.html','./app.js','./manifest.webmanifest'];
 const FONT_HOSTS=['fonts.googleapis.com','fonts.gstatic.com'];
 
@@ -71,7 +84,31 @@ self.addEventListener('fetch',(e)=>{
     return;
   }
 
-  // network-first para mismo origen: siempre trae la ultima version cuando hay red,
+  // stale-while-revalidate para los modulos de fase4/: el arte pesa y casi
+  // nunca cambia, asi que responder desde cache es lo que hace que al reabrir
+  // la app el bosque ya este ahi en el primer pintado en vez de aparecer a
+  // pedazos. La revalidacion va por detras, sin bloquear la respuesta, y deja
+  // la version nueva lista para la visita siguiente. Un despliegue que cambie
+  // arte de verdad viene acompanado de un bump de CACHE, y entonces activate()
+  // purga y runPrecache() lo baja todo de una con el porton de #50 delante.
+  if(url.pathname.indexOf('/fase4/')!==-1){
+    e.respondWith(
+      caches.match(req).then(cached=>{
+        const red=fetch(req).then(res=>{
+          if(res && res.ok){
+            const copy=res.clone();
+            caches.open(CACHE).then(c=>c.put(req,copy)).catch(()=>{});
+          }
+          return res;
+        });
+        if(cached){ red.catch(()=>{}); return cached; }
+        return red.catch(()=>undefined);
+      })
+    );
+    return;
+  }
+
+  // network-first para el resto del mismo origen (shell y logica): siempre trae la ultima version cuando hay red,
   // refresca el cache, y cae al cache (o al index.html) si no hay conexion.
   e.respondWith(
     fetch(req,{cache:'reload'}).then(res=>{
