@@ -1,0 +1,137 @@
+/* ===== Fase 4 #56 · Arrastrar y soltar (aspecto) =====
+
+   Tres cosas que el niño tiene que ver sin que nadie se las explique:
+   qué se puede coger, dónde hay que soltarlo, y que lo que tiene ahora
+   mismo bajo el dedo va a caer donde toca.
+
+   1. Coger: la ficha levantada se aclara y se queda en su sitio como hueco
+      (.pa56-lift), y lo que viaja con el dedo es una copia inclinada con
+      sombra larga (.pa56-ghost). Que el original no desaparezca importa: si
+      suelta en el aire, ve que nada se ha perdido.
+   2. Soltar: los destinos propios del juego laten con un aro (.pa56-target).
+      Cuando el juego no tiene destino, el buzón es el enunciado
+      (.pa56-mail), que se marca como una tarjeta de papel abierta con la
+      cestita de Grok a la izquierda.
+   3. Confirmar: el destino bajo el dedo crece y se tiñe de verde
+      (.pa56-over). Es la única señal que promete "si sueltas aquí, cuenta".
+
+   Todo cuelga de html.pa56, que sólo se añade si el navegador tiene
+   PointerEvent: sin esa clase la app se ve idéntica a antes. */
+
+@import url("img/dd-mail.css");
+
+/* ---------- 1 · La ficha cogida ---------- */
+html.pa56 .pa56-lift{
+  opacity:.34 !important;
+  filter:saturate(.55);
+  transform:none !important;
+}
+.pa56-ghost{
+  position:fixed !important;
+  left:0;top:0;margin:0 !important;
+  z-index:4000 !important;
+  pointer-events:none !important;
+  opacity:.96;
+  transform-origin:50% 50%;
+  rotate:-4deg;
+  box-shadow:0 14px 28px rgba(46,59,44,.34),0 4px 0 rgba(46,59,44,.18) !important;
+  transition:none !important;
+  animation:none !important;
+}
+
+/* El dedo tiene que poder arrastrar sin que el navegador interprete scroll.
+   Sólo se desactiva el gesto nativo SOBRE las fichas: el campo de juego
+   sigue desplazándose si se arrastra desde el fondo. */
+html.pa56 #stage .choice,
+html.pa56 #stage .animalBig,
+html.pa56 .pa34-mcard,
+html.pa56 .pa34-scard,
+html.pa56 .pa34-citem,
+html.pa56 .pa53-tile,
+html.pa56 .pa54-piece,
+html.pa56 .pa54-tile,
+html.pa56 .pa54-foot,
+html.pa56 .pa55-tile,
+html.pa56 .pa55-note{
+  touch-action:none;
+  -webkit-user-select:none;user-select:none;
+  -webkit-touch-callout:none;
+}
+html.pa56-dragging,html.pa56-dragging body{
+  overflow:hidden !important;
+  -webkit-user-select:none;user-select:none;
+  cursor:grabbing;
+}
+
+/* ---------- 2 · Destinos propios del juego ---------- */
+.pa56-target{
+  position:relative;
+  outline:3px dashed rgba(87,197,150,.85);
+  outline-offset:3px;
+  animation:pa56breathe 1.5s ease-in-out infinite;
+}
+@keyframes pa56breathe{
+  0%,100%{outline-color:rgba(87,197,150,.45);}
+  50%{outline-color:rgba(87,197,150,.95);}
+}
+.pa56-over{
+  outline-style:solid !important;
+  outline-color:#57C596 !important;
+  box-shadow:0 0 0 6px rgba(87,197,150,.30) !important;
+  transform:scale(1.07);
+  transition:transform .12s ease;
+  z-index:5;
+}
+
+/* ---------- 3 · El buzón: el enunciado ----------
+   En elección múltiple no hay hueco donde soltar, y meter un cajón nuevo en
+   la rejilla movería la maquetación de todas las pantallas. El enunciado ya
+   está arriba en las nueve superficies, así que se convierte en destino: la
+   respuesta se lleva a la pregunta. */
+.pa56-mail{
+  position:relative;
+  border-radius:20px;
+  padding-left:52px !important;
+  background:rgba(255,252,242,.96);
+  outline:3px dashed rgba(232,132,58,.9);
+  outline-offset:4px;
+  animation:pa56breatheo 1.5s ease-in-out infinite;
+}
+@keyframes pa56breatheo{
+  0%,100%{outline-color:rgba(232,132,58,.45);}
+  50%{outline-color:rgba(232,132,58,.95);}
+}
+.pa56-mail::before{
+  content:"";position:absolute;left:8px;top:50%;
+  width:38px;height:38px;margin-top:-19px;
+  background-image:var(--pa56-mail);
+  background-size:contain;background-position:center;background-repeat:no-repeat;
+  animation:pa56nudge 1.1s ease-in-out infinite;
+}
+@keyframes pa56nudge{
+  0%,100%{transform:translateY(0);}
+  50%{transform:translateY(-4px);}
+}
+.pa56-mail.pa56-over{
+  outline-style:solid !important;
+  outline-color:#E8843A !important;
+  box-shadow:0 0 0 6px rgba(232,132,58,.28) !important;
+  transform:none;
+}
+
+/* ---------- 4 · Accesibilidad ----------
+   El arrastre es el gesto principal, pero el toque sigue vivo y con él el
+   teclado y el lector de pantalla; por eso el foco no se toca. Con
+   movimiento reducido desaparecen los latidos —que son adorno— y se quedan
+   los contornos y el verde del destino activo, que son información. */
+@media (prefers-reduced-motion:reduce){
+  .pa56-target,.pa56-mail{animation:none;outline-color:rgba(87,197,150,.9);}
+  .pa56-mail{outline-color:rgba(232,132,58,.9);}
+  .pa56-mail::before{animation:none;}
+  .pa56-over{transition:none;transform:none;}
+  .pa56-ghost{rotate:none;}
+}
+@media (max-width:400px){
+  .pa56-mail{padding-left:44px !important;}
+  .pa56-mail::before{width:30px;height:30px;margin-top:-15px;left:6px;}
+}

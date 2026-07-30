@@ -29,7 +29,8 @@ const FASE4_MODULES=[
   '36-gate-esquina','37-nav-iconos','38-bosque-arte','39-fondo-vivo','40-secciones-fondo',
   '41-fondo-juego','42-pantallas-fondo',
   '46-hud-iconos','47-opciones-layout','48-avatares','49-iconos-quiz-letras','50-progreso-carga',
-  '51-hero-globo','52-juegos-tarjetas','53-formas-colores','54-ingenio','55-musica'
+  '51-hero-globo','52-juegos-tarjetas','53-formas-colores','54-ingenio','55-musica',
+  '56-arrastrar'
 ];
 
 const PRECACHE_STATE={status:'idle',done:0,total:0,failed:[]};
