@@ -136,7 +136,12 @@
     // sintetizados. Va después de #56 porque no compite con nada: sólo
     // escucha el primer gesto y añade su fila en Ajustes.
     "57-ambiente",
-    "58-emociones"
+    "58-emociones",
+    // #59 no añade contenido nuevo: une dos piezas que ya estaban sueltas.
+    // Va DESPUÉS de #05 (dueño de la tarjeta de aviso) y de #58 (dueño de la
+    // respiración guiada), porque lo único que hace es engancharse a lo que
+    // ambos ya exponen.
+    "59-puente-calma"
   ];
 
   var injected = Object.create(null);

@@ -1,0 +1,25 @@
+/* ===== Fase 4 · #59 Puente de calma =====
+   Aditivo: clases nuevas únicamente. El botón vive dentro de .frustBtns de
+   #05, así que hereda .btn.ghost.small; aquí sólo se le da el verde de calma
+   para que se lea distinto de "sugerir pausa" y de "seguir jugando": es la
+   única de las tres opciones que ofrece algo en vez de cortar o ignorar.
+   Animación: sólo transform/opacity, respeta prefers-reduced-motion. */
+
+.pa59-btn{
+  border-color:rgba(87,197,150,.55) !important;
+  color:#2E6B52 !important;
+  background:rgba(87,197,150,.14) !important;
+  font-weight:700;
+}
+.pa59-btn:active{ transform:scale(.96); }
+.pa59-btn::before{ content:"🌬️ "; }
+
+/* Resumen ofrecidas/usadas dentro de #progBody, con el mismo aire que el
+   bloque de #05 para que el adulto los lea como una sola idea. */
+.pa59-insight{ margin-top:12px; }
+.pa59-lab{ font-size:13px; font-weight:600; color:var(--ink-soft,#6b6b6b); margin-bottom:2px; }
+.pa59-row{ font-size:14px; color:var(--ink-soft,#6b6b6b); }
+
+@media (prefers-reduced-motion: reduce){
+  .pa59-btn:active{ transform:none; }
+}
