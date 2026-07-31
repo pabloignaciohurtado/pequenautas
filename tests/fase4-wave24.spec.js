@@ -32,15 +32,18 @@ test('Fase 4 · #58: la séptima tarjeta aparece y no toca a las tres originales
   await entrar(page);
   await expect(page.locator('#pa58Card')).toHaveCount(1);
   // las tres materias de app.js siguen intactas
-  await expect(page.locator('.subject:not(.pa53-card):not(.pa54-card):not(.pa55-card):not(.pa58-card)')).toHaveCount(3);
-  // siete casas en total
-  await expect(page.locator('#home .cards .subject')).toHaveCount(7);
-  // y es la última, para que su clic propio no se cuele en el binding de app.js
-  const last = await page.evaluate(() => {
+  await expect(page.locator('.subject:not(.pa53-card):not(.pa54-card):not(.pa55-card):not(.pa58-card):not(.pa60-card)')).toHaveCount(3);
+  // ocho casas en total desde #60
+  await expect(page.locator('#home .cards .subject')).toHaveCount(8);
+  // y va después de las tres originales, para que su clic propio no se cuele
+  // en el binding que app.js hace una sola vez al cargar. Desde #60 ya no es
+  // la última: el zócalo son dos bandas y #58 es la de arriba.
+  const orden = await page.evaluate(() => {
     const c = document.querySelectorAll('#home .cards .subject');
-    return c[c.length - 1].id;
+    return Array.prototype.map.call(c, (n) => n.id);
   });
-  expect(last).toBe('pa58Card');
+  expect(orden.indexOf('pa58Card')).toBe(orden.length - 2);
+  expect(orden[orden.length - 1]).toBe('pa60Card');
 });
 
 test('Fase 4 · #58: ocupa la fila entera (nada de huérfana en 3+3+1)', async ({ page }) => {

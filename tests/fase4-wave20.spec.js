@@ -37,7 +37,13 @@ test('Fase 4 · #55: la sexta tarjeta entra sin desplazar a las otras cinco', as
   const cards = await page.evaluate(() =>
     [...document.querySelectorAll('#home .subject')].map((c) => c.getAttribute('data-game'))
   );
-  expect(cards).toEqual(['math', 'reading', 'science', 'shapes', 'brain', 'music', 'emotions']);
+  // Las seis materias de CONTENIDO son las que ocupan la rejilla 3+3 y su orden
+  // es el que un niño ya aprendió a reconocer: comprobamos ese prefijo, no un
+  // total congelado. Cada materia de COMPETENCIA nueva (#58 Emociones, #60
+  // Hábitos…) se añade después como banda, así que fijar el largo obligaría a
+  // reescribir esta oleada entera cada vez que llega una casa nueva.
+  expect(cards.slice(0, 6)).toEqual(['math', 'reading', 'science', 'shapes', 'brain', 'music']);
+  expect(cards.slice(6)).toContain('emotions');
   await expect(page.locator('#pa55Card .label')).toHaveText(/Música|Music/);
   await expect(page.locator('#pa55Lv')).toHaveText(/Nivel 1|Level 1/);
 });
@@ -50,7 +56,8 @@ test('Fase 4 · #55: seis casas caben en dos filas de tres', async ({ page }) =>
     const tops = [...document.querySelectorAll('#home .subject')].map((c) => c.offsetTop);
     return [...new Set(tops)].length;
   });
-  expect(rows).toBe(3); // 3+3 y la banda de #58
+  // 3+3 de contenido y una banda por materia de competencia.
+  expect(rows).toBeGreaterThanOrEqual(3);
 });
 
 test('Fase 4 · #55: no se crea AudioContext hasta que el niño toca', async ({ page }) => {
@@ -195,10 +202,12 @@ test('Fase 4 · #55: agudo o grave ordena barras de menor a mayor en experto', a
 
 test('Fase 4 · #55: cerrar con Escape devuelve al mapa sin romper Home', async ({ page }) => {
   await entrar(page);
+  // Lo que importa es que Home vuelva igual que estaba, no cuántas casas haya.
+  const antes = await page.locator('#home .subject').count();
   await abrirMusica(page, 1); // repite la melodía
   await expect(page.locator('.pa55-play.show')).toHaveCount(1);
   await page.keyboard.press('Escape');
   await page.waitForTimeout(300);
   await expect(page.locator('.pa55-play.show')).toHaveCount(0);
-  await expect(page.locator('#home .subject')).toHaveCount(7);
+  await expect(page.locator('#home .subject')).toHaveCount(antes);
 });

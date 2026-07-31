@@ -64,7 +64,8 @@
     ".pa55-tile",
     ".pa55-note",
     ".pa58-tile",
-    ".pa58-act"
+    ".pa58-act",
+    ".pa60-item.hold"
   ].join(",");
 
   /* Lo que NUNCA es origen, aunque encaje en la lista de arriba:
@@ -81,7 +82,8 @@
     ".pa34-cbin",
     ".pa34-acorn",
     ".pa34-tplay svg *",
-    ".pa54-trail svg *"
+    ".pa54-trail svg *",
+    ".pa60-bin"
   ].join(",");
 
   /* Pares origen → destino que el juego YA tenía. El orden importa: se toma
@@ -94,6 +96,7 @@
     { o: ".pa53-tile", t: ".pa53-tile.pa53-hole" },
     { o: ".pa54-piece", t: ".pa54-slot" },
     { o: ".pa54-tile[data-k]", t: ".pa54-tile.pa54-sh" },
+    { o: ".pa60-item.hold", t: ".pa60-bin" },
     { o: "#stage .animalBig", t: "#stage .choice.habitat,#stage .choice.diet" }
   ];
 
@@ -109,6 +112,7 @@
     { root: ".pa54-play", p: "#pa54prompt" },
     { root: ".pa55-play", p: "#pa55prompt" },
     { root: ".pa58-play", p: "#pa58prompt" },
+    { root: ".pa60-play", p: "#pa60prompt" },
     { root: "#game", p: "#promptText" }
   ];
 
