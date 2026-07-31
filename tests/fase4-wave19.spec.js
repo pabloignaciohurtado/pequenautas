@@ -53,7 +53,13 @@ test('Fase 4 · #54: la quinta tarjeta existe y no roba el tap a las demás', as
   const cards = await page.evaluate(() =>
     [...document.querySelectorAll('#home .subject')].map((c) => c.getAttribute('data-game'))
   );
-  expect(cards).toEqual(['math', 'reading', 'science', 'shapes', 'brain', 'music', 'emotions']);
+  // Las seis materias de CONTENIDO son las que ocupan la rejilla 3+3 y su orden
+  // es el que un niño ya aprendió a reconocer: comprobamos ese prefijo, no un
+  // total congelado. Cada materia de COMPETENCIA nueva (#58 Emociones, #60
+  // Hábitos…) se añade después como banda, así que fijar el largo obligaría a
+  // reescribir esta oleada entera cada vez que llega una casa nueva.
+  expect(cards.slice(0, 6)).toEqual(['math', 'reading', 'science', 'shapes', 'brain', 'music']);
+  expect(cards.slice(6)).toContain('emotions');
 
   await page.locator('.subject').nth(1).click();
   await page.waitForTimeout(700);
@@ -71,7 +77,11 @@ test('Fase 4 · #54: cinco casas en dos filas, ninguna huérfana', async ({ page
     const set = [...new Set(tops)];
     return set.map((t) => tops.filter((x) => x === t).length);
   });
-  expect(filas).toEqual([3, 3, 1]); // con #58 son siete: 3+3 y la banda ancha de Emociones sola
+  // La rejilla de contenido son dos filas de tres y ninguna queda huérfana; lo
+  // que venga después son bandas a lo ancho, una por fila.
+  expect(filas.slice(0, 2)).toEqual([3, 3]);
+  expect(filas.slice(2).every((n) => n === 1)).toBe(true);
+  expect(filas.length).toBeGreaterThanOrEqual(3);
 });
 
 test('Fase 4 · #54: abre su propia sección con cuatro juegos ilustrados', async ({ page }) => {
