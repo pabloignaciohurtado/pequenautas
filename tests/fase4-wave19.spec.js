@@ -53,7 +53,7 @@ test('Fase 4 · #54: la quinta tarjeta existe y no roba el tap a las demás', as
   const cards = await page.evaluate(() =>
     [...document.querySelectorAll('#home .subject')].map((c) => c.getAttribute('data-game'))
   );
-  expect(cards).toEqual(['math', 'reading', 'science', 'shapes', 'brain', 'music']);
+  expect(cards).toEqual(['math', 'reading', 'science', 'shapes', 'brain', 'music', 'emotions']);
 
   await page.locator('.subject').nth(1).click();
   await page.waitForTimeout(700);
@@ -66,13 +66,12 @@ test('Fase 4 · #54: cinco casas en dos filas, ninguna huérfana', async ({ page
   await page.setViewportSize({ width: 1024, height: 800 });
   await entrar(page);
   const filas = await page.evaluate(() => {
-    const tops = [...document.querySelectorAll('#home .subject')].map((c) =>
-      Math.round(c.getBoundingClientRect().top)
-    );
+    // offsetTop: el rect incluiría el transform del balanceo de las tarjetas.
+    const tops = [...document.querySelectorAll('#home .subject')].map((c) => c.offsetTop);
     const set = [...new Set(tops)];
     return set.map((t) => tops.filter((x) => x === t).length);
   });
-  expect(filas).toEqual([3, 3]); // con #55 son seis: tres arriba, tres abajo
+  expect(filas).toEqual([3, 3, 1]); // con #58 son siete: 3+3 y la banda ancha de Emociones sola
 });
 
 test('Fase 4 · #54: abre su propia sección con cuatro juegos ilustrados', async ({ page }) => {
