@@ -62,7 +62,9 @@
     ".pa54-tile",
     ".pa54-foot",
     ".pa55-tile",
-    ".pa55-note"
+    ".pa55-note",
+    ".pa58-tile",
+    ".pa58-act"
   ].join(",");
 
   /* Lo que NUNCA es origen, aunque encaje en la lista de arriba:
@@ -106,6 +108,7 @@
     { root: ".pa53-play", p: "#pa53prompt" },
     { root: ".pa54-play", p: "#pa54prompt" },
     { root: ".pa55-play", p: "#pa55prompt" },
+    { root: ".pa58-play", p: "#pa58prompt" },
     { root: "#game", p: "#promptText" }
   ];
 
