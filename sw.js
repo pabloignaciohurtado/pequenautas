@@ -43,7 +43,7 @@ const FASE4_MODULES=[
   '41-fondo-juego','42-pantallas-fondo',
   '46-hud-iconos','47-opciones-layout','48-avatares','49-iconos-quiz-letras','50-progreso-carga',
   '51-hero-globo','52-juegos-tarjetas','53-formas-colores','54-ingenio','55-musica',
-  '56-arrastrar','57-ambiente','58-emociones','59-puente-calma'
+  '56-arrastrar','57-ambiente','58-emociones','59-puente-calma','60-habitos'
 ];
 
 const PRECACHE_STATE={status:'idle',done:0,total:0,failed:[]};
