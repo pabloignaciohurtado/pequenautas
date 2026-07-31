@@ -141,7 +141,8 @@
     // Va DESPUÉS de #05 (dueño de la tarjeta de aviso) y de #58 (dueño de la
     // respiración guiada), porque lo único que hace es engancharse a lo que
     // ambos ya exponen.
-    "59-puente-calma"
+    "59-puente-calma",
+    "60-habitos"
   ];
 
   var injected = Object.create(null);
