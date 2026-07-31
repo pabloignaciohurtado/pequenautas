@@ -1,0 +1,255 @@
+/* ===== Fase 4 #58 · Sección "Emociones y Convivencia" (aspecto) =====
+
+   Home pasa a SIETE casas. Con tres columnas quedaría 3+3+1 y esa última
+   tarjeta suelta se lee como un error de maquetación. Subir a cuatro
+   columnas tampoco sirve: la ilustración de cada casa deja de leerse en
+   tablet. Así que la séptima ocupa la fila entera a propósito, en formato
+   banda: es la lectura correcta de la rejilla Y la decisión de producto
+   correcta, porque es la sección que queremos que el adulto vea primero.
+   En 1 columna el span es inocuo (ya era ancho completo).
+
+   La séptima tarjeta trae su propio par de colores (#35 sólo define
+   :nth-child(1..3)).
+
+   Overlay propio (.pa58-ov) por la razón de siempre: #40 hace
+   querySelector(".pa34-ov") y con dos overlays le pondría el fondo al
+   equivocado. Todo lo de dentro reutiliza .pa34-* y hereda gratis el
+   papercraft de #52.
+
+   Lo específico de esta sección es la cara: un SVG que sólo cambia cejas,
+   ojos y boca. Su estilo vive aquí y no en el JS para que el modo alto
+   contraste y prefers-reduced-motion puedan intervenir.
+
+   Aditivo: no toca app.js, ni index.html, ni STORE_KEY. */
+
+@import url("img/em-home.css");
+@import url("img/em-face.css");
+@import url("img/em-what.css");
+@import url("img/em-help.css");
+@import url("img/em-breathe.css");
+
+/* ---------- 1 · Home: la séptima casa es una banda ---------- */
+.subject.pa58-card{
+  grid-column:1 / -1 !important;
+  --pa35c:#57C596; --pa35cd:#369468;
+  min-height:132px !important;
+}
+.subject.pa58-card::before{background-image:var(--pa58-home);background-position:center 38%;}
+.screen.active .subject.pa58-card{animation:pa35in 460ms var(--ease-out,cubic-bezier(.2,.8,.3,1)) 390ms forwards !important;opacity:0;}
+@media (prefers-reduced-motion:reduce){
+  .screen.active .subject.pa58-card{animation:none !important;opacity:1 !important;transform:none !important;}
+}
+
+/* ---------- 2 · Viñeta por juego (misma banda que #52) ---------- */
+html.pa52 [data-pa34-game="emo:face"]    .mech{background-image:var(--pa58-face) !important;}
+html.pa52 [data-pa34-game="emo:what"]    .mech{background-image:var(--pa58-what) !important;}
+html.pa52 [data-pa34-game="emo:help"]    .mech{background-image:var(--pa58-help) !important;}
+html.pa52 [data-pa34-game="emo:breathe"] .mech{background-image:var(--pa58-breathe) !important;}
+.pa58-games .mech{background-size:contain;background-position:center;background-repeat:no-repeat;}
+
+/* ---------- 3 · Overlay propio ---------- */
+.pa58-ov{
+  position:fixed;inset:0;z-index:1400;
+  background:rgba(31,42,30,.52);
+  display:flex;align-items:flex-end;justify-content:center;
+  opacity:0;pointer-events:none;transition:opacity .22s ease;
+}
+.pa58-ov.show{opacity:1;pointer-events:auto;}
+.pa58-ov .pa34-sheet{transform:translateY(18px);transition:transform .24s cubic-bezier(.2,.8,.3,1);}
+.pa58-ov.show .pa34-sheet{transform:none;}
+
+/* ---------- 4 · Superficie de juego ---------- */
+.pa58-play{
+  position:fixed;inset:0;z-index:1500;
+  background:radial-gradient(120% 70% at 50% 0%, #FBF6E6 0%, #F1E9D4 55%, #E4DCC2 100%);
+  display:flex;flex-direction:column;
+  font-family:'Plus Jakarta Sans',system-ui,sans-serif;
+  opacity:0;pointer-events:none;transition:opacity .2s ease;
+}
+.pa58-play.show{opacity:1;pointer-events:auto;}
+.pa58-ptop{
+  flex:0 0 auto;display:flex;align-items:center;gap:10px;
+  padding:12px 14px;background:#FFFCF2;
+  box-shadow:0 2px 10px rgba(46,59,44,.10);
+}
+.pa58-prompt{flex:1 1 auto;text-align:center;font-weight:800;font-size:17px;color:#2E3B2C;line-height:1.25;}
+.pa58-pstar{flex:0 0 auto;font-weight:800;color:#2E3B2C;font-size:15px;white-space:nowrap;}
+.pa58-field{
+  flex:1 1 auto;overflow-y:auto;
+  display:flex;flex-direction:column;align-items:center;justify-content:center;
+  gap:18px;padding:18px 14px;
+}
+.pa58-field > *{width:100%;max-width:620px;}
+.pa58-pbot{
+  flex:0 0 auto;display:flex;align-items:center;gap:12px;
+  padding:12px 16px calc(12px + env(safe-area-inset-bottom,0px));
+  background:#FFFCF2;box-shadow:0 -2px 10px rgba(46,59,44,.10);
+}
+.pa58-prog{flex:1 1 auto;display:flex;gap:7px;flex-wrap:wrap;}
+.pa58-prog i{flex:0 0 auto;width:22px;height:8px;border-radius:5px;background:rgba(46,59,44,.16);transition:background .2s;}
+.pa58-prog i.on{background:#57C596;}
+.pa58-cta{
+  flex:0 0 auto;border:0;border-radius:16px;cursor:pointer;
+  background:#57C596;color:#fff;font-weight:800;font-size:16px;
+  padding:11px 20px;box-shadow:0 4px 0 #369468;font-family:inherit;
+}
+.pa58-cta.ghost{background:#FFFCF2;color:#2E3B2C;box-shadow:0 4px 0 rgba(46,59,44,.16);}
+.pa58-cta:active{transform:translateY(2px);box-shadow:0 2px 0 #369468;}
+
+/* ---------- 5 · La cara ----------
+   Un zorro de papel al que sólo le cambian cejas, ojos y boca. El trazo es
+   grueso a propósito: a 3 años lo que se lee de una cara son las líneas,
+   no los matices. --tc lo pone el JS con el color de la emoción y tiñe
+   sólo el halo, nunca la cara: si la cara cambiara de color el niño
+   resolvería por color y no por expresión. */
+.pa58-stage{
+  display:flex;align-items:center;justify-content:center;
+  min-height:190px;
+}
+.pa58-fsvg{width:180px;height:180px;display:block;overflow:visible;}
+.pa58-fsvg .head{fill:#E8843A;stroke:#B4643C;stroke-width:2.5;}
+.pa58-fsvg .snout{fill:#FBF3E2;stroke:#D9BFA0;stroke-width:2;}
+.pa58-fsvg .ear{fill:#D9702F;stroke:#B4643C;stroke-width:2.5;stroke-linejoin:round;}
+.pa58-fsvg .earin{fill:#F6C9A8;}
+.pa58-fsvg .eye{fill:#2E3B2C;}
+.pa58-fsvg .glint{fill:#fff;}
+.pa58-fsvg .lid,
+.pa58-fsvg .brow,
+.pa58-fsvg .mouth{fill:none;stroke:#2E3B2C;stroke-width:3.4;stroke-linecap:round;stroke-linejoin:round;}
+.pa58-fsvg .mouth{stroke-width:3.8;}
+.pa58-fsvg .nose{fill:#2E3B2C;}
+.pa58-fsvg .blush{fill:#EFA07A;opacity:.75;}
+.pa58-fsvg .tear{fill:#4EA8DE;}
+.pa58-fsvg .steam{fill:none;stroke:#D9563F;stroke-width:3;stroke-linecap:round;}
+.pa58-stage.in .pa58-fsvg{animation:pa58pop 560ms cubic-bezier(.2,.9,.3,1.2);}
+@keyframes pa58pop{0%{opacity:0;transform:scale(.7);}60%{transform:scale(1.06);}100%{opacity:1;transform:scale(1);}}
+
+/* ---------- 6 · Tarjeta de situación ---------- */
+.pa58-sit{
+  display:flex;flex-direction:column;align-items:center;gap:8px;
+  background:#FFFCF2;border-radius:24px;padding:16px 18px;
+  border:3px solid rgba(46,59,44,.12);
+  box-shadow:0 5px 0 rgba(46,59,44,.10),0 10px 20px rgba(46,59,44,.12);
+  max-width:520px !important;
+}
+.pa58-sit .ic{font-size:52px;line-height:1;}
+.pa58-sit .tx{font-size:17px;font-weight:800;color:#2E3B2C;text-align:center;line-height:1.3;}
+.pa58-sit .face{height:0;overflow:hidden;transition:height .3s ease;}
+.pa58-sit.reveal .face{height:112px;}
+.pa58-sit .face .pa58-fsvg{width:104px;height:104px;}
+.pa58-sit.reveal .face .pa58-fsvg{animation:pa58pop 500ms cubic-bezier(.2,.9,.3,1.2);}
+.pa58-sit .face.static{height:112px;}
+
+/* ---------- 7 · Fichas de emoción ---------- */
+.pa58-tilewrap{display:flex;justify-content:center;}
+.pa58-tiles{display:flex;flex-wrap:wrap;gap:12px;justify-content:center;}
+.pa58-tile{
+  width:104px;min-height:104px;flex:0 0 auto;
+  display:flex;flex-direction:column;align-items:center;justify-content:center;gap:6px;
+  border:3px solid var(--tc,#57C596);border-radius:22px;
+  background:#FFFCF2;cursor:pointer;font-family:inherit;padding:10px 6px;
+  box-shadow:0 4px 0 rgba(46,59,44,.10),0 8px 16px rgba(46,59,44,.12);
+  transition:transform .14s ease,box-shadow .14s ease;
+}
+.pa58-tile:active{transform:translateY(2px);}
+.pa58-tile .ic{font-size:38px;line-height:1;}
+.pa58-tile .nm{font-size:14px;font-weight:800;color:#2E3B2C;text-align:center;}
+
+/* ---------- 8 · Acciones (¿qué puedo hacer?) ----------
+   En columna y a texto completo, no en fichas: aquí lo que hay que
+   comparar son frases, y ponerlas en fila obliga a leer en zigzag. */
+.pa58-acts{display:flex;flex-direction:column;gap:10px;max-width:460px !important;margin:0 auto;}
+.pa58-act{
+  border:3px solid rgba(46,59,44,.14);border-radius:20px;
+  background:#FFFCF2;cursor:pointer;font-family:inherit;
+  font-size:16px;font-weight:800;color:#2E3B2C;text-align:left;
+  padding:14px 16px;line-height:1.25;
+  box-shadow:0 4px 0 rgba(46,59,44,.10),0 8px 16px rgba(46,59,44,.12);
+  transition:transform .14s ease;
+}
+.pa58-act:active{transform:translateY(2px);}
+
+/* ---------- 9 · Respiración ----------
+   Los anillos NO se apagan en prefers-reduced-motion, sólo se suavizan:
+   son el metrónomo del ejercicio, y sin ellos no hay ejercicio. La duración
+   se mantiene idéntica a la del JS (4 s dentro, 1 s sostener, 4 s fuera)
+   porque el niño sigue el círculo, no la voz. */
+.pa58-breathe{
+  position:relative;display:flex;align-items:center;justify-content:center;
+  min-height:280px;
+}
+.pa58-breathe .ring{
+  position:absolute;border-radius:50%;
+  border:4px solid var(--tc,#57C596);opacity:.30;
+  width:150px;height:150px;
+  transition:transform 4s cubic-bezier(.4,0,.4,1),opacity 4s ease;
+}
+.pa58-breathe .ring.r2{width:190px;height:190px;opacity:.22;}
+.pa58-breathe .ring.r3{width:230px;height:230px;opacity:.14;}
+.pa58-breathe .core{
+  position:relative;z-index:2;
+  transition:transform 4s cubic-bezier(.4,0,.4,1);
+  transform:scale(.72);
+}
+.pa58-breathe .core .pa58-fsvg{width:130px;height:130px;}
+.pa58-breathe.in .ring,
+.pa58-breathe.hold .ring{transform:scale(1.28);opacity:.45;}
+.pa58-breathe.in .core,
+.pa58-breathe.hold .core{transform:scale(1);}
+.pa58-breathe.hold .ring{transition-duration:1s;}
+.pa58-breathe.hold .core{transition-duration:1s;}
+.pa58-breathe.out .ring{transform:scale(1);opacity:.22;}
+.pa58-breathe.out .core{transform:scale(.72);}
+.pa58-skip{align-self:center;max-width:none !important;width:auto !important;}
+
+/* ---------- 10 · Estados compartidos ---------- */
+.pa58-ok{border-color:#57C596 !important;box-shadow:0 0 0 4px rgba(87,197,150,.40) !important;}
+.pa58-no{animation:pa58shake 420ms;}
+@keyframes pa58shake{0%,100%{transform:none;}20%{transform:translateX(-7px);}45%{transform:translateX(6px);}70%{transform:translateX(-4px);}}
+
+/* ---------- 11 · Victoria ---------- */
+.pa58-win{
+  position:absolute;inset:0;z-index:3;
+  background:rgba(31,42,30,.62);
+  display:flex;align-items:center;justify-content:center;padding:22px;
+  opacity:0;pointer-events:none;transition:opacity .24s ease;
+}
+.pa58-win.show{opacity:1;pointer-events:auto;}
+.pa58-wc{
+  background:#FFFCF2;border-radius:26px;padding:24px 22px;text-align:center;
+  max-width:340px;width:100%;box-shadow:0 16px 40px rgba(0,0,0,.3);
+}
+.pa58-wc .rf{font-size:64px;line-height:1;margin:0 auto 6px;}
+.pa58-wc h2{margin:0 0 6px;font-size:24px;color:#2E3B2C;}
+.pa58-wc p{margin:0 0 16px;font-size:15px;color:#5A6657;}
+.pa58-wc .row{display:flex;gap:10px;justify-content:center;}
+
+@media (max-width:400px){
+  .pa58-tile{width:88px;min-height:90px;}
+  .pa58-tile .ic{font-size:32px;}
+  .pa58-fsvg{width:148px;height:148px;}
+  .pa58-sit .ic{font-size:44px;}
+  .pa58-sit .tx{font-size:15px;}
+  .pa58-act{font-size:15px;padding:12px 14px;}
+  .pa58-breathe{min-height:250px;}
+}
+@media (prefers-reduced-motion:reduce){
+  .pa58-no{animation:none;}
+  .pa58-stage.in .pa58-fsvg,
+  .pa58-sit.reveal .face .pa58-fsvg{animation:none;}
+  .pa58-tile,.pa58-act{transition:none;}
+  .pa58-breathe .ring,.pa58-breathe .core{transition-timing-function:linear;}
+}
+
+/* Alto contraste (#17): la cara pierde el relleno naranja y se queda en
+   línea, que es como mejor se lee con baja visión. */
+html.a11y-hc .pa58-fsvg .head{fill:#FFFFFF;stroke:#000;stroke-width:3.5;}
+html.a11y-hc .pa58-fsvg .snout{fill:#FFFFFF;stroke:#000;stroke-width:3;}
+html.a11y-hc .pa58-fsvg .ear{fill:#FFFFFF;stroke:#000;stroke-width:3.5;}
+html.a11y-hc .pa58-fsvg .earin{fill:#DDD;}
+html.a11y-hc .pa58-fsvg .blush{display:none;}
+html.a11y-hc .pa58-fsvg .lid,
+html.a11y-hc .pa58-fsvg .brow,
+html.a11y-hc .pa58-fsvg .mouth{stroke:#000;stroke-width:4.2;}
+html.a11y-hc .pa58-act,
+html.a11y-hc .pa58-tile{border-color:#000 !important;}

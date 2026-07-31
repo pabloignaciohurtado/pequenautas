@@ -37,7 +37,7 @@ test('Fase 4 · #55: la sexta tarjeta entra sin desplazar a las otras cinco', as
   const cards = await page.evaluate(() =>
     [...document.querySelectorAll('#home .subject')].map((c) => c.getAttribute('data-game'))
   );
-  expect(cards).toEqual(['math', 'reading', 'science', 'shapes', 'brain', 'music']);
+  expect(cards).toEqual(['math', 'reading', 'science', 'shapes', 'brain', 'music', 'emotions']);
   await expect(page.locator('#pa55Card .label')).toHaveText(/Música|Music/);
   await expect(page.locator('#pa55Lv')).toHaveText(/Nivel 1|Level 1/);
 });
@@ -46,12 +46,11 @@ test('Fase 4 · #55: seis casas caben en dos filas de tres', async ({ page }) =>
   await page.setViewportSize({ width: 1024, height: 800 });
   await entrar(page);
   const rows = await page.evaluate(() => {
-    const tops = [...document.querySelectorAll('#home .subject')].map((c) =>
-      Math.round(c.getBoundingClientRect().top)
-    );
+    // offsetTop: el rect incluiría el transform del balanceo de las tarjetas.
+    const tops = [...document.querySelectorAll('#home .subject')].map((c) => c.offsetTop);
     return [...new Set(tops)].length;
   });
-  expect(rows).toBe(2);
+  expect(rows).toBe(3); // 3+3 y la banda de #58
 });
 
 test('Fase 4 · #55: no se crea AudioContext hasta que el niño toca', async ({ page }) => {
@@ -201,5 +200,5 @@ test('Fase 4 · #55: cerrar con Escape devuelve al mapa sin romper Home', async 
   await page.keyboard.press('Escape');
   await page.waitForTimeout(300);
   await expect(page.locator('.pa55-play.show')).toHaveCount(0);
-  await expect(page.locator('#home .subject')).toHaveCount(6);
+  await expect(page.locator('#home .subject')).toHaveCount(7);
 });
