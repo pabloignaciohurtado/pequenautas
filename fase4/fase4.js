@@ -135,7 +135,8 @@
     // #57 es la cama sonora de bosque que sustituye a los efectos
     // sintetizados. Va después de #56 porque no compite con nada: sólo
     // escucha el primer gesto y añade su fila en Ajustes.
-    "57-ambiente"
+    "57-ambiente",
+    "58-emociones"
   ];
 
   var injected = Object.create(null);
