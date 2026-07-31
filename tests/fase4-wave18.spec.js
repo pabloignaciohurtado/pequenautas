@@ -44,7 +44,7 @@ test('Fase 4 · #53: la cuarta tarjeta existe y no roba el tap a las otras tres'
     const cs = [...document.querySelectorAll('#home .subject')];
     return cs.map((c) => c.getAttribute('data-game'));
   });
-  expect(cards).toEqual(['math', 'reading', 'science', 'shapes', 'brain', 'music']);
+  expect(cards).toEqual(['math', 'reading', 'science', 'shapes', 'brain', 'music', 'emotions']);
 
   // Las tres originales siguen abriendo el overlay de #34, no el de #53.
   await page.locator('.subject').nth(1).click();
@@ -57,12 +57,13 @@ test('Fase 4 · #53: la rejilla de Home no deja huérfana a la cuarta tarjeta', 
   await page.setViewportSize({ width: 1024, height: 800 });
   await entrar(page);
   const rows = await page.evaluate(() => {
-    const tops = [...document.querySelectorAll('#home .subject')].map(
-      (c) => Math.round(c.getBoundingClientRect().top)
-    );
+    // offsetTop y no getBoundingClientRect: las tarjetas tienen una animación
+    // de balanceo y el rect incluye el transform, así que dos casas de la misma
+    // fila pueden diferir unos píxeles según el fotograma.
+    const tops = [...document.querySelectorAll('#home .subject')].map((c) => c.offsetTop);
     return [...new Set(tops)].length;
   });
-  expect(rows).toBe(2); // con #55 son seis tarjetas en 3 columnas: 3+3
+  expect(rows).toBe(3); // con #58 son siete: 3+3 y la banda de Emociones ocupando su propia fila
 });
 
 test('Fase 4 · #53: abre su propia sección con cuatro juegos ilustrados', async ({ page }) => {
