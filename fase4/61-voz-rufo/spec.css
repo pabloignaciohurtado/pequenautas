@@ -1,0 +1,50 @@
+/* ===== Fase 4 #61 · La voz de Rufo =====
+
+   Hasta aquí la app hablaba con la voz del sistema operativo (Web Speech API).
+   Eso significa que Rufo sonaba distinto en cada teléfono y, en los Android
+   baratos —que son justo los que acaban en manos de un niño de cuatro años—
+   sonaba a robot. No era un ajuste mal puesto: esa voz sencillamente no es
+   nuestra, la pone el fabricante.
+
+   Aquí llegan los primeros clips locutados de verdad. Nueve frases en español
+   y nueve en inglés, las del guion que app.js ya tenía escrito en
+   AUDIO_MANIFEST.keys, generadas con Kokoro (modelo libre, licencia Apache
+   2.0, voz masculina joven «alex», 24 kHz mono a 32 kbps).
+
+   Por qué el audio viaja dentro de un CSS:
+
+   1. El repo no admite binarios —el arte de #38, #49 o #52 ya vive así, en
+      base64 dentro de propiedades personalizadas—, y no tenía sentido inventar
+      un segundo mecanismo solo para el sonido.
+   2. El service worker precachea automáticamente todo lo que un spec.css
+      @importa (ver extractImports en sw.js). Poniendo los clips aquí, la voz
+      queda offline sin tocar ni una línea del worker.
+   3. Al ser data: URIs, no hay ni una petición de red al reproducir. La app
+      suena igual en un avión que en casa, que es toda su gracia.
+
+   Un archivo por clip, como en el arte: corregir una frase no obliga a mover
+   las otras diecisiete.
+
+   Aditivo: no toca app.js, ni index.html, ni STORE_KEY. Si spec.js no carga,
+   estas variables quedan definidas sin que nadie las lea y Rufo sigue hablando
+   con la voz del sistema, exactamente como antes. */
+
+@import url("voz/es-intro_tap.css");
+@import url("voz/es-cheer_great.css");
+@import url("voz/es-cheer_wow.css");
+@import url("voz/es-cheer_win.css");
+@import url("voz/es-cheer_amazing.css");
+@import url("voz/es-lang_es.css");
+@import url("voz/es-lang_en.css");
+@import url("voz/es-break_title.css");
+@import url("voz/es-break_bye.css");
+
+@import url("voz/en-intro_tap.css");
+@import url("voz/en-cheer_great.css");
+@import url("voz/en-cheer_wow.css");
+@import url("voz/en-cheer_win.css");
+@import url("voz/en-cheer_amazing.css");
+@import url("voz/en-lang_es.css");
+@import url("voz/en-lang_en.css");
+@import url("voz/en-break_title.css");
+@import url("voz/en-break_bye.css");
