@@ -13,8 +13,26 @@ sustituir esas voces por **clips locutados por personas** sin tocar la lógica d
   ahí intentan cargar un MP3. Así nunca hay 404 ni ruido de consola por clips que aún no existen.
 
 ## Estado actual
-`available` está **VACÍO**: ningún clip humano se ha grabado todavía. El runtime está
-listo y el fallback TTS activo. Pendiente de locución.
+`available` sigue **VACÍO**, y es a propósito: aquí dentro no hay ningún clip grabado
+por una persona todavía. Lo que sí cambió es lo que se oye mientras tanto.
+
+Desde la oleada 27, el módulo `fase4/61-voz-rufo` trae dieciocho clips locutados —las
+nueve claves del guion en ES y en EN— sintetizados con **Kokoro** (modelo libre,
+licencia Apache 2.0, voz masculina joven «alex» en español y «liam» en inglés), a
+24 kHz mono 32 kbps. Viajan en base64 dentro de `fase4/61-voz-rufo/voz/*.css`, igual
+que el arte, porque el repo no admite binarios y así el service worker los precachea
+solo por estar `@import`ados.
+
+Ese módulo se coloca **por debajo** de este banco, nunca por encima. El orden al
+reproducir una clave es:
+
+1. `audio/<idioma>/<clave>.mp3` — locución humana, vía este AudioBank (cuando exista);
+2. el clip embebido de #61 — lo que suena hoy;
+3. la voz del sistema — el fallback de siempre.
+
+Es decir: el día que se grabe a una persona basta con seguir los pasos de abajo y esos
+clips ganan solos, sin borrar ni tocar nada de #61. Por eso `available` se deja vacío
+y `app.js` no se modificó.
 
 ## Añadir clips reales
 1. Abre `AUDIO_MANIFEST.keys` en app.js: es el **guion de locución** (texto por idioma de cada clave).
