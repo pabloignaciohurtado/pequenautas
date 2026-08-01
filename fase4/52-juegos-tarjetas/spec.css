@@ -136,14 +136,23 @@ html.pa52 [data-pa34-game="math:match"] .mech::after{
 }
 
 /* ---------- 6 · Nombre y progreso ---------- */
+/* Se reserva el alto de dos renglones para el nombre: así el dibujo —que es lo
+   que el niño mira primero— y la píldora de nivel arrancan a la misma altura en
+   las dos tarjetas de la fila aunque un título sea más largo que el otro. */
 html.pa52 .pa34-game .gn{
   font-family:'Baloo 2','Fredoka',system-ui,sans-serif;
   font-size:14px;font-weight:800;color:#2E3B2C;line-height:1.15;
   text-align:center;
+  min-height:2.3em;
+  display:flex;align-items:center;justify-content:center;
 }
 html.pa52 .pa34-game .gp{
   font-size:11px;font-weight:700;color:#6B7A5E;text-align:center;
   background:rgba(46,59,44,.07);border-radius:999px;padding:2px 9px;
+  /* La píldora se ancla al pie. Sin esto, "Une cantidad y número" la empujaba
+     hacia abajo y su vecina de fila la mostraba más arriba: dos hermanas que
+     deberían leerse a la vez quedaban desalineadas. */
+  margin-top:auto;
 }
 html.pa52 .pa34-game .lock{top:8px;right:10px;}
 
