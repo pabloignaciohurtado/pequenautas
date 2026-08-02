@@ -11,7 +11,7 @@
    medio entre eso y un único archivo enorme que habría que rebajar entero
    cada vez que se añade una frase.
 
-   Generado por herramienta; no editar a mano. */
+   Generado por tools/voz/construir.py; no editar a mano. */
 @import url("voz/01.css");
 @import url("voz/02.css");
 @import url("voz/03.css");
