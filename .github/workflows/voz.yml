@@ -34,6 +34,11 @@ permissions:
 jobs:
   hornear:
     runs-on: ubuntu-latest
+    env:
+      # El descargador nuevo de Hugging Face (Xet) se cayó a mitad de la
+      # descarga del modelo sin usuario autenticado. El clásico es más lento
+      # pero llega, y aquí lo que importa es llegar.
+      HF_HUB_DISABLE_XET: "1"
     # Ciento veintidós frases en una CPU sin tarjeta gráfica van a ritmo lento;
     # el tope alto es un seguro, no una previsión.
     timeout-minutes: 330
@@ -67,6 +72,32 @@ jobs:
             torch==2.6.0 torchaudio==2.6.0
           pip install chatterbox-tts==0.1.7 "numpy<2" librosa==0.11.0
           python -c "import torch, torchaudio, transformers; print(torch.__version__, transformers.__version__)"
+
+      - name: Modelo en caché
+        uses: actions/cache@v4
+        with:
+          path: ~/.cache/huggingface
+          key: chatterbox-mtl-v1
+
+      - name: Traer el modelo
+        # Se baja aparte, antes de hornear, y con reintentos: son casi tres
+        # gigas contra un servidor público y una caída a mitad no puede
+        # significar empezar el lote de cero.
+        run: |
+          for i in 1 2 3 4 5; do
+            python - <<'PY' && exit 0
+          from huggingface_hub import snapshot_download
+          snapshot_download(repo_id="ResembleAI/chatterbox", repo_type="model",
+                            revision="main",
+                            allow_patterns=["ve.pt", "t3_mtl23ls_v2.safetensors",
+                                            "s3gen.pt", "conds.pt",
+                                            "grapheme_mtl_merged_expanded_v1.json",
+                                            "Cangjie5_TC.json"])
+          PY
+            echo "descarga fallida, reintento $i"
+            sleep 30
+          done
+          exit 1
 
       - name: Hornear
         run: python tools/voz/hornear.py "${{ inputs.lista || 'tools/voz/frases-es-w1.json' }}" clips
