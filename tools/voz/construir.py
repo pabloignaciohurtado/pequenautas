@@ -6,10 +6,14 @@ Uso:  python tools/voz/construir.py <carpeta-clips> <lista.json> [raiz-repo]
 Escribe:
   fase4/62-voz-narradora/voz/NN.css   los clips en base64
   fase4/62-voz-narradora/spec.css     la lista de @import
+  fase4/62-voz-narradora/spec.js      el mapa texto -> clip
 
-No toca spec.js. El mapa texto -> clip que vive allí se calcula con el mismo
-sha1 del texto que usa el horno, así que mientras la lista de frases no
-cambie, el mapa sigue siendo correcto y no hay dos sitios que sincronizar.
+El mapa se reescribe aquí, y no a mano, por dos motivos. Uno, que con el
+catálogo creciendo por olas mantener a mano cuatrocientas líneas de sha1 es
+pedir una desincronización. Y dos, que solo entran en el mapa las frases que
+de verdad tienen clip: si una toma sale mal y no se empaqueta, su entrada
+desaparece del mapa y la app la dice con el sintetizador, en vez de pedir un
+recurso que no está.
 
 Los clips se reparten en trozos porque el service worker precachea cada
 @import por separado: un archivo por frase serían cientos de descargas en el
@@ -65,7 +69,10 @@ def main():
     raiz = sys.argv[3] if len(sys.argv) > 3 else "."
     mod = os.path.join(raiz, "fase4", "62-voz-narradora")
 
-    items = json.load(open(lista, encoding="utf-8"))
+    # Varias listas separadas por coma: una por ola de frases (ver hornear.py).
+    items = []
+    for l in lista.split(","):
+        items += json.load(open(l.strip(), encoding="utf-8"))
     listos = []
     for it in items:
         key = cid(it["lang"], it["text"])
@@ -103,7 +110,32 @@ def main():
     with open(os.path.join(mod, "spec.css"), "w") as f:
         f.write(CABECERA + imports)
 
+    escribir_mapa(os.path.join(mod, "spec.js"), items,
+                  set(k for k, _ in listos))
+
     print("trozos:", len(trozos), "->", mod)
+
+
+def escribir_mapa(spec, items, hay):
+    """Reescribe el bloque MAPA de spec.js dejando el resto del archivo igual.
+
+    La clave es el idioma y el texto con los espacios colapsados, que es como
+    lo normaliza spec.js antes de buscar; el valor, el identificador del clip.
+    """
+    js = open(spec, encoding="utf-8").read()
+    ini = js.index("  var MAPA = {")
+    fin = js.index("\n  };", ini) + len("\n  };")
+    pares = {}
+    for it in items:
+        key = cid(it["lang"], it["text"])
+        if key in hay:
+            pares[it["lang"] + "|" + " ".join(it["text"].split())] = key
+    cuerpo = ",\n".join(
+        "    %s: %s" % (json.dumps(k, ensure_ascii=False), json.dumps(pares[k]))
+        for k in sorted(pares))
+    with open(spec, "w", encoding="utf-8") as f:
+        f.write(js[:ini] + "  var MAPA = {\n" + cuerpo + "\n  };" + js[fin:])
+    print("mapa:", len(pares), "entradas")
 
 
 if __name__ == "__main__":

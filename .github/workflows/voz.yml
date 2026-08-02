@@ -24,9 +24,13 @@ on:
   workflow_dispatch:
     inputs:
       lista:
-        description: "Lista de frases a hornear"
+        description: "Listas de frases a hornear, separadas por coma"
         required: false
-        default: "tools/voz/frases-es-w1.json"
+        default: "tools/voz/frases-es-w1.json,tools/voz/frases-es-w2.json"
+      rehacer:
+        description: "Identificadores de clip a rehornear, separados por espacio"
+        required: false
+        default: ""
 
 permissions:
   contents: write
@@ -39,8 +43,11 @@ jobs:
       # descarga del modelo sin usuario autenticado. El clásico es más lento
       # pero llega, y aquí lo que importa es llegar.
       HF_HUB_DISABLE_XET: "1"
-    # Ciento veintidós frases en una CPU sin tarjeta gráfica van a ritmo lento;
-    # el tope alto es un seguro, no una previsión.
+    # A minuto por frase en una CPU sin tarjeta gráfica, el catálogo completo
+    # ya no cabe en un trabajo. El horno se detiene solo a los 250 minutos
+    # (MINUTOS_MAX) para que dé tiempo a empaquetar y comprometer lo hecho, y
+    # la pasada siguiente recupera esos clips de la rama y sigue. El tope de
+    # aquí solo es la red de seguridad por debajo del límite de seis horas.
     timeout-minutes: 330
 
     steps:
@@ -116,17 +123,52 @@ jobs:
           print("oídos listos")
           PY
 
+      - name: Recuperar lo ya horneado
+        # Los clips de las olas anteriores ya están en la rama, dentro del CSS
+        # en base64. Recuperarlos aquí es lo que convierte cada pasada en
+        # incremental: el horno se salta lo que ya existe y dedica el tiempo a
+        # las frases nuevas. Sin esto, añadir una ola obligaría a rehornear el
+        # catálogo entero, que ya no cabe en un solo trabajo de Actions.
+        # Los que figuren en tools/voz/rehornear.txt —o en la entrada
+        # `rehacer` si el flujo se lanza a mano— se dejan fuera a propósito:
+        # es la manera de arreglar un clip suelto sin tocar los demás, y como
+        # el archivo vive en el repositorio, el arreglo viaja con el cambio que
+        # lo motiva en vez de depender de que alguien recuerde escribirlo.
+        run: |
+          mkdir -p clips
+          REHACER="${{ inputs.rehacer }}" python - <<'PY'
+          import base64, glob, os, re
+          fuera = set(os.environ.get("REHACER", "").split())
+          if os.path.exists("tools/voz/rehornear.txt"):
+              for linea in open("tools/voz/rehornear.txt"):
+                  linea = linea.split("#")[0].strip()
+                  if linea:
+                      fuera.add(linea)
+          n = 0
+          for f in sorted(glob.glob("fase4/62-voz-narradora/voz/*.css")):
+              for k, b in re.findall(
+                      r'--pa62-([a-z]{2}-[0-9a-f]{10})\s*:\s*'
+                      r'url\("data:audio/mpeg;base64,([^"]+)"\)', open(f).read()):
+                  if k in fuera:
+                      continue
+                  open("clips/%s.mp3" % k, "wb").write(
+                      base64.b64decode(re.sub(r'\\\s*', '', b)))
+                  n += 1
+          print("recuperados", n, "clips; a rehornear", sorted(fuera))
+          PY
+
       - name: Hornear
-        run: python tools/voz/hornear.py "${{ inputs.lista || 'tools/voz/frases-es-w1.json' }}" clips
+        run: python tools/voz/hornear.py "${{ inputs.lista || 'tools/voz/frases-es-w1.json,tools/voz/frases-es-w2.json' }}" clips
 
       - name: Empaquetar
-        run: python tools/voz/construir.py clips "${{ inputs.lista || 'tools/voz/frases-es-w1.json' }}" .
+        run: python tools/voz/construir.py clips "${{ inputs.lista || 'tools/voz/frases-es-w1.json,tools/voz/frases-es-w2.json' }}" .
 
       - name: Comprometer
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          git add fase4/62-voz-narradora/voz fase4/62-voz-narradora/spec.css
+          git add fase4/62-voz-narradora/voz fase4/62-voz-narradora/spec.css \
+            fase4/62-voz-narradora/spec.js
           if git diff --cached --quiet; then
             echo "sin cambios"
           else

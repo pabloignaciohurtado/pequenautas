@@ -54,6 +54,21 @@ def _inference(self, **kw):
 _t3.T3.inference = _inference
 
 
+def pronunciar(it):
+    """Lo que se le pasa al modelo, que no siempre es lo que se ve en pantalla.
+
+    El campo `say` manda cuando está. Cuando no, se rebajan a minúscula las
+    palabras escritas enteras en mayúscula: la app las usa para destacar
+    —"¡Sí! Es SOL.", "La sílaba MA", "¿Quién hace PUM PUM?"— pero el modelo
+    entiende la mayúscula como deletreo y contesta "ese, o, ele". Las letras
+    sueltas se dejan como están, porque ahí el deletreo es justo lo que se
+    quiere: "¿Qué empieza con A?" se dice nombrando la letra."""
+    if it.get("say"):
+        return it["say"]
+    return " ".join(p.lower() if len(p) > 1 and p.upper() == p and p.lower() != p
+                    else p for p in it["text"].split())
+
+
 def cid(lang, text):
     return lang + "-" + hashlib.sha1(text.encode("utf-8")).hexdigest()[:10]
 
@@ -153,6 +168,30 @@ def _plano(s):
     return " ".join(pal)
 
 
+def _nucleo(esperado):
+    """La frase sin el fonema de delante: "sss... Sol" -> "Sol"."""
+    return re.sub(r"^\w*\.\.\.\s*", "", esperado)
+
+
+def eco(esperado, oido):
+    """¿Se dijo la frase y luego se volvió a decir?
+
+    Es el único defecto que sobrevivió al segundo horneado: cuatro clips de
+    ciento veintidós salieron con la frase repetida detrás —"Me seco. Me
+    seco.", "La ballena come carne" dos veces— y pasaron el control porque
+    todo lo que se oye es lo que tocaba decir, solo que dos veces, y el
+    parecido no baja lo suficiente. Aquí se mira aparte: si en la cola de lo
+    transcrito reaparece el arranque de la frase, la toma se descarta y se
+    vuelve a intentar. No basta con que sobre texto, porque el transcriptor
+    añade coletillas suyas; tiene que reaparecer el principio."""
+    a = _plano(_nucleo(esperado)).split()
+    b = _plano(oido).split()
+    if not a or len(b) < len(a) + 1:
+        return False
+    arranque = " ".join(a[:min(2, len(a))])
+    return arranque in " ".join(b[len(a):])
+
+
 def parecido(esperado, oido):
     """Cuánto se parece lo que se oye a lo que tocaba decir, de 0 a 1.
 
@@ -183,7 +222,19 @@ def main():
     lista = sys.argv[1] if len(sys.argv) > 1 else "tools/voz/frases-es-w1.json"
     salida = sys.argv[2] if len(sys.argv) > 2 else "clips"
     os.makedirs(salida, exist_ok=True)
-    items = json.load(open(lista, encoding="utf-8"))
+    # Varias listas separadas por coma: el catálogo crece por olas y cada ola
+    # es un archivo, pero el horno y el empaquetador tienen que ver el conjunto
+    # entero, porque el módulo se reconstruye completo cada vez.
+    items = []
+    for l in lista.split(","):
+        items += json.load(open(l.strip(), encoding="utf-8"))
+
+    # Un trabajo de Actions se corta a las seis horas y se lleva por delante lo
+    # que no haya llegado a comprometerse. Con casi cuatrocientas frases el
+    # lote ya no cabe en una sola pasada, así que el horno para solo, a tiempo
+    # de que el paso siguiente empaquete y suba lo hecho; la pasada siguiente
+    # recupera esos clips del propio repositorio y sigue por donde iba.
+    tope = float(os.environ.get("MINUTOS_MAX", "250"))
 
     m = ChatterboxMultilingualTTS.from_pretrained(device="cpu")
     print("MODELO CARGADO", flush=True)
@@ -191,12 +242,15 @@ def main():
 
     for i, it in enumerate(items):
         lang, text = it["lang"], it["text"]
-        say = it.get("say", text)
+        say = pronunciar(it)
         key = cid(lang, text)
         mp3 = os.path.join(salida, key + ".mp3")
         if os.path.exists(mp3) and dur(mp3) > 0.25:
-            print("salto", key, flush=True)
             continue
+        if (time.time() - t0) / 60 > tope:
+            print("TIEMPO AGOTADO tras %.0f min, quedan %d frases"
+                  % ((time.time() - t0) / 60, len(items) - i), flush=True)
+            break
 
         # Trece caracteres por segundo es el ritmo al que habla esta voz en
         # español; de ahí sale la duración esperada, y de ella la ventana que
@@ -276,6 +330,13 @@ def main():
                 p2 = parecido(say, oido2)
                 if p2 > p:
                     p, oido = p2, oido2 + " [oído grande]"
+            if eco(say, oido):
+                # Una toma con la frase repetida no puede ganar a una limpia,
+                # pero sí a no tener nada: se le baja la nota por debajo del
+                # umbral de reintento y se deja compitiendo por si ninguna
+                # sale mejor.
+                p = min(p, 0.5)
+                oido += " [eco]"
             if p > mejor[0]:
                 mejor = (p, d, oido)
                 shutil.copyfile(cand, mp3)
@@ -301,7 +362,7 @@ def main():
     # al final: quien mire el trabajo ve de un vistazo cuántos salieron bien y
     # cuáles hay que revisar, sin tener que descargar el registro entero.
     print("LOTE TERMINADO", flush=True)
-    print("RECUENTO ok=%d flojo=%d MALO=%d de %d"
+    print("RECUENTO ok=%d flojo=%d MALO=%d horneadas de %d en la lista"
           % (CUENTA.get("ok", 0), CUENTA.get("flojo", 0),
              CUENTA.get("MALO", 0), len(items)), flush=True)
     for fila in DUDOSOS:
