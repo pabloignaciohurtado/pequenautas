@@ -1,0 +1,87 @@
+name: Voz de la narradora
+
+# Este flujo hornea los clips de voz y los deja escritos en la propia rama.
+#
+# El motivo es de peso: los mp3 en base64 pesan más de un mega, y no hay manera
+# razonable de subirlos a mano archivo por archivo. Lo que sí se versiona bien
+# es la lista de frases —siete kilobytes de texto plano, legible en cualquier
+# diff—, así que la lista viaja en el repositorio y la voz se fabrica aquí.
+#
+# Se dispara cuando cambia la lista de frases dentro de una rama de trabajo, y
+# también a mano. Lo de la rama no es un capricho: un flujo solo se puede
+# lanzar a mano cuando su archivo ya vive en la rama principal, y aquí el
+# archivo nace en la rama de la funcionalidad, así que hace falta un disparo
+# que no dependa de eso. El filtro por ruta lo mantiene a raya —solo corre si
+# se toca tools/voz—, y como el propio flujo escribe en fase4, no se llama a
+# sí mismo.
+
+on:
+  push:
+    branches: ["feat/**"]
+    paths:
+      - "tools/voz/**"
+      - ".github/workflows/voz.yml"
+  workflow_dispatch:
+    inputs:
+      lista:
+        description: "Lista de frases a hornear"
+        required: false
+        default: "tools/voz/frases-es-w1.json"
+
+permissions:
+  contents: write
+
+jobs:
+  hornear:
+    runs-on: ubuntu-latest
+    # Ciento veintidós frases en una CPU sin tarjeta gráfica van a ritmo lento;
+    # el tope alto es un seguro, no una previsión.
+    timeout-minutes: 330
+
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ github.ref_name }}
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      - name: ffmpeg
+        run: sudo apt-get update && sudo apt-get install -y ffmpeg
+
+      - name: Dependencias
+        # setuptools por debajo de 81 no es capricho: el marcador de agua de
+        # resemble-perth todavía importa pkg_resources, y sin él la clase se
+        # queda en None y la generación revienta al guardar.
+        # Las versiones van clavadas porque la voz depende de ellas: otra
+        # combinación de torch y transformers genera un audio distinto, y lo
+        # que se busca aquí es que la narradora suene igual hoy que dentro de
+        # seis meses. La rueda de torch se pide al índice de solo CPU: la
+        # normal arrastra cientos de megas de CUDA que en el corredor no
+        # sirven para nada.
+        run: |
+          python -m pip install --upgrade pip
+          pip install "setuptools<81"
+          pip install --index-url https://download.pytorch.org/whl/cpu \
+            torch==2.6.0 torchaudio==2.6.0
+          pip install chatterbox-tts==0.1.7 "numpy<2" librosa==0.11.0
+          python -c "import torch, torchaudio, transformers; print(torch.__version__, transformers.__version__)"
+
+      - name: Hornear
+        run: python tools/voz/hornear.py "${{ inputs.lista || 'tools/voz/frases-es-w1.json' }}" clips
+
+      - name: Empaquetar
+        run: python tools/voz/construir.py clips "${{ inputs.lista || 'tools/voz/frases-es-w1.json' }}" .
+
+      - name: Comprometer
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add fase4/62-voz-narradora/voz fase4/62-voz-narradora/spec.css
+          if git diff --cached --quiet; then
+            echo "sin cambios"
+          else
+            git commit -m "voz(62): hornear clips de la narradora en CI"
+            git push origin HEAD:${{ github.ref_name }}
+          fi
