@@ -1,0 +1,14 @@
+# Clips que hay que volver a hornear aunque ya estén en la rama.
+#
+# La auditoría del segundo horneado dejó cuatro tomas con la frase repetida
+# detrás: se entiende todo, pero se dice dos veces. El control de calidad ya
+# sabe detectarlo (ver eco() en hornear.py), así que basta con apartarlos para
+# que el horno los rehaga con el criterio nuevo.
+#
+# Una línea por identificador. Cuando el horneado siguiente los deje bien,
+# esta lista se vacía.
+
+es-5b535a4e7d   # "Me seco" -> "Me seco. Me seco."
+es-7fb9ba168e   # "La ballena come carne." dicha dos veces
+es-69d319b84a   # "El león come carne." + cola "no mover, el león come..."
+es-1200b5f70e   # "sss... Sol" -> "Sol. Sol."
