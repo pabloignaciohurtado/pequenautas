@@ -105,7 +105,12 @@ def codificar(wav, mp3):
 
 # ---------------------------------------------------------------- el oído
 
-_OIDO = {"m": None}
+# Dos transcriptores, no uno. El pequeño despacha el lote entero a buen ritmo,
+# pero se rinde con las palabras sueltas —a un "dos" impecable le contesta con
+# silencio— y entonces condena un clip que está bien. Cuando duda, el mediano
+# da la segunda opinión: tarda unos segundos más, y solo se le molesta en los
+# casos dudosos, que son pocos.
+_OIDO = {"small": None, "medium": None}
 
 # Los números llegan escritos con letra al modelo y vuelven en cifra del
 # transcriptor, y al revés con las letras sueltas. Sin esta tabla, un "cuatro"
@@ -115,14 +120,14 @@ _CIFRAS = {"0": "cero", "1": "uno", "2": "dos", "3": "tres", "4": "cuatro",
            "9": "nueve", "10": "diez"}
 
 
-def _modelo_oido():
-    if _OIDO["m"] is None:
+def _modelo_oido(talla="small"):
+    if _OIDO[talla] is None:
         from faster_whisper import WhisperModel
-        _OIDO["m"] = WhisperModel("small", device="cpu", compute_type="int8")
-    return _OIDO["m"]
+        _OIDO[talla] = WhisperModel(talla, device="cpu", compute_type="int8")
+    return _OIDO[talla]
 
 
-def escuchar(mp3, tmp):
+def escuchar(mp3, tmp, talla="small"):
     """Devuelve lo que se entiende en el clip.
 
     El transcriptor devuelve vacío ante audios de menos de medio segundo, y
@@ -133,9 +138,10 @@ def escuchar(mp3, tmp):
                     "-af", "adelay=700|700,apad=pad_dur=0.7",
                     "-ar", "16000", "-ac", "1", tmp],
                    capture_output=True, stdin=subprocess.DEVNULL, timeout=30)
-    segs, _ = _modelo_oido().transcribe(tmp, language="es", beam_size=5,
-                                        vad_filter=False,
-                                        condition_on_previous_text=False)
+    segs, _ = _modelo_oido(talla).transcribe(
+        tmp, language="es", beam_size=5, vad_filter=False,
+        condition_on_previous_text=False,
+        initial_prompt="Narración infantil en español.")
     return " ".join(s.text for s in segs).strip()
 
 
@@ -169,6 +175,9 @@ def parecido(esperado, oido):
 # claramente rotas por debajo de 0,60.
 BUENO, ACEPTABLE = 0.75, 0.60
 
+CUENTA = {}
+DUDOSOS = []
+
 
 def main():
     lista = sys.argv[1] if len(sys.argv) > 1 else "tools/voz/frases-es-w1.json"
@@ -197,8 +206,13 @@ def main():
         if corta:
             lo, hi = esp * 0.5, max(1.7, esp * 2.0 + 0.7)
         else:
-            lo, hi = esp * 0.45, esp * 2.6 + 1.2
-        intentos = 4
+            # La ventana ancha del primer horneado dejaba pasar divagaciones:
+            # "¿Qué come el perro?" salió una vez en 4,2 s —el doble de largo
+            # de lo que tarda en decirse— y entró igual. Con 1,8 veces más
+            # ocho décimas de margen sigue cabiendo una toma pausada, pero ya
+            # no cabe una frase con cola de ruido detrás.
+            lo, hi = esp * 0.45, esp * 1.8 + 0.8
+        intentos = 7
         CAP["v"] = int(esp * 25 * 2.2) + 40
 
         raw = os.path.join(salida, "_raw.wav")
@@ -207,16 +221,24 @@ def main():
         mejor = (-1.0, 0.0, "")   # parecido, duración, transcripción
         for a in range(intentos):
             torch.manual_seed(1000 + a * 7919 + i)
+            # Cada intento cambia algo más que la semilla: si tres tomas con
+            # los mismos ajustes salieron mal, la cuarta idéntica tampoco va a
+            # salir. Conforme se insiste se baja la temperatura y se sube el
+            # castigo a la repetición, que es justo lo que corta la cola de
+            # divagación del final.
+            paso = min(a, 3)
+            exa = (0.4 if corta else 0.5) - 0.05 * paso
+            cfg = (0.5 if corta else 0.45) + 0.05 * paso
+            tem = (0.3 if corta else 0.6) - 0.06 * paso
+            rep = (3.0 if corta else 2.0) + 0.5 * paso
             try:
                 # Las frases de una sola palabra necesitan mano dura: con la
                 # temperatura alta el modelo no encuentra el final y rellena
                 # el hueco con ruido. Bajarla y castigar la repetición hace
                 # que diga la palabra y se calle.
                 wav = m.generate(say, language_id=lang,
-                                 exaggeration=0.4 if corta else 0.5,
-                                 cfg_weight=0.5 if corta else 0.45,
-                                 temperature=0.3 if corta else 0.6,
-                                 repetition_penalty=3.0 if corta else 2.0)
+                                 exaggeration=exa, cfg_weight=cfg,
+                                 temperature=tem, repetition_penalty=rep)
             except Exception as e:
                 print("ERRGEN", key, repr(e)[:120], flush=True)
                 continue
@@ -241,6 +263,19 @@ def main():
                 print("ERROIR", key, repr(e)[:90], flush=True)
                 oido = ""
             p = parecido(say, oido)
+            if p < BUENO:
+                # Antes de condenar la toma se pide la segunda opinión al oído
+                # grande: sobre los treinta y seis dudosos del primer horneado
+                # rescató dieciocho, que estaban bien y solo sonaban raro al
+                # oído pequeño.
+                try:
+                    oido2 = escuchar(cand, pad, "medium")
+                except Exception as e:
+                    print("ERROIR2", key, repr(e)[:90], flush=True)
+                    oido2 = ""
+                p2 = parecido(say, oido2)
+                if p2 > p:
+                    p, oido = p2, oido2 + " [oído grande]"
             if p > mejor[0]:
                 mejor = (p, d, oido)
                 shutil.copyfile(cand, mp3)
@@ -254,11 +289,23 @@ def main():
 
         p, d, oido = mejor
         marca = "ok" if p >= BUENO else ("flojo" if p >= ACEPTABLE else "MALO")
+        CUENTA[marca] = CUENTA.get(marca, 0) + 1
+        if marca != "ok":
+            DUDOSOS.append((marca, key, round(p, 2), text, oido[:60]))
         print(marca, key, "%d/%d" % (i + 1, len(items)),
               "%.2fs p=%.2f" % (d, p), "min=%.1f" % ((time.time() - t0) / 60),
               repr(text)[:40], "->", repr(oido)[:40], flush=True)
 
+    # El registro de Actions se consulta por la cola, y con más de cien clips
+    # las primeras líneas quedan fuera de alcance. Por eso el recuento va aquí
+    # al final: quien mire el trabajo ve de un vistazo cuántos salieron bien y
+    # cuáles hay que revisar, sin tener que descargar el registro entero.
     print("LOTE TERMINADO", flush=True)
+    print("RECUENTO ok=%d flojo=%d MALO=%d de %d"
+          % (CUENTA.get("ok", 0), CUENTA.get("flojo", 0),
+             CUENTA.get("MALO", 0), len(items)), flush=True)
+    for fila in DUDOSOS:
+        print("REVISAR", *fila, flush=True)
 
 
 if __name__ == "__main__":

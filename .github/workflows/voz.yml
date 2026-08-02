@@ -79,8 +79,9 @@ jobs:
         with:
           path: ~/.cache/huggingface
           # La llave sube de número al cambiar lo que se guarda: ahora dentro
-          # va también el transcriptor que revisa los clips.
-          key: chatterbox-mtl-v2
+          # van los dos transcriptores que revisan los clips, el pequeño y el
+          # grande al que se recurre cuando el pequeño duda.
+          key: chatterbox-mtl-v3
           restore-keys: chatterbox-mtl-
 
       - name: Traer el modelo
@@ -102,6 +103,18 @@ jobs:
             sleep 30
           done
           exit 1
+
+      - name: Traer los oídos
+        # Los dos transcriptores se bajan aquí y no durante el horneado: si el
+        # grande se descargara a mitad del lote, el reloj de la primera frase
+        # que dudara incluiría gigabyte y medio de red.
+        run: |
+          python - <<'PY'
+          from faster_whisper import WhisperModel
+          WhisperModel("small", device="cpu", compute_type="int8")
+          WhisperModel("medium", device="cpu", compute_type="int8")
+          print("oídos listos")
+          PY
 
       - name: Hornear
         run: python tools/voz/hornear.py "${{ inputs.lista || 'tools/voz/frases-es-w1.json' }}" clips
