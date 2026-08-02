@@ -18,8 +18,18 @@ hornea en CI cada vez que la lista crece.
 
 Se puede volver a lanzar sobre una carpeta a medias: los clips que ya están
 se saltan, así que un reintento no vuelve a empezar de cero.
+
+Cada clip se escucha antes de darlo por bueno. La duración sola no basta: en
+el primer horneado hubo frases que duraban lo previsto y decían otra cosa
+—"La mariposa come plantas" salió convertida en una retahíla de "¡pues no!"—
+y otras que se cortaban a media palabra sin salirse de la ventana. Así que lo
+generado se transcribe y se compara con lo que tenía que decir; si no se
+parece, se prueba otra vez con otra semilla y al final se guarda la mejor
+toma. Vale la pena el gasto: son voces que van a oír niños de tres años una y
+otra vez, y un clip que balbucea se nota mucho más que uno que tarda de más.
 """
-import base64, hashlib, json, os, subprocess, sys, time
+import base64, difflib, hashlib, json, os, re, shutil, subprocess, sys, time
+import unicodedata
 
 import torch
 import torchaudio as ta
@@ -93,6 +103,73 @@ def codificar(wav, mp3):
         subprocess.run(["pkill", "-9", "-x", "ffmpeg"], capture_output=True)
 
 
+# ---------------------------------------------------------------- el oído
+
+_OIDO = {"m": None}
+
+# Los números llegan escritos con letra al modelo y vuelven en cifra del
+# transcriptor, y al revés con las letras sueltas. Sin esta tabla, un "cuatro"
+# perfecto se leería como fallo total.
+_CIFRAS = {"0": "cero", "1": "uno", "2": "dos", "3": "tres", "4": "cuatro",
+           "5": "cinco", "6": "seis", "7": "siete", "8": "ocho",
+           "9": "nueve", "10": "diez"}
+
+
+def _modelo_oido():
+    if _OIDO["m"] is None:
+        from faster_whisper import WhisperModel
+        _OIDO["m"] = WhisperModel("small", device="cpu", compute_type="int8")
+    return _OIDO["m"]
+
+
+def escuchar(mp3, tmp):
+    """Devuelve lo que se entiende en el clip.
+
+    El transcriptor devuelve vacío ante audios de menos de medio segundo, y
+    aquí medio catálogo son palabras sueltas de esa duración. Se le rodea de
+    silencio antes de dárselo: con siete décimas por lado, "círculo" pasa de
+    no entenderse a entenderse entero."""
+    subprocess.run(["ffmpeg", "-nostdin", "-y", "-v", "error", "-i", mp3,
+                    "-af", "adelay=700|700,apad=pad_dur=0.7",
+                    "-ar", "16000", "-ac", "1", tmp],
+                   capture_output=True, stdin=subprocess.DEVNULL, timeout=30)
+    segs, _ = _modelo_oido().transcribe(tmp, language="es", beam_size=5,
+                                        vad_filter=False,
+                                        condition_on_previous_text=False)
+    return " ".join(s.text for s in segs).strip()
+
+
+def _plano(s):
+    s = unicodedata.normalize("NFD", s.lower())
+    s = "".join(c for c in s if unicodedata.category(c) != "Mn")
+    s = re.sub(r"[^a-z0-9ñ ]", " ", s)
+    pal = [_CIFRAS.get(p, p) for p in s.split()]
+    return " ".join(pal)
+
+
+def parecido(esperado, oido):
+    """Cuánto se parece lo que se oye a lo que tocaba decir, de 0 a 1.
+
+    Las frases de fonema —"sss... Sol"— se comparan también contra la palabra
+    sola: nadie transcribe una ese alargada de la misma manera dos veces, y lo
+    que de verdad importa es que la palabra esté."""
+    a, b = _plano(esperado), _plano(oido)
+    if not a:
+        return 1.0
+    r = difflib.SequenceMatcher(None, a, b).ratio()
+    corto = re.sub(r"^\w*\.\.\.\s*", "", esperado)
+    if corto != esperado:
+        r = max(r, difflib.SequenceMatcher(None, _plano(corto), b).ratio())
+    return r
+
+
+# Por debajo de esto se vuelve a intentar; por debajo del segundo umbral, el
+# clip se marca en el registro para poder mirarlo a mano. Los valores salen de
+# medir el primer horneado: las tomas buenas quedaron por encima de 0,75 y las
+# claramente rotas por debajo de 0,60.
+BUENO, ACEPTABLE = 0.75, 0.60
+
+
 def main():
     lista = sys.argv[1] if len(sys.argv) > 1 else "tools/voz/frases-es-w1.json"
     salida = sys.argv[2] if len(sys.argv) > 2 else "clips"
@@ -121,10 +198,13 @@ def main():
             lo, hi = esp * 0.5, max(1.7, esp * 2.0 + 0.7)
         else:
             lo, hi = esp * 0.45, esp * 2.6 + 1.2
-        intentos = 3 if corta else 2
+        intentos = 4
         CAP["v"] = int(esp * 25 * 2.2) + 40
 
-        bien = False
+        raw = os.path.join(salida, "_raw.wav")
+        cand = os.path.join(salida, "_cand.mp3")
+        pad = os.path.join(salida, "_pad.wav")
+        mejor = (-1.0, 0.0, "")   # parecido, duración, transcripción
         for a in range(intentos):
             torch.manual_seed(1000 + a * 7919 + i)
             try:
@@ -140,19 +220,43 @@ def main():
             except Exception as e:
                 print("ERRGEN", key, repr(e)[:120], flush=True)
                 continue
-            raw = os.path.join(salida, "_raw.wav")
             ta.save(raw, wav, m.sr)
-            codificar(raw, mp3)
-            d = dur(mp3)
-            if lo <= d <= hi:
-                bien = True
+            if os.path.exists(cand):
+                os.remove(cand)
+            codificar(raw, cand)
+            d = dur(cand)
+            if not (lo <= d <= hi):
+                # Fuera de ventana no merece transcribirse, pero sí guardarse
+                # por si ninguna toma sale bien: más vale un clip regular que
+                # un hueco, porque el hueco deja a la app sin la frase.
+                if mejor[0] < 0 and d > 0.25:
+                    shutil.copyfile(cand, mp3)
+                    mejor = (0.0, d, "(fuera de ventana)")
+                print("reintento", key, "dura %.2f, esperaba %.2f" % (d, esp),
+                      flush=True)
+                continue
+            try:
+                oido = escuchar(cand, pad)
+            except Exception as e:
+                print("ERROIR", key, repr(e)[:90], flush=True)
+                oido = ""
+            p = parecido(say, oido)
+            if p > mejor[0]:
+                mejor = (p, d, oido)
+                shutil.copyfile(cand, mp3)
+            if p >= BUENO:
                 break
-            print("reintento", key, "d=%.2f esp=%.2f" % (d, esp), flush=True)
+            print("reintento", key, "oí %r (%.2f)" % (oido[:50], p), flush=True)
 
-        marca = "ok" if bien else "FLOJO"
+        for f in (raw, cand, pad):
+            if os.path.exists(f):
+                os.remove(f)
+
+        p, d, oido = mejor
+        marca = "ok" if p >= BUENO else ("flojo" if p >= ACEPTABLE else "MALO")
         print(marca, key, "%d/%d" % (i + 1, len(items)),
-              "%.2fs" % dur(mp3), "min=%.1f" % ((time.time() - t0) / 60),
-              repr(text)[:60], flush=True)
+              "%.2fs p=%.2f" % (d, p), "min=%.1f" % ((time.time() - t0) / 60),
+              repr(text)[:40], "->", repr(oido)[:40], flush=True)
 
     print("LOTE TERMINADO", flush=True)
 
