@@ -1,0 +1,32 @@
+/* ===== Fase 4 #62 · La voz de la narradora (clips) =====
+
+   Las frases que la narradora dice durante las rondas —instrucciones,
+   preguntas, pistas, respuestas— vienen aquí grabadas, no las improvisa el
+   sintetizador del sistema. spec.js las reproduce; este archivo solo carga
+   los trozos.
+
+   Están repartidas en varios archivos a propósito: el service worker
+   precachea cada @import por separado, así que un archivo por frase serían
+   cientos de descargas en el primer arranque. Veinte trozos es el término
+   medio entre eso y un único archivo enorme que habría que rebajar entero
+   cada vez que se añade una frase.
+
+   Generado por herramienta; no editar a mano. */
+@import url("voz/01.css");
+@import url("voz/02.css");
+@import url("voz/03.css");
+@import url("voz/04.css");
+@import url("voz/05.css");
+@import url("voz/06.css");
+@import url("voz/07.css");
+@import url("voz/08.css");
+@import url("voz/09.css");
+@import url("voz/10.css");
+@import url("voz/11.css");
+@import url("voz/12.css");
+@import url("voz/13.css");
+@import url("voz/14.css");
+@import url("voz/15.css");
+@import url("voz/16.css");
+@import url("voz/17.css");
+@import url("voz/18.css");

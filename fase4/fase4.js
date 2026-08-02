@@ -96,6 +96,10 @@
     // frase, estampa opts.key y mueve la boca de la mascota— y #61 se limita
     // a poner el sonido por debajo. Al revés, Rufo hablaría con boca quieta.
     "61-voz-rufo",
+    // #62 va después de #61 y antes de #16: por fuera de Rufo, para poder
+    // dejarle sus dieciocho frases intactas antes de decidir nada; por dentro
+    // de #16, que sigue moviendo la boca de la mascota.
+    "62-voz-narradora",
     "16-voces-mascota",
     "20-animaciones-personaje",
     "30-controles-parentales",

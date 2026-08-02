@@ -28,7 +28,12 @@
    archivos nuevos y queremos que activate() purgue y runPrecache() los baje de
    una vez, con el portón de #50 en pantalla, en lugar de que Rufo estrene voz
    a trozos según qué frase toque primero. */
-const CACHE='pequenautas-v5';
+/* v6: entra #62 con la voz grabada de la narradora. Se sube la versión por lo
+   mismo que en v5: los clips llegan en archivos nuevos y conviene que
+   activate() purgue y runPrecache() los baje de una vez, con el portón de #50
+   en pantalla, en lugar de que la narradora estrene voz a trozos según qué
+   frase toque primero. */
+const CACHE='pequenautas-v6';
 const SHELL=['./','./index.html','./app.js','./manifest.webmanifest'];
 const FONT_HOSTS=['fonts.googleapis.com','fonts.gstatic.com'];
 
@@ -40,7 +45,7 @@ const FASE4_MODULES=[
   '01-eval-pre-post','02-ab-testing','03-repaso-espaciado','04-indice-dominio','05-deteccion-frustracion',
   '11-materias-nuevas','12-mates-avanzadas','13-lectura-avanzada','14-ciencias-avanzada','15-cms-json',
   '07-secuenciacion','06-motor-adaptativo','08-zdp-dinamica','09-recomendador',
-  '17-accesibilidad','18-dislexia','61-voz-rufo','16-voces-mascota','20-animaciones-personaje','30-controles-parentales',
+  '17-accesibilidad','18-dislexia','61-voz-rufo','62-voz-narradora','16-voces-mascota','20-animaciones-personaje','30-controles-parentales',
   '19-album-logros','21-reporte-semanal','22-metas-semanales','23-modo-aula',
   '28-pwa-tiendas',
   '31-identidad-visual','32-pantallas-bosque','33-hero-diorama','34-juegos','35-cajas3d',
