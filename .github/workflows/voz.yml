@@ -26,7 +26,7 @@ on:
       lista:
         description: "Listas de frases a hornear, separadas por coma"
         required: false
-        default: "tools/voz/frases-es-w1.json,tools/voz/frases-es-w2.json"
+        default: "tools/voz/frases-es-w1.json,tools/voz/frases-es-w2.json,tools/voz/frases-en-w1.json"
       rehacer:
         description: "Identificadores de clip a rehornear, separados por espacio"
         required: false
@@ -163,10 +163,10 @@ jobs:
           PY
 
       - name: Hornear
-        run: python tools/voz/hornear.py "${{ inputs.lista || 'tools/voz/frases-es-w1.json,tools/voz/frases-es-w2.json' }}" clips
+        run: python tools/voz/hornear.py "${{ inputs.lista || 'tools/voz/frases-es-w1.json,tools/voz/frases-es-w2.json,tools/voz/frases-en-w1.json' }}" clips
 
       - name: Empaquetar
-        run: python tools/voz/construir.py clips "${{ inputs.lista || 'tools/voz/frases-es-w1.json,tools/voz/frases-es-w2.json' }}" .
+        run: python tools/voz/construir.py clips "${{ inputs.lista || 'tools/voz/frases-es-w1.json,tools/voz/frases-es-w2.json,tools/voz/frases-en-w1.json' }}" .
 
       - uses: actions/setup-node@v4
         with:
