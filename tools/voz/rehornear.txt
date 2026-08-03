@@ -1,0 +1,12 @@
+# Clips que hay que volver a hornear aunque ya estén en la rama.
+#
+# Vacía, y no por casualidad. Las siete que había aquí —"Ropa" convertida en
+# "¡Dropa! ¡Dropa!", "verde" dicho dos veces, "¡Sí! Es CASA." cortada a media
+# palabra— eran defectos del motor anterior, que inventaba el audio token a
+# token y de vez en cuando se perdía. Kokoro no inventa: a la misma frase le
+# devuelve siempre el mismo audio, así que un clip malo ya no se arregla
+# volviendo a tirar el dado, y esta lista se queda sin oficio.
+#
+# Si alguna vez hace falta para un caso puntual, es una línea por
+# identificador: el flujo de voz los deja fuera del rescate y se hornean de
+# nuevo en la pasada siguiente.

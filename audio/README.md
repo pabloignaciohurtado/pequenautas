@@ -23,15 +23,29 @@ licencia Apache 2.0, voz masculina joven «alex» en español y «liam» en ingl
 que el arte, porque el repo no admite binarios y así el service worker los precachea
 solo por estar `@import`ados.
 
-Ese módulo se coloca **por debajo** de este banco, nunca por encima. El orden al
-reproducir una clave es:
+Desde la oleada 28, el módulo `fase4/62-voz-narradora` hace lo mismo con la voz que
+narra las rondas: el enunciado de cada juego, la pregunta, la pista y la felicitación.
+Son frases distintas de las nueve del guion —muchas más— y por eso no viven en este
+banco: se resuelven por **texto**, no por clave. Están sintetizadas con el mismo
+**Kokoro** «alex» de #61, así que toda la app habla con una sola voz en vez de dos.
+Viajan en base64 dentro de `fase4/62-voz-narradora/voz/*.css`, repartidas en
+varios archivos porque el service worker precachea cada `@import` por separado y un
+archivo por frase serían cientos de descargas en el primer arranque.
+
+La primera ola cubre el español. En inglés todavía no hay clips y la app se comporta
+como antes —cae al sintetizador del sistema—, sin que haya que tocar el módulo cuando
+lleguen.
+
+Los dos módulos se colocan **por debajo** de este banco, nunca por encima. El orden al
+hablar es:
 
 1. `audio/<idioma>/<clave>.mp3` — locución humana, vía este AudioBank (cuando exista);
-2. el clip embebido de #61 — lo que suena hoy;
-3. la voz del sistema — el fallback de siempre.
+2. el clip embebido de #61, si la frase es del guion de Rufo;
+3. el clip de la narradora (#62), si la frase está en su banco;
+4. la voz del sistema — el fallback de siempre.
 
 Es decir: el día que se grabe a una persona basta con seguir los pasos de abajo y esos
-clips ganan solos, sin borrar ni tocar nada de #61. Por eso `available` se deja vacío
+clips ganan solos, sin borrar ni tocar nada de #61 ni de #62. Por eso `available` se deja vacío
 y `app.js` no se modificó.
 
 ## Añadir clips reales

@@ -1,0 +1,198 @@
+name: Voz de la narradora
+
+# Este flujo hornea los clips de voz y los deja escritos en la propia rama.
+#
+# El motivo es de peso: los mp3 en base64 pesan más de un mega, y no hay manera
+# razonable de subirlos a mano archivo por archivo. Lo que sí se versiona bien
+# es la lista de frases —siete kilobytes de texto plano, legible en cualquier
+# diff—, así que la lista viaja en el repositorio y la voz se fabrica aquí.
+#
+# Se dispara cuando cambia la lista de frases dentro de una rama de trabajo, y
+# también a mano. Lo de la rama no es un capricho: un flujo solo se puede
+# lanzar a mano cuando su archivo ya vive en la rama principal, y aquí el
+# archivo nace en la rama de la funcionalidad, así que hace falta un disparo
+# que no dependa de eso. El filtro por ruta lo mantiene a raya —solo corre si
+# se toca tools/voz—, y como el propio flujo escribe en fase4, no se llama a
+# sí mismo.
+
+on:
+  push:
+    branches: ["feat/**"]
+    paths:
+      - "tools/voz/**"
+      - ".github/workflows/voz.yml"
+  workflow_dispatch:
+    inputs:
+      lista:
+        description: "Listas de frases a hornear, separadas por coma"
+        required: false
+        default: "tools/voz/frases-es-w1.json,tools/voz/frases-es-w2.json"
+      rehacer:
+        description: "Identificadores de clip a rehornear, separados por espacio"
+        required: false
+        default: ""
+
+permissions:
+  contents: write
+
+jobs:
+  hornear:
+    runs-on: ubuntu-latest
+    env:
+      # El descargador nuevo de Hugging Face (Xet) se cayó a mitad de la
+      # descarga del modelo sin usuario autenticado. El clásico es más lento
+      # pero llega, y aquí lo que importa es llegar.
+      HF_HUB_DISABLE_XET: "1"
+    # Con Kokoro el catálogo entero se hornea en minutos, así que ya no hace
+    # falta el trabajo de cinco horas y media que pedía el motor anterior. El
+    # horno sigue parando solo por MINUTOS_MAX para que dé tiempo a empaquetar
+    # y comprometer lo hecho si algo se atasca; este tope es la red de debajo.
+    timeout-minutes: 60
+
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ github.ref_name }}
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      - name: ffmpeg
+        run: sudo apt-get update && sudo apt-get install -y ffmpeg
+
+      - name: Dependencias
+        # Las versiones van clavadas porque la voz depende de ellas: otra
+        # combinación de torch y kokoro genera un audio distinto, y lo que se
+        # busca aquí es que la narradora suene igual hoy que dentro de seis
+        # meses. La rueda de torch se pide al índice de solo CPU: la normal
+        # arrastra cientos de megas de CUDA que en el corredor no sirven para
+        # nada. espeak-ng es la letra pequeña de Kokoro: el conversor de texto
+        # a fonemas lo llama por debajo y sin él no arranca.
+        run: |
+          sudo apt-get install -y espeak-ng
+          python -m pip install --upgrade pip
+          pip install --index-url https://download.pytorch.org/whl/cpu \
+            torch==2.6.0
+          pip install kokoro==0.9.4 soundfile "numpy<2"
+          python -c "import torch, kokoro; print(torch.__version__)"
+
+      - name: Modelo en caché
+        uses: actions/cache@v4
+        with:
+          path: ~/.cache/huggingface
+          # La llave cambia al cambiar lo que se guarda: aquí dentro ya no van
+          # los tres gigas de Chatterbox ni los dos transcriptores que hacían
+          # falta para vigilarlo, sino los ochenta y dos millones de
+          # parámetros de Kokoro.
+          key: kokoro-82m-v1
+          restore-keys: kokoro-82m-
+
+      - name: Traer el modelo
+        # Se baja aparte, antes de hornear, y con reintentos: es un servidor
+        # público y una caída a mitad no puede significar empezar de cero.
+        run: |
+          for i in 1 2 3 4 5; do
+            python - <<'PY' && exit 0
+          from huggingface_hub import snapshot_download
+          snapshot_download(repo_id="hexgrad/Kokoro-82M", repo_type="model",
+                            allow_patterns=["config.json", "kokoro-v1_0.pth",
+                                            "voices/em_alex.pt",
+                                            "voices/am_liam.pt"])
+          PY
+            echo "descarga fallida, reintento $i"
+            sleep 30
+          done
+          exit 1
+
+      - name: Recuperar lo ya horneado
+        # Los clips de las olas anteriores ya están en la rama, dentro del CSS
+        # en base64. Recuperarlos aquí es lo que convierte cada pasada en
+        # incremental: el horno se salta lo que ya existe y dedica el tiempo a
+        # las frases nuevas. Sin esto, añadir una ola obligaría a rehornear el
+        # catálogo entero, que ya no cabe en un solo trabajo de Actions.
+        # Los que figuren en tools/voz/rehornear.txt —o en la entrada
+        # `rehacer` si el flujo se lanza a mano— se dejan fuera a propósito:
+        # es la manera de arreglar un clip suelto sin tocar los demás, y como
+        # el archivo vive en el repositorio, el arreglo viaja con el cambio que
+        # lo motiva en vez de depender de que alguien recuerde escribirlo.
+        #
+        # Y un clip solo se rescata si lo puso la voz de ahora. Cada trozo lleva
+        # estampado el motor que lo generó; si no coincide con tools/voz/motor.txt
+        # ese trozo se ignora entero y sus frases se hornean de nuevo. Sin esta
+        # comprobación, cambiar de voz no cambiaría nada: el rescate devolvería
+        # el audio antiguo, el horno lo daría por hecho y la app seguiría
+        # sonando como antes por más que el código dijera otra cosa.
+        run: |
+          mkdir -p clips
+          REHACER="${{ inputs.rehacer }}" python - <<'PY'
+          import base64, glob, os, re
+          fuera = set(os.environ.get("REHACER", "").split())
+          if os.path.exists("tools/voz/rehornear.txt"):
+              for linea in open("tools/voz/rehornear.txt"):
+                  linea = linea.split("#")[0].strip()
+                  if linea:
+                      fuera.add(linea)
+
+          motor = "desconocido"
+          for linea in open("tools/voz/motor.txt", encoding="utf-8"):
+              linea = linea.split("#")[0].strip()
+              if linea:
+                  motor = linea
+                  break
+
+          n = ajenos = 0
+          for f in sorted(glob.glob("fase4/62-voz-narradora/voz/*.css")):
+              css = open(f).read()
+              m = re.search(r'motor:\s*(\S+)', css)
+              if not m or m.group(1) != motor:
+                  ajenos += 1
+                  print("descartado", f, "-> lo horneó",
+                        m.group(1) if m else "un motor sin marca")
+                  continue
+              for k, b in re.findall(
+                      r'--pa62-([a-z]{2}-[0-9a-f]{10})\s*:\s*'
+                      r'url\("data:audio/mpeg;base64,([^"]+)"\)', css):
+                  if k in fuera:
+                      continue
+                  open("clips/%s.mp3" % k, "wb").write(
+                      base64.b64decode(re.sub(r'\\\s*', '', b)))
+                  n += 1
+          print("motor", motor, "| recuperados", n, "clips |",
+                ajenos, "trozos de otra voz | a rehornear", sorted(fuera))
+          PY
+
+      - name: Hornear
+        run: python tools/voz/hornear.py "${{ inputs.lista || 'tools/voz/frases-es-w1.json,tools/voz/frases-es-w2.json' }}" clips
+
+      - name: Empaquetar
+        run: python tools/voz/construir.py clips "${{ inputs.lista || 'tools/voz/frases-es-w1.json,tools/voz/frases-es-w2.json' }}" .
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+
+      - name: Probar
+        # Las pruebas corren aquí, sobre el módulo ya empaquetado y antes de
+        # escribir nada en la rama. No es duplicar a CI: un empujón hecho con
+        # el token del propio flujo no dispara otros flujos, así que el commit
+        # con la voz recién horneada era justo el único que nadie comprobaba.
+        # Si la voz rompe algo, el trabajo se cae y el destrozo no llega a la
+        # rama.
+        run: |
+          npm install
+          npx playwright install --with-deps chromium
+          npx playwright test
+
+      - name: Comprometer
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add fase4/62-voz-narradora/voz fase4/62-voz-narradora/spec.css \
+            fase4/62-voz-narradora/spec.js
+          if git diff --cached --quiet; then
+            echo "sin cambios"
+          else
+            git commit -m "voz(62): hornear clips de la narradora en CI"
+            git push origin HEAD:${{ github.ref_name }}
+          fi

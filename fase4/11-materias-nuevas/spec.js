@@ -42,7 +42,7 @@
       setMoreD:'Agrega Emociones, Formas y colores, y Rutinas al inicio',
       emoLbl:'Emociones', shapesLbl:'Formas y colores', routLbl:'Rutinas',
       emoQ:'¿Cómo se siente?', emoYes:'¡Sí! Se siente', emoHint1:'Mira la escena, ¿cómo se siente?', emoIt:'Se siente',
-      shapeQ:'¿Qué forma es?', shapeYes:'¡Sí! Es un', shapeHint1:'Mira bien los lados: ¿es redondo o tiene puntas?', shapeIt:'Es un',
+      shapeQ:'¿Qué forma es?', shapeYes:'¡Sí! Es', shapeHint1:'Mira bien los lados: ¿es redondo o tiene puntas?', shapeIt:'Es',
       colorQ:'¿Qué color es?', colorYes:'¡Sí! Es', colorHint1:'Mira bien el color.', colorIt:'Es',
       routQ:'¿Cuándo haces esto: {act}?', routYes:'¡Sí! Es en la', routHint1:'Piensa: ¿mañana, tarde o noche?', routIt:'Es en la'
     });
@@ -51,7 +51,7 @@
       setMoreD:'Adds Feelings, Shapes & Colors, and Routines to the home screen',
       emoLbl:'Feelings', shapesLbl:'Shapes & Colors', routLbl:'Routines',
       emoQ:'How does it feel?', emoYes:'Yes! It feels', emoHint1:'Look at the scene, how does it feel?', emoIt:'It feels',
-      shapeQ:'What shape is it?', shapeYes:'Yes! It is a', shapeHint1:'Look closely: is it round or does it have points?', shapeIt:'It is a',
+      shapeQ:'What shape is it?', shapeYes:'Yes! It is', shapeHint1:'Look closely: is it round or does it have points?', shapeIt:'It is',
       colorQ:'What color is it?', colorYes:'Yes! It is', colorHint1:'Look closely at the color.', colorIt:'It is',
       routQ:'When do you do this: {act}?', routYes:"Yes! It's in the", routHint1:'Think: morning, afternoon, or night?', routIt:"It's in the"
     });
@@ -80,11 +80,14 @@
     {emoji:'🛌', emo:'calm',   es:'Descansas después de jugar',   en:'You rest after playing'}
   ];
 
+  /* El artículo viaja con la forma: en español "estrella" es femenina y decir
+     "un estrella" suena a error de la app, que es justo lo que un peque no
+     debe oír mientras aprende a hablar. */
   var SHAPES=[
-    {key:'circle',   es:'Círculo',    en:'Circle'},
-    {key:'square',   es:'Cuadrado',   en:'Square'},
-    {key:'triangle', es:'Triángulo',  en:'Triangle'},
-    {key:'star',     es:'Estrella',   en:'Star'}
+    {key:'circle',   es:'Círculo',    en:'Circle',   art:{es:'un',  en:'a'}},
+    {key:'square',   es:'Cuadrado',   en:'Square',   art:{es:'un',  en:'a'}},
+    {key:'triangle', es:'Triángulo',  en:'Triangle', art:{es:'un',  en:'a'}},
+    {key:'star',     es:'Estrella',   en:'Star',     art:{es:'una', en:'a'}}
   ];
   var COLORS=[
     {key:'red',    es:'Rojo',      en:'Red',    hex:'#E8574A'},
@@ -170,12 +173,12 @@
       b.onclick=function(){
         if(sh.key===target.key){
           b.classList.remove('reveal'); b.classList.add('correct'); chime('ok');
-          speakSeq([{t:t.shapeYes+' '+sh[S.lang].toLowerCase()+'.'},{t:t.mGreat}]);
+          speakSeq([{t:t.shapeYes+' '+sh.art[S.lang]+' '+sh[S.lang].toLowerCase()+'.'},{t:t.mGreat}]);
           confetti(); afterCorrect('shape-'+sh.key);
         } else {
           onWrong(b,function(lvl){
             if(lvl===1) speak(t.shapeHint1);
-            else if(lvl===3) speak(t.shapeIt+' '+target[S.lang].toLowerCase()+'. '+t.mTapGlow);
+            else if(lvl===3) speak(t.shapeIt+' '+target.art[S.lang]+' '+target[S.lang].toLowerCase()+'. '+t.mTapGlow);
           });
         }
       };
