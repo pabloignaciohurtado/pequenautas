@@ -25,6 +25,24 @@ import base64, hashlib, json, os, re, subprocess, sys
 TROZOS = 20
 
 
+def motor():
+    """Identificador de la voz que hornea, tal como está en tools/voz/motor.txt.
+
+    Se estampa en cada trozo generado para que el flujo de voz sepa de quién es
+    el audio que hay guardado en la rama. Sin la marca no podría distinguir un
+    clip de la voz actual de uno de la anterior, rescataría los viejos y la app
+    seguiría hablando con una voz jubilada."""
+    p = os.path.join(os.path.dirname(os.path.abspath(__file__)), "motor.txt")
+    try:
+        for linea in open(p, encoding="utf-8"):
+            linea = linea.split("#")[0].strip()
+            if linea:
+                return linea
+    except OSError:
+        pass
+    return "desconocido"
+
+
 def cid(lang, text):
     return lang + "-" + hashlib.sha1(text.encode("utf-8")).hexdigest()[:10]
 
@@ -92,11 +110,13 @@ def main():
         if viejo.endswith(".css"):
             os.remove(os.path.join(mod, "voz", viejo))
 
+    mot = motor()
     n = max(1, (len(listos) + TROZOS - 1) // TROZOS)
     trozos = [listos[i:i + n] for i in range(0, len(listos), n)]
     for i, tr in enumerate(trozos):
         out = ["/* Fase 4 #62 - clips de la narradora, trozo %02d de %02d.\n"
-               "   Generado; no editar a mano. */\n:root{\n" % (i + 1, len(trozos))]
+               "   Generado; no editar a mano.\n"
+               "   motor: %s */\n:root{\n" % (i + 1, len(trozos), mot)]
         for key, p in tr:
             b64 = base64.b64encode(open(p, "rb").read()).decode("ascii")
             out.append('  --pa62-%s:url("data:audio/mpeg;base64,%s");\n'
@@ -113,7 +133,7 @@ def main():
     escribir_mapa(os.path.join(mod, "spec.js"), items,
                   set(k for k, _ in listos))
 
-    print("trozos:", len(trozos), "->", mod)
+    print("trozos:", len(trozos), "->", mod, "motor:", mot)
 
 
 def escribir_mapa(spec, items, hay):

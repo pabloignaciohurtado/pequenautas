@@ -1,21 +1,12 @@
 # Clips que hay que volver a hornear aunque ya estén en la rama.
 #
-# Siguen las siete de la ola 2, y siguen por el mismo motivo: la tanda anterior
-# las rehizo con otra semilla y volvieron con el mismo defecto exacto. Siete
-# intentos cada una, siete veces lo mismo. Eso ya no es mala suerte, así que
-# esta vez no se cambia la semilla sino la causa: el oído aprende a leer el
-# seseo, el detector de eco reconoce la repetición que empieza a media frase,
-# la ventana de duración cuenta las pausas de los signos, y las palabras que el
-# modelo no sabe terminar llevan un punto o un artículo en el campo `say` —que
-# no toca el identificador, así que el mapa sigue valiendo.
+# Vacía, y no por casualidad. Las siete que había aquí —"Ropa" convertida en
+# "¡Dropa! ¡Dropa!", "verde" dicho dos veces, "¡Sí! Es CASA." cortada a media
+# palabra— eran defectos del motor anterior, que inventaba el audio token a
+# token y de vez en cuando se perdía. Kokoro no inventa: a la misma frase le
+# devuelve siempre el mismo audio, así que un clip malo ya no se arregla
+# volviendo a tirar el dado, y esta lista se queda sin oficio.
 #
-# Una línea por identificador. Cuando el horneado siguiente las deje bien,
-# esta lista se vacía.
-
-es-03cd5169e1   # "Ropa" -> "¡Dropa! ¡Dropa!" (eco, y una consonante de más)
-es-2030abee0f   # "verde" -> "Verde. Verde." (eco)
-es-54238f4cb5   # "Tarde" fuera de la ventana de duración
-es-537a986453   # "Ordena: La hora de comer" fuera de la ventana de duración
-es-82c8dd5245   # "PEZ" -> "¡Pes!"
-es-a1aa81e07f   # "¡Sí! Es GATO." -> "Sí, es gato. Es gato."
-es-68104186d0   # "¡Sí! Es CASA." -> "Sí, es casa, es cas..." (cola cortada)
+# Si alguna vez hace falta para un caso puntual, es una línea por
+# identificador: el flujo de voz los deja fuera del rescate y se hornean de
+# nuevo en la pasada siguiente.

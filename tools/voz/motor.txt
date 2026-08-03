@@ -1,0 +1,19 @@
+kokoro-em_alex-v1
+# Quién puso la voz que hay empaquetada ahora mismo en fase4/62-voz-narradora.
+#
+# La primera línea es el identificador y lo único que se lee; lo demás es
+# explicación. construir.py lo copia dentro de cada trozo de CSS que genera, y
+# el flujo de voz compara esa marca con esta antes de rescatar los clips que ya
+# están en la rama.
+#
+# Sirve para una cosa concreta: que cambiar de motor o de voz no deje audio
+# viejo colado. El rescate es lo que hace incremental cada pasada —se salta lo
+# que ya existe y hornea solo lo nuevo—, y sin esta marca sería incapaz de
+# distinguir un clip de la voz de ahora de uno de la anterior: rescataría los
+# antiguos, el horno los daría por hechos y la app seguiría hablando con la voz
+# que se acaba de jubilar. Con la marca, si no coincide, no se rescata nada y
+# el catálogo se hornea entero.
+#
+# Cámbialo cuando cambie el motor, la voz o cualquier ajuste que altere el
+# sonido —la velocidad, el filtro de ffmpeg—, y sube el número al final si es
+# la misma voz sonando distinta.

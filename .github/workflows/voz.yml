@@ -43,12 +43,11 @@ jobs:
       # descarga del modelo sin usuario autenticado. El clásico es más lento
       # pero llega, y aquí lo que importa es llegar.
       HF_HUB_DISABLE_XET: "1"
-    # A minuto por frase en una CPU sin tarjeta gráfica, el catálogo completo
-    # ya no cabe en un trabajo. El horno se detiene solo a los 250 minutos
-    # (MINUTOS_MAX) para que dé tiempo a empaquetar y comprometer lo hecho, y
-    # la pasada siguiente recupera esos clips de la rama y sigue. El tope de
-    # aquí solo es la red de seguridad por debajo del límite de seis horas.
-    timeout-minutes: 330
+    # Con Kokoro el catálogo entero se hornea en minutos, así que ya no hace
+    # falta el trabajo de cinco horas y media que pedía el motor anterior. El
+    # horno sigue parando solo por MINUTOS_MAX para que dé tiempo a empaquetar
+    # y comprometer lo hecho si algo se atasca; este tope es la red de debajo.
+    timeout-minutes: 60
 
     steps:
       - uses: actions/checkout@v4
@@ -63,65 +62,48 @@ jobs:
         run: sudo apt-get update && sudo apt-get install -y ffmpeg
 
       - name: Dependencias
-        # setuptools por debajo de 81 no es capricho: el marcador de agua de
-        # resemble-perth todavía importa pkg_resources, y sin él la clase se
-        # queda en None y la generación revienta al guardar.
         # Las versiones van clavadas porque la voz depende de ellas: otra
-        # combinación de torch y transformers genera un audio distinto, y lo
-        # que se busca aquí es que la narradora suene igual hoy que dentro de
-        # seis meses. La rueda de torch se pide al índice de solo CPU: la
-        # normal arrastra cientos de megas de CUDA que en el corredor no
-        # sirven para nada.
+        # combinación de torch y kokoro genera un audio distinto, y lo que se
+        # busca aquí es que la narradora suene igual hoy que dentro de seis
+        # meses. La rueda de torch se pide al índice de solo CPU: la normal
+        # arrastra cientos de megas de CUDA que en el corredor no sirven para
+        # nada. espeak-ng es la letra pequeña de Kokoro: el conversor de texto
+        # a fonemas lo llama por debajo y sin él no arranca.
         run: |
+          sudo apt-get install -y espeak-ng
           python -m pip install --upgrade pip
-          pip install "setuptools<81"
           pip install --index-url https://download.pytorch.org/whl/cpu \
-            torch==2.6.0 torchaudio==2.6.0
-          pip install chatterbox-tts==0.1.7 "numpy<2" librosa==0.11.0
-          pip install faster-whisper==1.1.1
-          python -c "import torch, torchaudio, transformers; print(torch.__version__, transformers.__version__)"
+            torch==2.6.0
+          pip install kokoro==0.9.4 soundfile "numpy<2"
+          python -c "import torch, kokoro; print(torch.__version__)"
 
       - name: Modelo en caché
         uses: actions/cache@v4
         with:
           path: ~/.cache/huggingface
-          # La llave sube de número al cambiar lo que se guarda: ahora dentro
-          # van los dos transcriptores que revisan los clips, el pequeño y el
-          # grande al que se recurre cuando el pequeño duda.
-          key: chatterbox-mtl-v3
-          restore-keys: chatterbox-mtl-
+          # La llave cambia al cambiar lo que se guarda: aquí dentro ya no van
+          # los tres gigas de Chatterbox ni los dos transcriptores que hacían
+          # falta para vigilarlo, sino los ochenta y dos millones de
+          # parámetros de Kokoro.
+          key: kokoro-82m-v1
+          restore-keys: kokoro-82m-
 
       - name: Traer el modelo
-        # Se baja aparte, antes de hornear, y con reintentos: son casi tres
-        # gigas contra un servidor público y una caída a mitad no puede
-        # significar empezar el lote de cero.
+        # Se baja aparte, antes de hornear, y con reintentos: es un servidor
+        # público y una caída a mitad no puede significar empezar de cero.
         run: |
           for i in 1 2 3 4 5; do
             python - <<'PY' && exit 0
           from huggingface_hub import snapshot_download
-          snapshot_download(repo_id="ResembleAI/chatterbox", repo_type="model",
-                            revision="main",
-                            allow_patterns=["ve.pt", "t3_mtl23ls_v2.safetensors",
-                                            "s3gen.pt", "conds.pt",
-                                            "grapheme_mtl_merged_expanded_v1.json",
-                                            "Cangjie5_TC.json"])
+          snapshot_download(repo_id="hexgrad/Kokoro-82M", repo_type="model",
+                            allow_patterns=["config.json", "kokoro-v1_0.pth",
+                                            "voices/em_alex.pt",
+                                            "voices/am_liam.pt"])
           PY
             echo "descarga fallida, reintento $i"
             sleep 30
           done
           exit 1
-
-      - name: Traer los oídos
-        # Los dos transcriptores se bajan aquí y no durante el horneado: si el
-        # grande se descargara a mitad del lote, el reloj de la primera frase
-        # que dudara incluiría gigabyte y medio de red.
-        run: |
-          python - <<'PY'
-          from faster_whisper import WhisperModel
-          WhisperModel("small", device="cpu", compute_type="int8")
-          WhisperModel("medium", device="cpu", compute_type="int8")
-          print("oídos listos")
-          PY
 
       - name: Recuperar lo ya horneado
         # Los clips de las olas anteriores ya están en la rama, dentro del CSS
@@ -134,6 +116,13 @@ jobs:
         # es la manera de arreglar un clip suelto sin tocar los demás, y como
         # el archivo vive en el repositorio, el arreglo viaja con el cambio que
         # lo motiva en vez de depender de que alguien recuerde escribirlo.
+        #
+        # Y un clip solo se rescata si lo puso la voz de ahora. Cada trozo lleva
+        # estampado el motor que lo generó; si no coincide con tools/voz/motor.txt
+        # ese trozo se ignora entero y sus frases se hornean de nuevo. Sin esta
+        # comprobación, cambiar de voz no cambiaría nada: el rescate devolvería
+        # el audio antiguo, el horno lo daría por hecho y la app seguiría
+        # sonando como antes por más que el código dijera otra cosa.
         run: |
           mkdir -p clips
           REHACER="${{ inputs.rehacer }}" python - <<'PY'
@@ -144,17 +133,33 @@ jobs:
                   linea = linea.split("#")[0].strip()
                   if linea:
                       fuera.add(linea)
-          n = 0
+
+          motor = "desconocido"
+          for linea in open("tools/voz/motor.txt", encoding="utf-8"):
+              linea = linea.split("#")[0].strip()
+              if linea:
+                  motor = linea
+                  break
+
+          n = ajenos = 0
           for f in sorted(glob.glob("fase4/62-voz-narradora/voz/*.css")):
+              css = open(f).read()
+              m = re.search(r'motor:\s*(\S+)', css)
+              if not m or m.group(1) != motor:
+                  ajenos += 1
+                  print("descartado", f, "-> lo horneó",
+                        m.group(1) if m else "un motor sin marca")
+                  continue
               for k, b in re.findall(
                       r'--pa62-([a-z]{2}-[0-9a-f]{10})\s*:\s*'
-                      r'url\("data:audio/mpeg;base64,([^"]+)"\)', open(f).read()):
+                      r'url\("data:audio/mpeg;base64,([^"]+)"\)', css):
                   if k in fuera:
                       continue
                   open("clips/%s.mp3" % k, "wb").write(
                       base64.b64decode(re.sub(r'\\\s*', '', b)))
                   n += 1
-          print("recuperados", n, "clips; a rehornear", sorted(fuera))
+          print("motor", motor, "| recuperados", n, "clips |",
+                ajenos, "trozos de otra voz | a rehornear", sorted(fuera))
           PY
 
       - name: Hornear

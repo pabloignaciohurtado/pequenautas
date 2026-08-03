@@ -26,10 +26,9 @@ solo por estar `@import`ados.
 Desde la oleada 28, el módulo `fase4/62-voz-narradora` hace lo mismo con la voz que
 narra las rondas: el enunciado de cada juego, la pregunta, la pista y la felicitación.
 Son frases distintas de las nueve del guion —muchas más— y por eso no viven en este
-banco: se resuelven por **texto**, no por clave. Están sintetizadas con **Chatterbox
-Multilingual** (Resemble AI, licencia MIT), que es un modelo generativo y no un
-concatenador de fonemas; se nota sobre todo en las frases largas, donde no se oyen las
-costuras. Viajan en base64 dentro de `fase4/62-voz-narradora/voz/*.css`, repartidas en
+banco: se resuelven por **texto**, no por clave. Están sintetizadas con el mismo
+**Kokoro** «alex» de #61, así que toda la app habla con una sola voz en vez de dos.
+Viajan en base64 dentro de `fase4/62-voz-narradora/voz/*.css`, repartidas en
 varios archivos porque el service worker precachea cada `@import` por separado y un
 archivo por frase serían cientos de descargas en el primer arranque.
 
