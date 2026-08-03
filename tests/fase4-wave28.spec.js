@@ -12,7 +12,8 @@ const fileUrl = 'file://' + path.resolve(__dirname, '../index.html');
 //   · que #62 se cargue DESPUÉS de #61 —para dejarle a Rufo sus frases— y
 //     ANTES de #16, que sigue siendo quien mueve la boca de la mascota;
 //   · que el AudioBank de app.js siga intacto y con prioridad;
-//   · que el inglés, todavía sin clips, se comporte como siempre;
+//   · que estén las dos olas, español e inglés, y que ninguna se invente
+//     frases que la app no dice;
 //   · y que si todo esto falla, la ronda se siga premiando igual, porque la
 //     voz es un adorno y el juego no.
 
@@ -76,7 +77,7 @@ test('Fase 4 · #62: aditivo — ni app.js, ni index.html, ni STORE_KEY', () => 
   expect(js).toContain('VozRufo');
 });
 
-test('Fase 4 · #62: en ejecución hay clips en español y ninguno inventado en inglés', async ({ page }) => {
+test('Fase 4 · #62: en ejecución hay clips en los dos idiomas y ninguno inventado', async ({ page }) => {
   const errores = [];
   page.on('pageerror', (e) => errores.push(e.message));
   await page.goto(fileUrl);
@@ -102,8 +103,9 @@ test('Fase 4 · #62: en ejecución hay clips en español y ninguno inventado en 
       tieneMuestra: v.has(muestra, 'es'),
       tieneConEspacios: v.has('  ' + muestra.replace(/ /g, '  ') + ' ', 'es'),
       esAudio: v.uri(v.id(muestra, 'es')).indexOf('data:audio/mpeg;base64,') === 0,
-      // en inglés todavía no hay ola: la app cae al sintetizador como antes
+      // la ola 2 trae el inglés, cosechado jugando a la app en ese idioma
       en: frases.filter((f) => f.indexOf('en|') === 0).length,
+      tieneIngles: v.has('Well done!', 'en'),
       inventado: v.has('esto no lo dice nadie', 'es')
     };
   });
