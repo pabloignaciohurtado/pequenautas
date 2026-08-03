@@ -7,9 +7,11 @@
 
    Están repartidas en varios archivos a propósito: el service worker
    precachea cada @import por separado, así que un archivo por frase serían
-   cientos de descargas en el primer arranque. Veinte trozos es el término
+   cientos de descargas en el primer arranque. Cuarenta trozos es el término
    medio entre eso y un único archivo enorme que habría que rebajar entero
-   cada vez que se añade una frase.
+   cada vez que se añade una frase; con las dos olas puestas deja cada
+   archivo en torno a los ciento cincuenta kilobytes, que es tamaño que un
+   editor abre y un diff todavía enseña.
 
    Generado por tools/voz/construir.py; no editar a mano. */
 @import url("voz/01.css");
@@ -32,3 +34,23 @@
 @import url("voz/18.css");
 @import url("voz/19.css");
 @import url("voz/20.css");
+@import url("voz/21.css");
+@import url("voz/22.css");
+@import url("voz/23.css");
+@import url("voz/24.css");
+@import url("voz/25.css");
+@import url("voz/26.css");
+@import url("voz/27.css");
+@import url("voz/28.css");
+@import url("voz/29.css");
+@import url("voz/30.css");
+@import url("voz/31.css");
+@import url("voz/32.css");
+@import url("voz/33.css");
+@import url("voz/34.css");
+@import url("voz/35.css");
+@import url("voz/36.css");
+@import url("voz/37.css");
+@import url("voz/38.css");
+@import url("voz/39.css");
+@import url("voz/40.css");
