@@ -31,10 +31,11 @@
      3. clip de la narradora                              (este módulo)
      4. voz del sistema                                   (lo de siempre)
 
-   Ola 1 cubre el español. En inglés todavía no hay clips y la app se
-   comporta exactamente como antes: cae al sintetizador. Eso es a propósito,
-   no un olvido; el banco crece por olas y este módulo no necesita cambiar
-   para aprovechar las siguientes.
+   Ola 1 cubre el español; ola 2, el inglés. El módulo no cambió al llegar la
+   segunda: el mapa se genera solo y la búsqueda ya era por idioma y texto,
+   así que crecer era añadir líneas a un JSON. Lo que no esté en el mapa
+   —una frase nueva, un clip que salió mal— sigue cayendo al sintetizador,
+   que es el comportamiento de siempre y nunca deja a la app muda.
 
    Aditivo: no toca app.js, ni index.html, ni STORE_KEY. */
 (function () {
