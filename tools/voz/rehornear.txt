@@ -1,14 +1,19 @@
 # Clips que hay que volver a hornear aunque ya estén en la rama.
 #
-# La auditoría del segundo horneado dejó cuatro tomas con la frase repetida
-# detrás: se entiende todo, pero se dice dos veces. El control de calidad ya
-# sabe detectarlo (ver eco() en hornear.py), así que basta con apartarlos para
-# que el horno los rehaga con el criterio nuevo.
+# Las cuatro tomas con eco de la tanda anterior salieron bien y ya no figuran
+# aquí. El horneado de la ola 2 dejó siete señaladas por el control de calidad:
+# dos con la frase repetida detrás, dos que se salieron de la ventana de
+# duración —ahí no se oye lo que toca— y tres que se entienden pero llegan
+# justas de parecido. Apartarlas basta para que el horno las rehaga con otra
+# semilla; el resto del catálogo se recupera intacto de la propia rama.
 #
-# Una línea por identificador. Cuando el horneado siguiente los deje bien,
+# Una línea por identificador. Cuando el horneado siguiente las deje bien,
 # esta lista se vacía.
 
-es-5b535a4e7d   # "Me seco" -> "Me seco. Me seco."
-es-7fb9ba168e   # "La ballena come carne." dicha dos veces
-es-69d319b84a   # "El león come carne." + cola "no mover, el león come..."
-es-1200b5f70e   # "sss... Sol" -> "Sol. Sol."
+es-03cd5169e1   # "Ropa" -> "¡Dropa! ¡Dropa!" (eco, y una consonante de más)
+es-2030abee0f   # "verde" -> "Verde. Verde." (eco)
+es-54238f4cb5   # "Tarde" fuera de la ventana de duración
+es-537a986453   # "Ordena: La hora de comer" fuera de la ventana de duración
+es-82c8dd5245   # "PEZ" -> "¡Pes!"
+es-a1aa81e07f   # "¡Sí! Es GATO." -> "Sí, es gato. Es gato."
+es-68104186d0   # "¡Sí! Es CASA." -> "Sí, es casa, es cas..." (cola cortada)
