@@ -35,6 +35,7 @@
     mOpCountLeft: 'Cuenta los que quedan.',
     mOpAddYes:    '¡Sí! En total son',
     mOpTakeYes:   '¡Sí! Quedan',
+    mOpTakeYes1:  '¡Sí! Queda',
     mTakeAway:    'Quitamos',
     mPatQ:        '¿Qué sigue?',
     mPatYes:      '¡Sí! Sigue',
@@ -51,6 +52,7 @@
     mOpCountLeft: 'Count the ones that are left.',
     mOpAddYes:    'Yes! In total there are',
     mOpTakeYes:   'Yes! There are left',
+    mOpTakeYes1:  'Yes! There is left',
     mTakeAway:    'We take away',
     mPatQ:        'What comes next?',
     mPatYes:      'Yes! Next comes',
@@ -144,7 +146,7 @@
       bt.onclick=function(){
         if(n===result){
           bt.classList.remove('reveal'); bt.classList.add('correct'); chime('ok');
-          speakSeq([{t:t.mOpTakeYes+' '+nWord(result)+'.'},{t:t.mGreat}]);
+          speakSeq([{t:(result===1?t.mOpTakeYes1:t.mOpTakeYes)+' '+nWord(result)+'.'},{t:t.mGreat}]);
           confetti(); afterCorrect('math-take-'+a+'-'+b);
         } else {
           onWrong(bt,function(lvl){
