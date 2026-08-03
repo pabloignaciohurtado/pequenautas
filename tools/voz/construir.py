@@ -22,7 +22,7 @@ añade una frase.
 """
 import base64, hashlib, json, os, re, subprocess, sys
 
-TROZOS = 20
+TROZOS = 40
 
 
 def motor():
@@ -73,9 +73,11 @@ CABECERA = """/* ===== Fase 4 #62 · La voz de la narradora (clips) =====
 
    Están repartidas en varios archivos a propósito: el service worker
    precachea cada @import por separado, así que un archivo por frase serían
-   cientos de descargas en el primer arranque. Veinte trozos es el término
+   cientos de descargas en el primer arranque. Cuarenta trozos es el término
    medio entre eso y un único archivo enorme que habría que rebajar entero
-   cada vez que se añade una frase.
+   cada vez que se añade una frase; con las dos olas puestas deja cada
+   archivo en torno a los ciento cincuenta kilobytes, que es tamaño que un
+   editor abre y un diff todavía enseña.
 
    Generado por tools/voz/construir.py; no editar a mano. */
 """
