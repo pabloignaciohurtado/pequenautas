@@ -168,6 +168,22 @@ jobs:
       - name: Empaquetar
         run: python tools/voz/construir.py clips "${{ inputs.lista || 'tools/voz/frases-es-w1.json,tools/voz/frases-es-w2.json' }}" .
 
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+
+      - name: Probar
+        # Las pruebas corren aquí, sobre el módulo ya empaquetado y antes de
+        # escribir nada en la rama. No es duplicar a CI: un empujón hecho con
+        # el token del propio flujo no dispara otros flujos, así que el commit
+        # con la voz recién horneada era justo el único que nadie comprobaba.
+        # Si la voz rompe algo, el trabajo se cae y el destrozo no llega a la
+        # rama.
+        run: |
+          npm install
+          npx playwright install --with-deps chromium
+          npx playwright test
+
       - name: Comprometer
         run: |
           git config user.name "github-actions[bot]"
