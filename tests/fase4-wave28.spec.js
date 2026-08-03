@@ -114,6 +114,10 @@ test('Fase 4 · #62: en ejecución hay clips en los dos idiomas y ninguno invent
   expect(info.tieneMuestra).toBe(true);
   expect(info.tieneConEspacios).toBe(true);
   expect(info.esAudio).toBe(true);
+  // la ola de inglés: no vale con que existan, tienen que ser buscables por
+  // el mismo texto que la app pasa a speak()
+  expect(info.en).toBeGreaterThanOrEqual(100);
+  expect(info.tieneIngles).toBe(true);
   expect(info.inventado).toBe(false);
   expect(errores).toEqual([]);
 });
