@@ -1,11 +1,13 @@
 # Clips que hay que volver a hornear aunque ya estén en la rama.
 #
-# Las cuatro tomas con eco de la tanda anterior salieron bien y ya no figuran
-# aquí. El horneado de la ola 2 dejó siete señaladas por el control de calidad:
-# dos con la frase repetida detrás, dos que se salieron de la ventana de
-# duración —ahí no se oye lo que toca— y tres que se entienden pero llegan
-# justas de parecido. Apartarlas basta para que el horno las rehaga con otra
-# semilla; el resto del catálogo se recupera intacto de la propia rama.
+# Siguen las siete de la ola 2, y siguen por el mismo motivo: la tanda anterior
+# las rehizo con otra semilla y volvieron con el mismo defecto exacto. Siete
+# intentos cada una, siete veces lo mismo. Eso ya no es mala suerte, así que
+# esta vez no se cambia la semilla sino la causa: el oído aprende a leer el
+# seseo, el detector de eco reconoce la repetición que empieza a media frase,
+# la ventana de duración cuenta las pausas de los signos, y las palabras que el
+# modelo no sabe terminar llevan un punto o un artículo en el campo `say` —que
+# no toca el identificador, así que el mapa sigue valiendo.
 #
 # Una línea por identificador. Cuando el horneado siguiente las deje bien,
 # esta lista se vacía.
