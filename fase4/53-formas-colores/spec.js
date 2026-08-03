@@ -61,16 +61,18 @@
   function star() { try { if (typeof window.addStar === "function") window.addStar(); } catch (e) {} }
 
   /* ---------- vocabulario ---------- */
+  // El artículo va junto al nombre: "estrella" es femenina, y preguntar por
+  // "el estrella" es un error que el peque oye antes de saber leerlo.
   var SHAPES = {
-    circle: { es: "círculo", en: "circle" },
-    square: { es: "cuadrado", en: "square" },
-    triangle: { es: "triángulo", en: "triangle" },
-    star: { es: "estrella", en: "star" },
-    heart: { es: "corazón", en: "heart" },
-    rect: { es: "rectángulo", en: "rectangle" },
-    oval: { es: "óvalo", en: "oval" },
-    diamond: { es: "rombo", en: "diamond" },
-    hexagon: { es: "hexágono", en: "hexagon" }
+    circle: { es: "círculo", en: "circle", art: "el" },
+    square: { es: "cuadrado", en: "square", art: "el" },
+    triangle: { es: "triángulo", en: "triangle", art: "el" },
+    star: { es: "estrella", en: "star", art: "la" },
+    heart: { es: "corazón", en: "heart", art: "el" },
+    rect: { es: "rectángulo", en: "rectangle", art: "el" },
+    oval: { es: "óvalo", en: "oval", art: "el" },
+    diamond: { es: "rombo", en: "diamond", art: "el" },
+    hexagon: { es: "hexágono", en: "hexagon", art: "el" }
   };
   // Por nivel: cuántas formas entran en juego. Empieza por las tres que
   // un peque de 3 años ya distingue y va sumando de a poco.
@@ -360,7 +362,7 @@
       var picks = sample(pool, Math.min(opts, pool.length));
       var target = picks[rnd(picks.length)];
       var colors = shuffle(Object.keys(COLORS));
-      setPrompt(T("¿Cuál es el " + SHAPES[target].es + "?", "Which one is the " + SHAPES[target].en + "?"));
+      setPrompt(T("¿Cuál es " + SHAPES[target].art + " " + SHAPES[target].es + "?", "Which one is the " + SHAPES[target].en + "?"));
       var grid = el("div", "pa53-grid");
       picks.forEach(function (k, i) {
         var t = el("button", "pa53-tile", shapeSVG(k, COLORS[colors[i % colors.length]].hex));
