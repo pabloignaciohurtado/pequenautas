@@ -33,7 +33,7 @@ const UI={
     tip:'💡 AAP: acompaña a tu peque, sesiones de 10–15 min. El aprendizaje es mayor con un adulto al lado.',
     close:'Listo', switch:'Cambiar de niño', pTitle:'¿Quién juega?', pSub:'Elige tu perfil',
     newTitle:'Nuevo peque', newSub:'Elige un avatar y un nombre.', create:'¡Listo!', namePH:'Nombre', level:'Nivel', add:'Agregar',
-    stStars:'Estrellas', stRounds:'Rondas', stFirst:'Aciertos a la 1ª', stTime:'Tiempo medio', stFocus:'A reforzar', mAcc:'Aciertos', noData:'Aún no hay datos. ¡A jugar!', mSubQ:"¿Cuántos había?", mSubYes:"¡Sí! Había", mGreat:"¡Muy bien!", mLookAgain:"Mira otra vez, cuenta despacio.", mItWas:"Eran", mItWas1:"Era", mTapGlow:"Toca el que brilla.", mCmpQ:"¿Cuál grupo tiene más?", mCmpYes:"¡Sí! Este grupo tiene más.", mThereAre:"Hay", mCountEach:"Cuenta cada grupo, toca el que tiene más.", mMoreHere:"Aquí hay más.", introTap:"¡Toca para jugar!", sessLimitName:"Límite de sesión saludable", sessLimitDesc:"Una pausa amable para descansar (recomendado en niños de 3 a 5 años).", sessMinsName:"Duración de la sesión", sessMinsDesc:"Tiempo de juego antes de un descanso.", breakTitle:"¡Hora de descansar!", breakMsg:"Jugaste muy bien. Descansemos los ojos, estrírate un poquito y volvemos pronto.", breakRest:"Ok, a descansar", breakAdult:"Un adulto continúa", breakGatePrompt:"Para continuar, resuelve la suma.", restBye:"¡Nos vemos pronto!", pwaInstall:"Instalar app", tabEdu:"Educador", eduTitle:"Panel del educador", eduSub:"Resumen de todos los niños de este dispositivo.", eduGlobal:"Resumen global", eduChildren:"Niños", eduPerChild:"Por niño", eduNoRounds:"Sin rondas todavía", eduExport:"Exportar CSV", },
+    stStars:'Estrellas', stRounds:'Rondas', stFirst:'Aciertos a la 1ª', stTime:'Tiempo medio', stFocus:'A reforzar', mAcc:'Aciertos', noData:'Aún no hay datos. ¡A jugar!', mSubQ:"¿Cuántos había?", mSubYes:"¡Sí! Había", mGreat:"¡Muy bien!", mLookAgain:"Mira otra vez, cuenta despacio.", mItWas:"Eran", mItWas1:"Era", mTapGlow:"Toca el que brilla.", mCmpQ:"¿Cuál grupo tiene más?", mCmpYes:"¡Sí! Este grupo tiene más.", mThereAre:"Hay", mCountEach:"Cuenta cada grupo, toca el que tiene más.", mMoreHere:"Aquí hay más.", introTap:"¡Toca para jugar!", sessLimitName:"Límite de sesión saludable", sessLimitDesc:"Una pausa amable para descansar (recomendado en niños de 3 a 5 años).", sessMinsName:"Duración de la sesión", sessMinsDesc:"Tiempo de juego antes de un descanso.", breakTitle:"¡Hora de descansar!", breakMsg:"Jugaste muy bien. Descansemos los ojos, estírate un poquito y volvemos pronto.", breakRest:"Ok, a descansar", breakAdult:"Un adulto continúa", breakGatePrompt:"Para continuar, resuelve la suma.", restBye:"¡Nos vemos pronto!", pwaInstall:"Instalar app", tabEdu:"Educador", eduTitle:"Panel del educador", eduSub:"Resumen de todos los niños de este dispositivo.", eduGlobal:"Resumen global", eduChildren:"Niños", eduPerChild:"Por niño", eduNoRounds:"Sin rondas todavía", eduExport:"Exportar CSV", },
   en:{ tagline:'Learn by playing', math:'Numbers', read:'Letters', sci:'Animals', adult:'For grown-ups',
     celTitle:'You did it!', celSub:'You earned a star!', celHome:'Home', celAgain:'Again',
     gateTitle:'Grown-ups only', gateSub:'Tap and hold the button to enter.', hold:'Press and hold', holdNum:'Press and hold 👇',
@@ -997,13 +997,13 @@ function eduApplyChrome(){ var e=$('tabEduTxt'); if(e && UI[S.lang]) e.textConte
     },
     reading: {
       start: [
-        { es:'Di el sonido de la letra y pídele que lo repita contigo.', en:'Say the letter’s sound and ask them to repeat it with you.' },
+        { es:'Di el sonido de la letra y pídele que lo repita contigo.', en:'Say the letter's sound and ask them to repeat it with you.' },
         { es:'Pregúntale cómo suena esta letra antes de elegir.', en:'Ask how this letter sounds before choosing.' }
       ],
       mid: [
         { es:'Pregúntale: ¿qué otra cosa empieza con esta letra?', en:'Ask: what else starts with this letter?' },
         { es:'Busquen en la sala algo cuyo nombre empiece igual.', en:'Look around the room for something that starts the same way.' },
-        { es:'Pregúntale por el nombre de alguien que empiece con esta letra.', en:'Ask for someone’s name that starts with this letter.' }
+        { es:'Pregúntale por el nombre de alguien que empiece con esta letra.', en:'Ask for someone's name that starts with this letter.' }
       ]
     },
     science: {
