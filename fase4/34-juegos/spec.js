@@ -12,6 +12,23 @@
   function unlocked(gid){ var p=loadP(); return (typeof p[gid]==="number")?p[gid]:0; } // highest unlocked level index (0..4)
   function setUnlocked(gid,v){ var p=loadP(); if(!(p[gid]>=v)){ p[gid]=v; saveP(p); } }
 
+  /* ---------- idioma ----------
+     Esta capa era la unica puerta principal que se quedaba en espanol con la
+     app en ingles, y la unica que no decia nada en voz alta. Mismo patron
+     que #53-#60: se lee del DOM (no hay window.S global aqui) y T(es,en)
+     resuelve cada texto. say() pasa por window.speak, que ya respeta la
+     cadena AudioBank -> Rufo -> narradora -> sintetizador sin tocarla. */
+  var lang = "es";
+  function detectLang(){
+    try{
+      var n = document.getElementById("lblRead");
+      lang = (n && /letter/i.test(n.textContent || "")) ? "en" : "es";
+    }catch(e){}
+    return lang;
+  }
+  function T(es,en){ return lang==="en" ? en : es; }
+  function say(txt){ try{ if(typeof window.speak==="function") window.speak(txt,{lang:lang}); }catch(e){} }
+
   function ch(sp){ return String.fromCharCode(sp); }
   var ACC = ch(0xE1); // a acute
   var IACC = ch(0xED); // i acute
@@ -24,25 +41,28 @@
   // ---- registry ----
   // mech: tap|drag|sort|match|trace ; impl: 'app' (existing) | 'drag' | 'soon'
   var SECTIONS = {
-    math: { name:"N"+UACC+"meros", games:[
-      {id:"math:count", name:"Contar y arrastrar", mech:"drag", impl:"drag", desc:"Lleva las bellotas a la canasta"},
-      {id:"math:tap", name:"Cu"+ACC+"ntos ves", mech:"tap", impl:"app", app:"math", desc:"Cuenta y toca el n"+UACC+"mero"},
-      {id:"math:sort", name:"Ordena los n"+UACC+"meros", mech:"sort", impl:"sort", gen:"ordernum", desc:"Toca del m"+ACC+"s chico al m"+ACC+"s grande"},
-      {id:"math:match", name:"Une cantidad y n"+UACC+"mero", mech:"match", impl:"match", gen:"countnum", desc:"Une la cantidad con su n"+UACC+"mero"}
+    math: { name:"N"+UACC+"meros", nameEn:"Numbers", games:[
+      {id:"math:count", name:"Contar y arrastrar", nameEn:"Count and drag", mech:"drag", impl:"drag", desc:"Lleva las bellotas a la canasta", descEn:"Carry the acorns to the basket"},
+      {id:"math:tap", name:"Cu"+ACC+"ntos ves", nameEn:"How many do you see", mech:"tap", impl:"app", app:"math", desc:"Cuenta y toca el n"+UACC+"mero", descEn:"Count and tap the number"},
+      {id:"math:sort", name:"Ordena los n"+UACC+"meros", nameEn:"Sort the numbers", mech:"sort", impl:"sort", gen:"ordernum", desc:"Toca del m"+ACC+"s chico al m"+ACC+"s grande", descEn:"Tap from smallest to biggest"},
+      {id:"math:match", name:"Une cantidad y n"+UACC+"mero", nameEn:"Match amount and number", mech:"match", impl:"match", gen:"countnum", desc:"Une la cantidad con su n"+UACC+"mero", descEn:"Match the amount with its number"}
     ]},
-    reading: { name:"Letras", games:[
-      {id:"read:tap", name:"Con qu"+ch(0xE9)+" letra empieza", mech:"tap", impl:"app", app:"reading", desc:"Toca la letra inicial"},
-      {id:"read:drag", name:"Letra a su sombra", mech:"drag", impl:"classify", gen:"shadow", desc:"Toca la letra y luego su sombra"},
-      {id:"read:match", name:"May"+UACC+"scula y min"+UACC+"scula", mech:"match", impl:"match", gen:"caseAa", desc:"Une la letra grande con la peque"+NTIL+"a"},
-      {id:"read:trace", name:"Traza la letra", mech:"trace", impl:"trace", gen:"trace", desc:"Une los puntos y traza la letra"}
+    reading: { name:"Letras", nameEn:"Letters", games:[
+      {id:"read:tap", name:"Con qu"+ch(0xE9)+" letra empieza", nameEn:"Which letter it starts with", mech:"tap", impl:"app", app:"reading", desc:"Toca la letra inicial", descEn:"Tap the first letter"},
+      {id:"read:drag", name:"Letra a su sombra", nameEn:"Letter to its shadow", mech:"drag", impl:"classify", gen:"shadow", desc:"Toca la letra y luego su sombra", descEn:"Tap the letter, then its shadow"},
+      {id:"read:match", name:"May"+UACC+"scula y min"+UACC+"scula", nameEn:"Uppercase and lowercase", mech:"match", impl:"match", gen:"caseAa", desc:"Une la letra grande con la peque"+NTIL+"a", descEn:"Match the big letter with the small one"},
+      {id:"read:trace", name:"Traza la letra", nameEn:"Trace the letter", mech:"trace", impl:"trace", gen:"trace", desc:"Une los puntos y traza la letra", descEn:"Join the dots and trace the letter"}
     ]},
-    science: { name:"Animales", games:[
-      {id:"sci:tap", name:"D"+OACC+"nde vive", mech:"tap", impl:"app", app:"science", desc:"Toca el h"+ACC+"bitat"},
-      {id:"sci:drag", name:"Cada uno a su casa", mech:"drag", impl:"classify", gen:"habitat", desc:"Toca el animal y luego su casa"},
-      {id:"sci:sort", name:"Grandes y chicos", mech:"sort", impl:"sort", gen:"ordersize", desc:"Toca del m"+ACC+"s chico al m"+ACC+"s grande"},
-      {id:"sci:match", name:"Mam"+ACC+" y beb"+ch(0xE9), mech:"match", impl:"match", gen:"babies", desc:"Une cada mam"+ACC+" con su beb"+ch(0xE9)}
+    science: { name:"Animales", nameEn:"Animals", games:[
+      {id:"sci:tap", name:"D"+OACC+"nde vive", nameEn:"Where it lives", mech:"tap", impl:"app", app:"science", desc:"Toca el h"+ACC+"bitat", descEn:"Tap the habitat"},
+      {id:"sci:drag", name:"Cada uno a su casa", nameEn:"Each one to its home", mech:"drag", impl:"classify", gen:"habitat", desc:"Toca el animal y luego su casa", descEn:"Tap the animal, then its home"},
+      {id:"sci:sort", name:"Grandes y chicos", nameEn:"Big and small", mech:"sort", impl:"sort", gen:"ordersize", desc:"Toca del m"+ACC+"s chico al m"+ACC+"s grande", descEn:"Tap from smallest to biggest"},
+      {id:"sci:match", name:"Mam"+ACC+" y beb"+ch(0xE9), nameEn:"Mom and baby", mech:"match", impl:"match", gen:"babies", desc:"Une cada mam"+ACC+" con su beb"+ch(0xE9), descEn:"Match each mom with her baby"}
     ]}
   };
+  function secName(sec){ return lang==="en" ? (sec.nameEn||sec.name) : sec.name; }
+  function gName(g){ return lang==="en" ? (g.nameEn||g.name) : g.name; }
+  function gDesc(g){ return lang==="en" ? (g.descEn||g.desc) : g.desc; }
   var MECH_ICON = {tap:ch(0x1F446)?"":"", }; // fallback set below
   // use simple text glyphs to stay ASCII-safe in source; build via codepoints
   function mechEmoji(m){
@@ -60,15 +80,15 @@
   function el(tag,cls,html){ var e=document.createElement(tag); if(cls)e.className=cls; if(html!=null)e.innerHTML=html; return e; }
 
   // ---------- overlays root ----------
-  var ov=null, sheet=null, hdT=null, body=null, backBtn=null, curSection=null;
+  var ov=null, sheet=null, hdT=null, body=null, backBtn=null, curSection=null, curGame=null;
   function ensureOv(){
     if(ov) return;
     ov=el("div","pa34-ov"); ov.setAttribute("role","dialog"); ov.setAttribute("aria-modal","true");
     sheet=el("div","pa34-sheet");
     var hd=el("div","pa34-hd");
-    backBtn=el("button","pa34-back",INVQ===""?"&lsaquo;":"&lsaquo;"); backBtn.setAttribute("aria-label","Volver"); backBtn.style.display="none";
+    backBtn=el("button","pa34-back",INVQ===""?"&lsaquo;":"&lsaquo;"); backBtn.setAttribute("aria-label",T("Volver","Back")); backBtn.style.display="none";
     hdT=el("div","t","");
-    var x=el("button","pa34-x","&times;"); x.setAttribute("aria-label","Cerrar");
+    var x=el("button","pa34-x","&times;"); x.setAttribute("aria-label",T("Cerrar","Close"));
     hd.appendChild(backBtn); hd.appendChild(hdT); hd.appendChild(x);
     body=el("div","pa34-body");
     sheet.appendChild(hd); sheet.appendChild(body); ov.appendChild(sheet);
@@ -83,9 +103,10 @@
   // ---------- games grid ----------
   function openGames(sectionKey){
     var sec=SECTIONS[sectionKey]; if(!sec) return;
-    curSection=sectionKey;
-    openOv(); backBtn.style.display="none";
-    hdT.innerHTML = sec.name + "<small>Elige un juego</small>";
+    curSection=sectionKey; curGame=null;
+    detectLang();
+    openOv(); backBtn.style.display="none"; backBtn.setAttribute("aria-label",T("Volver","Back"));
+    hdT.innerHTML = secName(sec) + "<small>"+T("Elige un juego","Choose a game")+"</small>";
     body.innerHTML="";
     var grid=el("div","pa34-games");
     sec.games.forEach(function(g){
@@ -93,11 +114,11 @@
       b.setAttribute("data-pa34-game", g.id);
       if(g.impl==="app" && g.app){ b.setAttribute("data-pa34-app", g.app); }
       var mech=el("div","pa34-m-"+g.mech+" mech", mechEmoji(g.mech));
-      var nm=el("div","gn",g.name);
+      var nm=el("div","gn",gName(g));
       var pr;
-      if(g.impl==="drag"||g.impl==="match"||g.impl==="sort"||g.impl==="trace"||g.impl==="classify"){ var u=unlocked(g.id); pr=el("div","gp","Nivel "+(u+1)+" de 5"); }
-      else if(g.impl==="app"){ pr=el("div","gp","Con voz de Rufo"); }
-      else { pr=el("div","gp","Pronto"); }
+      if(g.impl==="drag"||g.impl==="match"||g.impl==="sort"||g.impl==="trace"||g.impl==="classify"){ var u=unlocked(g.id); pr=el("div","gp",T("Nivel "+(u+1)+" de 5","Level "+(u+1)+" of 5")); }
+      else if(g.impl==="app"){ pr=el("div","gp",T("Con voz de Rufo","With Rufo's voice")); }
+      else { pr=el("div","gp",T("Pronto","Coming soon")); }
       b.appendChild(mech); b.appendChild(nm); b.appendChild(pr);
       if(g.impl==="soon"){ b.appendChild(el("div","lock",String.fromCodePoint(0x1F512))); }
       b.addEventListener("click",function(){ pickGame(g); });
@@ -114,7 +135,8 @@
     }
     if(g.impl==="drag"||g.impl==="match"||g.impl==="sort"||g.impl==="trace"||g.impl==="classify"){ openLevels(g); return; }
     // soon
-    toast(INV+"Pronto"+"! Este juego llega muy prontito "+String.fromCodePoint(0x1F98A));
+    toast(T(INV+"Pronto! Este juego llega muy prontito "+String.fromCodePoint(0x1F98A),
+             "Coming soon! This game arrives really soon "+String.fromCodePoint(0x1F98A)));
   }
 
   function toast(msg){
@@ -126,9 +148,12 @@
 
   // ---------- level map ----------
   function openLevels(g){
+    curGame=g;
+    detectLang();
     openOv(); backBtn.style.display="";
+    backBtn.setAttribute("aria-label",T("Volver","Back"));
     backBtn.onclick=function(){ openGames(curSection); };
-    hdT.innerHTML = g.name + "<small>Elige un nivel</small>";
+    hdT.innerHTML = gName(g) + "<small>"+T("Elige un nivel","Choose a level")+"</small>";
     body.innerHTML="";
     var u=unlocked(g.id);
     var wrap=el("div","pa34-levels");
@@ -143,7 +168,8 @@
         b.innerHTML=String.fromCodePoint(0x1F512); b.disabled=true;
       }
       if(state==="done"){ b.appendChild(el("span","st",String.fromCodePoint(0x2B50))); }
-      var caps=["Muy f"+ACC+"cil","F"+ACC+"cil","Normal","Un reto","Experto"];
+      var caps=T(["Muy f"+ACC+"cil","F"+ACC+"cil","Normal","Un reto","Experto"],
+                 ["Very easy","Easy","Normal","A challenge","Expert"]);
       var cap=el("div","cap",caps[i]);
       // alternate side for a path feel
       if(i%2===0){ row.appendChild(b); row.appendChild(cap); }
@@ -170,25 +196,25 @@
     if(play) return;
     play=el("div","pa34-play");
     play.innerHTML=
-      '<div class="pa34-ptop"><button class="pa34-x" id="pa34pX" aria-label="Salir">&times;</button>'+
+      '<div class="pa34-ptop"><button class="pa34-x" id="pa34pX" aria-label="'+T("Salir","Exit")+'">&times;</button>'+
         '<div class="pa34-prompt" id="pa34prompt"></div>'+
         '<div class="pa34-pstar">'+String.fromCodePoint(0x2B50)+' <span id="pa34score">0</span></div></div>'+
       '<div class="pa34-field" id="pa34field">'+
         '<div class="pa34-basket" id="pa34basket"><div class="count" id="pa34count">0 / 0</div>'+basketSVG()+'</div>'+
-        '<div class="pa34-hint" id="pa34hint">Tocá una bellota y llevala a la canasta</div>'+
+        '<div class="pa34-hint" id="pa34hint"></div>'+
         '<div class="pa34-rufo" id="pa34rufo">'+rufoSVG(false)+'</div>'+
       '</div>'+
       '<div class="pa34-pbot"><div class="pa34-prog" id="pa34prog"></div>'+
-        '<button class="pa34-cta" id="pa34cta" disabled>Sigue arrastrando...</button></div>'+
+        '<button class="pa34-cta" id="pa34cta" disabled></button></div>'+
       '<div class="pa34-win" id="pa34win"><div class="pa34-wc">'+
-        '<div class="rf">'+rufoSVG(true)+'</div><h2 id="pa34wt">'+INV+'Muy bien!</h2><p id="pa34wp"></p>'+
-        '<div class="row"><button class="pa34-cta ghost" id="pa34wmap">Mapa</button><button class="pa34-cta" id="pa34wnext">Siguiente</button></div>'+
+        '<div class="rf">'+rufoSVG(true)+'</div><h2 id="pa34wt"></h2><p id="pa34wp"></p>'+
+        '<div class="row"><button class="pa34-cta ghost" id="pa34wmap"></button><button class="pa34-cta" id="pa34wnext"></button></div>'+
       '</div></div>';
     document.body.appendChild(play);
     pEls={ field:$("pa34field"), basket:$("pa34basket"), count:$("pa34count"),
       prompt:$("pa34prompt"), cta:$("pa34cta"), prog:$("pa34prog"), rufo:$("pa34rufo"),
       hint:$("pa34hint"), win:$("pa34win"), score:$("pa34score"), wt:$("pa34wt"), wp:$("pa34wp"),
-      wnext:$("pa34wnext"), wmap:$("pa34wmap") };
+      wnext:$("pa34wnext"), wmap:$("pa34wmap"), x:$("pa34pX") };
     $("pa34pX").addEventListener("click",exitPlay);
     pEls.cta.addEventListener("click",function(){ if(!pEls.cta.disabled) advanceOrExit(); });
   }
@@ -200,15 +226,21 @@
   function launchDrag(g,level){
     ensurePlay();
     closeOv();
-    G.gid=g.id; G.level=level; G.name=g.name;
+    detectLang();
+    if(pEls.x) pEls.x.setAttribute("aria-label",T("Salir","Exit"));
+    G.gid=g.id; G.level=level; G.name=g.name; G.g=g;
     var cfg=DRAG_LEVELS[level]||DRAG_LEVELS[0];
     G.need=cfg[0]; var pool=cfg[0]+cfg[1]; G.placed=0;
     play.classList.add("show"); pEls.win.classList.remove("show");
     pEls.rufo.innerHTML=rufoSVG(false);
-    pEls.prompt.innerHTML="Arrastra <b>"+G.need+"</b> bellotas "+String.fromCodePoint(0x1F330)+" a la canasta";
+    var promptTxt = T("Arrastra <b>"+G.need+"</b> bellotas "+String.fromCodePoint(0x1F330)+" a la canasta",
+                       "Drag <b>"+G.need+"</b> acorns "+String.fromCodePoint(0x1F330)+" to the basket");
+    pEls.prompt.innerHTML=promptTxt;
     pEls.count.textContent="0 / "+G.need;
-    pEls.cta.textContent="Sigue arrastrando..."; pEls.cta.disabled=true;
+    pEls.cta.textContent=T("Sigue arrastrando...","Keep dragging..."); pEls.cta.disabled=true;
+    pEls.hint.textContent=T("Toca una bellota y llevala a la canasta","Tap an acorn and carry it to the basket");
     pEls.hint.style.display="";
+    say(T("Arrastra "+G.need+" bellotas a la canasta","Drag "+G.need+" acorns to the basket"));
     // progress leaves
     pEls.prog.innerHTML=""; for(var i=0;i<G.need;i++){ var lf=el("div","pa34-leaf"); lf.id="pa34lf"+i; pEls.prog.appendChild(lf); }
     // clear acorns
@@ -245,14 +277,18 @@
     if(G.placed>=G.need) winLevel();
   }
   function winLevel(){
-    pEls.cta.textContent=INV+"Listo!"; pEls.cta.disabled=false;
+    pEls.cta.textContent=T(INV+"Listo!","Done!"); pEls.cta.disabled=false;
     G.score++; pEls.score.textContent=G.score;
     // unlock next level & add a star in the app if possible
     setUnlocked(G.gid, Math.min(G.level+1,4));
     try{ if(typeof window.addStar==="function") window.addStar(); }catch(e){}
-    pEls.wp.textContent="Contaste y llevaste "+G.need+" bellotas "+String.fromCodePoint(0x1F330);
+    pEls.wt.textContent=T(INV+"Muy bien!","Well done!");
+    pEls.wp.textContent=T("Contaste y llevaste "+G.need+" bellotas "+String.fromCodePoint(0x1F330),
+                           "You counted and carried "+G.need+" acorns "+String.fromCodePoint(0x1F330));
     var last = G.level>=4;
-    pEls.wnext.textContent = last ? INV+"Terminado!" : "Siguiente";
+    pEls.wnext.textContent = last ? T(INV+"Terminado!","All done!") : T("Siguiente","Next");
+    pEls.wmap.textContent = T("Mapa","Map");
+    say(T(INV+"Muy bien!","Well done!"));
     setTimeout(function(){ burst(); pEls.win.classList.add("show"); },340);
   }
   function advanceOrExit(){
@@ -334,17 +370,17 @@
     if(mplay) return;
     mplay=el("div","pa34-mplay");
     mplay.innerHTML=
-      '<div class="pa34-ptop"><button class="pa34-x" id="pa34mX" aria-label="Salir">&times;</button>'+
+      '<div class="pa34-ptop"><button class="pa34-x" id="pa34mX" aria-label="'+T("Salir","Exit")+'">&times;</button>'+
         '<div class="pa34-prompt" id="pa34mprompt"></div>'+
         '<div class="pa34-pstar">'+String.fromCodePoint(0x2B50)+' <span id="pa34mscore">0</span></div></div>'+
       '<div class="pa34-mcols"><div class="pa34-col" id="pa34mL"></div><div class="pa34-col" id="pa34mR"></div></div>'+
       '<div class="pa34-win" id="pa34mwin"><div class="pa34-wc">'+
-        '<div class="rf">'+rufoSVG(true)+'</div><h2 id="pa34mwt">'+INV+'Muy bien!</h2><p id="pa34mwp"></p>'+
-        '<div class="row"><button class="pa34-cta ghost" id="pa34mwmap">Mapa</button><button class="pa34-cta" id="pa34mwnext">Siguiente</button></div>'+
+        '<div class="rf">'+rufoSVG(true)+'</div><h2 id="pa34mwt"></h2><p id="pa34mwp"></p>'+
+        '<div class="row"><button class="pa34-cta ghost" id="pa34mwmap"></button><button class="pa34-cta" id="pa34mwnext"></button></div>'+
       '</div></div>';
     document.body.appendChild(mplay);
     mEls={ L:$("pa34mL"), R:$("pa34mR"), prompt:$("pa34mprompt"), score:$("pa34mscore"),
-      win:$("pa34mwin"), wt:$("pa34mwt"), wp:$("pa34mwp"), wnext:$("pa34mwnext"), wmap:$("pa34mwmap") };
+      win:$("pa34mwin"), wt:$("pa34mwt"), wp:$("pa34mwp"), wnext:$("pa34mwnext"), wmap:$("pa34mwmap"), x:$("pa34mX") };
     $("pa34mX").addEventListener("click",function(){ mplay.classList.remove("show"); });
     mEls.wnext.onclick=function(){
       mEls.win.classList.remove("show");
@@ -356,11 +392,15 @@
   function launchMatch(g,level){
     ensureMPlay();
     closeOv();
+    detectLang();
+    if(mEls.x) mEls.x.setAttribute("aria-label",T("Salir","Exit"));
     M.gid=g.id; M.level=level; M.name=g.name; M.g=g; M.selLeft=null; M.matched=0;
     var pairs=buildPairs(g,level); M.total=pairs.length;
     mplay.classList.add("show"); mEls.win.classList.remove("show");
-    mEls.prompt.innerHTML=g.desc || "Une las parejas";
+    var promptTxt = gDesc(g) || T("Une las parejas","Match the pairs");
+    mEls.prompt.innerHTML=promptTxt;
     mEls.L.innerHTML=""; mEls.R.innerHTML="";
+    say(promptTxt);
     // left in order, right shuffled; tag each with the same pairId
     var rights=shuffle(pairs.map(function(p,idx){ return {tok:p.b, id:idx}; }));
     pairs.forEach(function(p,idx){
@@ -397,8 +437,12 @@
     setUnlocked(M.gid, Math.min(M.level+1,4));
     M.score=(M.score||0)+1; mEls.score.textContent=M.score;
     try{ if(typeof window.addStar==="function") window.addStar(); }catch(e){}
-    mEls.wp.textContent="Uniste "+M.total+" parejas "+String.fromCodePoint(0x1F31F);
-    mEls.wnext.textContent = M.level>=4 ? INV+"Terminado!" : "Siguiente";
+    mEls.wt.textContent=T(INV+"Muy bien!","Well done!");
+    mEls.wp.textContent=T("Uniste "+M.total+" parejas "+String.fromCodePoint(0x1F31F),
+                           "You matched "+M.total+" pairs "+String.fromCodePoint(0x1F31F));
+    mEls.wnext.textContent = M.level>=4 ? T(INV+"Terminado!","All done!") : T("Siguiente","Next");
+    mEls.wmap.textContent = T("Mapa","Map");
+    say(T(INV+"Muy bien!","Well done!"));
     setTimeout(function(){ if(typeof burstIn==="function") burstIn(mplay); mEls.win.classList.add("show"); },300);
   }
   function burstIn(host){
@@ -434,17 +478,17 @@
     if(splay) return;
     splay=el("div","pa34-splay");
     splay.innerHTML=
-      '<div class="pa34-ptop"><button class="pa34-x" id="pa34sX" aria-label="Salir">&times;</button>'+
+      '<div class="pa34-ptop"><button class="pa34-x" id="pa34sX" aria-label="'+T("Salir","Exit")+'">&times;</button>'+
         '<div class="pa34-prompt" id="pa34sprompt"></div>'+
         '<div class="pa34-pstar">'+String.fromCodePoint(0x2B50)+' <span id="pa34sscore">0</span></div></div>'+
       '<div class="pa34-sarea" id="pa34sarea"></div>'+
       '<div class="pa34-win" id="pa34swin"><div class="pa34-wc">'+
-        '<div class="rf">'+rufoSVG(true)+'</div><h2>'+INV+'Muy bien!</h2><p id="pa34swp"></p>'+
-        '<div class="row"><button class="pa34-cta ghost" id="pa34swmap">Mapa</button><button class="pa34-cta" id="pa34swnext">Siguiente</button></div>'+
+        '<div class="rf">'+rufoSVG(true)+'</div><h2 id="pa34swt"></h2><p id="pa34swp"></p>'+
+        '<div class="row"><button class="pa34-cta ghost" id="pa34swmap"></button><button class="pa34-cta" id="pa34swnext"></button></div>'+
       '</div></div>';
     document.body.appendChild(splay);
     sEls={ area:$("pa34sarea"), prompt:$("pa34sprompt"), score:$("pa34sscore"),
-      win:$("pa34swin"), wp:$("pa34swp"), wnext:$("pa34swnext"), wmap:$("pa34swmap") };
+      win:$("pa34swin"), wt:$("pa34swt"), wp:$("pa34swp"), wnext:$("pa34swnext"), wmap:$("pa34swmap"), x:$("pa34sX") };
     $("pa34sX").addEventListener("click",function(){ splay.classList.remove("show"); });
     sEls.wnext.onclick=function(){
       sEls.win.classList.remove("show");
@@ -455,11 +499,15 @@
   }
   function launchSort(g,level){
     ensureSPlay(); closeOv();
+    detectLang();
+    if(sEls.x) sEls.x.setAttribute("aria-label",T("Salir","Exit"));
     ST.gid=g.id; ST.level=level; ST.g=g; ST.expected=0;
     var items=buildSort(g,level); ST.total=items.length;
     splay.classList.add("show"); sEls.win.classList.remove("show");
-    sEls.prompt.innerHTML=g.desc || "Ordena";
+    var promptTxt = gDesc(g) || T("Ordena","Sort");
+    sEls.prompt.innerHTML=promptTxt;
     sEls.area.innerHTML="";
+    say(promptTxt);
     shuffle(items).forEach(function(it){
       var b=el("button","pa34-scard", tokenHTML(it.tok));
       b.setAttribute("data-rank", it.rank);
@@ -484,8 +532,12 @@
     setUnlocked(ST.gid, Math.min(ST.level+1,4));
     ST.score=(ST.score||0)+1; sEls.score.textContent=ST.score;
     try{ if(typeof window.addStar==="function") window.addStar(); }catch(e){}
-    sEls.wp.textContent="Ordenaste "+ST.total+" del m"+ACC+"s chico al m"+ACC+"s grande "+String.fromCodePoint(0x1F31F);
-    sEls.wnext.textContent = ST.level>=4 ? INV+"Terminado!" : "Siguiente";
+    sEls.wt.textContent=T(INV+"Muy bien!","Well done!");
+    sEls.wp.textContent=T("Ordenaste "+ST.total+" del m"+ACC+"s chico al m"+ACC+"s grande "+String.fromCodePoint(0x1F31F),
+                           "You sorted "+ST.total+" from smallest to biggest "+String.fromCodePoint(0x1F31F));
+    sEls.wnext.textContent = ST.level>=4 ? T(INV+"Terminado!","All done!") : T("Siguiente","Next");
+    sEls.wmap.textContent = T("Mapa","Map");
+    say(T(INV+"Muy bien!","Well done!"));
     setTimeout(function(){ burstIn(splay); sEls.win.classList.add("show"); },300);
   }
 
@@ -502,17 +554,17 @@
     if(tplay) return;
     tplay=el("div","pa34-tplay");
     tplay.innerHTML=
-      '<div class="pa34-ptop"><button class="pa34-x" id="pa34tX" aria-label="Salir">&times;</button>'+
+      '<div class="pa34-ptop"><button class="pa34-x" id="pa34tX" aria-label="'+T("Salir","Exit")+'">&times;</button>'+
         '<div class="pa34-prompt" id="pa34tprompt"></div>'+
         '<div class="pa34-pstar">'+String.fromCodePoint(0x2B50)+' <span id="pa34tscore">0</span></div></div>'+
       '<div class="pa34-tarea"><svg class="pa34-tsvg" id="pa34tsvg" viewBox="0 0 100 100"></svg></div>'+
       '<div class="pa34-win" id="pa34twin"><div class="pa34-wc">'+
-        '<div class="rf">'+rufoSVG(true)+'</div><h2>'+INV+'Muy bien!</h2><p id="pa34twp"></p>'+
-        '<div class="row"><button class="pa34-cta ghost" id="pa34twmap">Mapa</button><button class="pa34-cta" id="pa34twnext">Siguiente</button></div>'+
+        '<div class="rf">'+rufoSVG(true)+'</div><h2 id="pa34twt"></h2><p id="pa34twp"></p>'+
+        '<div class="row"><button class="pa34-cta ghost" id="pa34twmap"></button><button class="pa34-cta" id="pa34twnext"></button></div>'+
       '</div></div>';
     document.body.appendChild(tplay);
     tEls={ svg:$("pa34tsvg"), prompt:$("pa34tprompt"), score:$("pa34tscore"),
-      win:$("pa34twin"), wp:$("pa34twp"), wnext:$("pa34twnext"), wmap:$("pa34twmap") };
+      win:$("pa34twin"), wt:$("pa34twt"), wp:$("pa34twp"), wnext:$("pa34twnext"), wmap:$("pa34twmap"), x:$("pa34tX") };
     $("pa34tX").addEventListener("click",function(){ tplay.classList.remove("show"); });
     tEls.wnext.onclick=function(){
       tEls.win.classList.remove("show");
@@ -544,11 +596,15 @@
   }
   function launchTrace(g,level){
     ensureTPlay(); closeOv();
+    detectLang();
+    if(tEls.x) tEls.x.setAttribute("aria-label",T("Salir","Exit"));
     TR.gid=g.id; TR.level=level; TR.g=g;
     var L=TRACE_LETTERS[level]||TRACE_LETTERS[0];
     TR.pts=L.pts; TR.reached=0;
     tplay.classList.add("show"); tEls.win.classList.remove("show");
-    tEls.prompt.innerHTML="Traza la <b>"+L.ch+"</b>";
+    var promptTxt = T("Traza la <b>"+L.ch+"</b>","Trace the <b>"+L.ch+"</b>");
+    tEls.prompt.innerHTML=promptTxt;
+    say(T("Traza la "+L.ch,"Trace the "+L.ch));
     drawTrace();
   }
   function drawTrace(){
@@ -589,8 +645,12 @@
     TR.score=(TR.score||0)+1; tEls.score.textContent=TR.score;
     try{ if(typeof window.addStar==="function") window.addStar(); }catch(e){}
     var L=TRACE_LETTERS[TR.level]||TRACE_LETTERS[0];
-    tEls.wp.textContent="Trazaste la letra "+L.ch+" "+String.fromCodePoint(0x270F,0xFE0F);
-    tEls.wnext.textContent = TR.level>=4 ? INV+"Terminado!" : "Siguiente";
+    tEls.wt.textContent=T(INV+"Muy bien!","Well done!");
+    tEls.wp.textContent=T("Trazaste la letra "+L.ch+" "+String.fromCodePoint(0x270F,0xFE0F),
+                           "You traced the letter "+L.ch+" "+String.fromCodePoint(0x270F,0xFE0F));
+    tEls.wnext.textContent = TR.level>=4 ? T(INV+"Terminado!","All done!") : T("Siguiente","Next");
+    tEls.wmap.textContent = T("Mapa","Map");
+    say(T(INV+"Muy bien!","Well done!"));
     setTimeout(function(){ burstIn(tplay); tEls.win.classList.add("show"); },300);
   }
 
@@ -599,9 +659,9 @@
   var CLASS_LET_LEVELS = [2,3,4,4,5];
   var CLASS_HAB_LEVELS = [3,4,4,5,6];
   var HAB_BINS = [
-    { key:"agua", label:"Agua", tok:cp(0x1F30A) },
-    { key:"tierra", label:"Tierra", tok:cp(0x1F333) },
-    { key:"cielo", label:"Cielo", tok:cp(0x2601,0xFE0F) }
+    { key:"agua", label:"Agua", labelEn:"Water", tok:cp(0x1F30A) },
+    { key:"tierra", label:"Tierra", labelEn:"Land", tok:cp(0x1F333) },
+    { key:"cielo", label:"Cielo", labelEn:"Sky", tok:cp(0x2601,0xFE0F) }
   ];
   // animal -> índice de HAB_BINS (0 agua, 1 tierra, 2 cielo)
   var ANIMAL_HAB = [
@@ -632,18 +692,18 @@
     if(cplay) return;
     cplay=el("div","pa34-cplay");
     cplay.innerHTML=
-      '<div class="pa34-ptop"><button class="pa34-x" id="pa34cX" aria-label="Salir">&times;</button>'+
+      '<div class="pa34-ptop"><button class="pa34-x" id="pa34cX" aria-label="'+T("Salir","Exit")+'">&times;</button>'+
         '<div class="pa34-prompt" id="pa34cprompt"></div>'+
         '<div class="pa34-pstar">'+String.fromCodePoint(0x2B50)+' <span id="pa34cscore">0</span></div></div>'+
       '<div class="pa34-citems" id="pa34citems"></div>'+
       '<div class="pa34-cbins" id="pa34cbins"></div>'+
       '<div class="pa34-win" id="pa34cwin"><div class="pa34-wc">'+
-        '<div class="rf">'+rufoSVG(true)+'</div><h2>'+INV+'Muy bien!</h2><p id="pa34cwp"></p>'+
-        '<div class="row"><button class="pa34-cta ghost" id="pa34cwmap">Mapa</button><button class="pa34-cta" id="pa34cwnext">Siguiente</button></div>'+
+        '<div class="rf">'+rufoSVG(true)+'</div><h2 id="pa34cwt"></h2><p id="pa34cwp"></p>'+
+        '<div class="row"><button class="pa34-cta ghost" id="pa34cwmap"></button><button class="pa34-cta" id="pa34cwnext"></button></div>'+
       '</div></div>';
     document.body.appendChild(cplay);
     cEls={ items:$("pa34citems"), bins:$("pa34cbins"), prompt:$("pa34cprompt"), score:$("pa34cscore"),
-      win:$("pa34cwin"), wp:$("pa34cwp"), wnext:$("pa34cwnext"), wmap:$("pa34cwmap") };
+      win:$("pa34cwin"), wt:$("pa34cwt"), wp:$("pa34cwp"), wnext:$("pa34cwnext"), wmap:$("pa34cwmap"), x:$("pa34cX") };
     $("pa34cX").addEventListener("click",function(){ cplay.classList.remove("show"); });
     cEls.wnext.onclick=function(){
       cEls.win.classList.remove("show");
@@ -654,10 +714,14 @@
   }
   function launchClassify(g,level){
     ensureCPlay(); closeOv();
+    detectLang();
+    if(cEls.x) cEls.x.setAttribute("aria-label",T("Salir","Exit"));
     C.gid=g.id; C.level=level; C.g=g; C.sel=null; C.placed=0;
     var data=buildClassify(g,level); C.total=data.items.length;
     cplay.classList.add("show"); cEls.win.classList.remove("show");
-    cEls.prompt.innerHTML=g.desc || "Toca y coloca";
+    var promptTxt = gDesc(g) || T("Toca y coloca","Tap and place");
+    cEls.prompt.innerHTML=promptTxt;
+    say(promptTxt);
     // bins
     cEls.bins.innerHTML="";
     data.bins.forEach(function(b,idx){
@@ -665,7 +729,7 @@
       bin.setAttribute("data-bin",idx);
       var head=el("div","bh");
       if(b.kind==="shadow"){ head.appendChild(el("span","pa34-shadow",b.letter)); }
-      else { head.appendChild(el("span","pa34-emoji",b.tok.v)); head.appendChild(el("span","bl",b.label)); }
+      else { head.appendChild(el("span","pa34-emoji",b.tok.v)); head.appendChild(el("span","bl", lang==="en"?(b.labelEn||b.label):b.label)); }
       var slot=el("div","bslot");
       bin.appendChild(head); bin.appendChild(slot);
       bin.addEventListener("click",function(){ onBin(bin,slot); });
@@ -705,9 +769,61 @@
     setUnlocked(C.gid, Math.min(C.level+1,4));
     C.score=(C.score||0)+1; cEls.score.textContent=C.score;
     try{ if(typeof window.addStar==="function") window.addStar(); }catch(e){}
-    cEls.wp.textContent="Colocaste "+C.total+" en su lugar "+String.fromCodePoint(0x1F31F);
-    cEls.wnext.textContent = C.level>=4 ? INV+"Terminado!" : "Siguiente";
+    cEls.wt.textContent=T(INV+"Muy bien!","Well done!");
+    cEls.wp.textContent=T("Colocaste "+C.total+" en su lugar "+String.fromCodePoint(0x1F31F),
+                           "You placed "+C.total+" in its spot "+String.fromCodePoint(0x1F31F));
+    cEls.wnext.textContent = C.level>=4 ? T(INV+"Terminado!","All done!") : T("Siguiente","Next");
+    cEls.wmap.textContent = T("Mapa","Map");
+    say(T(INV+"Muy bien!","Well done!"));
     setTimeout(function(){ burstIn(cplay); cEls.win.classList.add("show"); },300);
+  }
+
+  // ---------- refrescar al cambiar de idioma ----------
+  /* El boton de idioma puede pulsarse con cualquiera de las pantallas de
+     esta capa abierta. La rejilla y el mapa de niveles se repintan enteros
+     (son baratos); las cinco pantallas de juego en curso solo refrescan sus
+     textos -enunciado, pista, boton- porque su estado (aciertos ya hechos,
+     bellotas ya colocadas) no debe perderse por cambiar de idioma a medio
+     jugar. */
+  function refreshLangUI(){
+    detectLang();
+    if(ov && ov.classList.contains("show")){
+      if(curGame){ openLevels(curGame); }
+      else if(curSection){ openGames(curSection); }
+    }
+    if(play && play.classList.contains("show") && G.g){
+      pEls.prompt.innerHTML = T("Arrastra <b>"+G.need+"</b> bellotas "+String.fromCodePoint(0x1F330)+" a la canasta",
+                                 "Drag <b>"+G.need+"</b> acorns "+String.fromCodePoint(0x1F330)+" to the basket");
+      pEls.hint.textContent = T("Toca una bellota y llevala a la canasta","Tap an acorn and carry it to the basket");
+      pEls.cta.textContent = pEls.cta.disabled ? T("Sigue arrastrando...","Keep dragging...") : T(INV+"Listo!","Done!");
+      if(pEls.x) pEls.x.setAttribute("aria-label",T("Salir","Exit"));
+    }
+    if(mplay && mplay.classList.contains("show") && M.g){
+      mEls.prompt.innerHTML = gDesc(M.g) || T("Une las parejas","Match the pairs");
+      if(mEls.x) mEls.x.setAttribute("aria-label",T("Salir","Exit"));
+    }
+    if(splay && splay.classList.contains("show") && ST.g){
+      sEls.prompt.innerHTML = gDesc(ST.g) || T("Ordena","Sort");
+      if(sEls.x) sEls.x.setAttribute("aria-label",T("Salir","Exit"));
+    }
+    if(tplay && tplay.classList.contains("show") && TR.g){
+      var L=TRACE_LETTERS[TR.level]||TRACE_LETTERS[0];
+      tEls.prompt.innerHTML = T("Traza la <b>"+L.ch+"</b>","Trace the <b>"+L.ch+"</b>");
+      if(tEls.x) tEls.x.setAttribute("aria-label",T("Salir","Exit"));
+    }
+    if(cplay && cplay.classList.contains("show") && C.g){
+      cEls.prompt.innerHTML = gDesc(C.g) || T("Toca y coloca","Tap and place");
+      if(cEls.x) cEls.x.setAttribute("aria-label",T("Salir","Exit"));
+    }
+  }
+  function wireLangBtn(){
+    try{
+      var lb=document.getElementById("langBtn");
+      if(lb && !lb.__pa34){
+        lb.__pa34=true;
+        lb.addEventListener("click",function(){ setTimeout(refreshLangUI,60); });
+      }
+    }catch(e){}
   }
 
   // ---------- hook subject cards ----------
@@ -729,11 +845,14 @@
   }
 
   function init(){
+    detectLang();
+    wireLangBtn();
     // ensure win buttons wired once play exists (lazy). Poll cards until home renders.
     var tries=0;
     var iv=setInterval(function(){
       tries++;
       var ok=hookCards();
+      wireLangBtn();
       if(play && pEls.wnext) wireWinButtons();
       if(ok || tries>40) { /* keep observing a bit for late renders */ }
       if(tries>60) clearInterval(iv);
