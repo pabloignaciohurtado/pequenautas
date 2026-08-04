@@ -253,16 +253,22 @@
   }, true);
 
   /* ---------- silenciar los efectos ----------
-     chime() es global: se reemplaza por un no-op y con eso desaparecen los
-     pitidos de acierto y de error de toda la app sin editar app.js. Se
-     conserva la firma y se deja el original accesible por si alguna vez
-     hiciera falta volver atrás. */
+     chime() es global: se envuelve y con eso desaparecen los pitidos de
+     acierto y de error de toda la app sin editar app.js. Pero solo mientras
+     el bosque suena: la cama sonora sustituye al pitido, no lo censura. Con
+     el ambiente en "Apagado" el chime original vuelve a pasar, porque si no
+     el ajuste "Voz y sonidos" prometería un control que este módulo le
+     había quitado por debajo. */
   try {
     if (typeof window.chime === "function" && !window.chime.__pa57) {
       window.__pa57chime = window.chime;
-      var noop = function () {};
-      noop.__pa57 = true;
-      window.chime = noop;
+      var envoltura = function () {
+        if (level === 0 && window.__pa57chime) {
+          return window.__pa57chime.apply(this, arguments);
+        }
+      };
+      envoltura.__pa57 = true;
+      window.chime = envoltura;
     }
   } catch (e) {}
 
