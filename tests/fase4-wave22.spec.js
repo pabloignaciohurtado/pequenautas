@@ -9,7 +9,9 @@ const fileUrl = 'file://' + path.resolve(__dirname, '../index.html');
 // sino:
 //   · que el AudioContext sigue sin nacer durante el alta de perfil, que es
 //     la regla que protege a iOS y que la ola 20 ya vigilaba;
-//   · que chime() queda mudo sin que nadie haya tocado app.js;
+//   · que chime() queda mudo mientras el bosque suena —la cama sustituye al
+//     pitido— pero vuelve a pasar con el ambiente en Apagado, porque el
+//     ajuste "Voz y sonidos" tiene que seguir mandando;
 //   · que speak() NO se toca, porque es la única instrucción que entiende
 //     un niño que no lee;
 //   · que la fila de Ajustes se clona bien y el volumen no escribe en
@@ -96,12 +98,37 @@ test('Fase 4 · #57: chime queda mudo pero speak sigue vivo', async ({ page }) =
     speakSeq: typeof window.speakSeq,
   }));
   expect(r.chime).toBe('function');
-  expect(r.mudo).toBe(true);       // reemplazada por el no-op de #57
+  expect(r.mudo).toBe(true);       // envuelta por #57
   expect(r.original).toBe('function'); // el original queda accesible
   expect(r.speak).toBe('function'); // la narración NO se toca
   expect(r.speakSeq).toBe('function');
   // y llamarla no explota: sigue siendo segura para todo app.js
   expect(await page.evaluate(() => { window.chime(true); return true; })).toBe(true);
+  // con el bosque encendido (nivel 2 por defecto), el original NO suena
+  const conBosque = await page.evaluate(() => {
+    let llamado = 0;
+    window.__pa57chime = function () { llamado++; };
+    window.chime('ok');
+    return llamado;
+  });
+  expect(conBosque).toBe(0);
+});
+
+test('Fase 4 · #57: con el ambiente en Apagado, el chime original vuelve a pasar', async ({ page }) => {
+  // el nivel 0 se fija antes de que la app cargue, como lo dejaría un adulto
+  await page.addInitScript(() => {
+    try { localStorage.setItem('pequenautas.f4.ambiente.v1', '0'); } catch (e) { }
+  });
+  await entrar(page);
+  const r = await page.evaluate(() => {
+    let llamado = 0;
+    window.__pa57chime = function () { llamado++; };
+    window.chime('ok');
+    return { nivel: window.PA57.level(), llamado };
+  });
+  expect(r.nivel).toBe(0);
+  // apagado el bosque, el pitido de acierto/error vuelve a ser el de app.js
+  expect(r.llamado).toBe(1);
 });
 
 test('Fase 4 · #57: la fila de Ajustes se clona con su ramita y su nivel', async ({ page }) => {
