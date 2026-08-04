@@ -92,9 +92,9 @@
     { id: "music:echo", kind: "echo", mech: "match",
       es: "Repite la melodía", en: "Repeat the tune",
       des: "Toca las notas en el mismo orden", den: "Tap the notes in the same order" },
-    { id: "music:loud", kind: "loud", mech: "drag",
+    { id: "music:loud", kind: "loud", mech: "tap",
       es: "Fuerte o suave", en: "Loud or soft",
-      des: "Di si el sonido fue fuerte o suave", den: "Tell if the sound was loud or soft" },
+      des: "Mira la onda y di si es fuerte o suave", den: "Watch the wave and tell if it is loud or soft" },
     { id: "music:pitch", kind: "pitch", mech: "sort",
       es: "Agudo o grave", en: "High or low",
       des: "Ordena los sonidos del grave al agudo", den: "Sort the sounds from low to high" }
@@ -431,7 +431,10 @@
     function next() {
       target = rnd(2) ? "loud" : "soft";
       G.replay = function () { setPrompt(G.prompt); fire(); };
-      setPrompt(T("¿La onda es grande o pequeña?", "Is the wave big or small?"));
+      // la pregunta usa las MISMAS palabras que los botones: pedir "grande o
+      // pequeña" y ofrecer "Fuerte / Suave" era obligar al niño a hacer solo
+      // el mapeo que este juego existe para enseñar
+      setPrompt(T("¿La onda es fuerte o suave?", "Is the wave loud or soft?"));
       setTimeout(fire, 620);
       function fire() {
         wave.className = "pa55-wave " + (target === "loud" ? "big" : "small");
