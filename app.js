@@ -997,13 +997,13 @@ function eduApplyChrome(){ var e=$('tabEduTxt'); if(e && UI[S.lang]) e.textConte
     },
     reading: {
       start: [
-        { es:'Di el sonido de la letra y pídele que lo repita contigo.', en:'Say the letter's sound and ask them to repeat it with you.' },
+        { es:'Di el sonido de la letra y pídele que lo repita contigo.', en:'Say the letter’s sound and ask them to repeat it with you.' },
         { es:'Pregúntale cómo suena esta letra antes de elegir.', en:'Ask how this letter sounds before choosing.' }
       ],
       mid: [
         { es:'Pregúntale: ¿qué otra cosa empieza con esta letra?', en:'Ask: what else starts with this letter?' },
         { es:'Busquen en la sala algo cuyo nombre empiece igual.', en:'Look around the room for something that starts the same way.' },
-        { es:'Pregúntale por el nombre de alguien que empiece con esta letra.', en:'Ask for someone's name that starts with this letter.' }
+        { es:'Pregúntale por el nombre de alguien que empiece con esta letra.', en:'Ask for someone’s name that starts with this letter.' }
       ]
     },
     science: {
