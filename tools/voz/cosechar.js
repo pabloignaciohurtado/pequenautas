@@ -210,9 +210,12 @@ const JUEGOS = ['math', 'reading', 'science',
      frase es un literal entero dentro de say()/setPrompt(): nada compuesto,
      nada interpolado. Un literal así es exactamente lo que se le pasa a la
      voz, así que sigue sin haber desajuste posible; y si alguna acabara
-     sobrando, el coste es un clip de más que nadie pide, no una frase muda. */
+     sobrando, el coste es un clip de más que nadie pide, no una frase muda.
+     Vale para los dos idiomas: T(es, en) lleva los dos literales juntos. */
   const estatico = new Set();
-  if (LANG === 'en') {
+  {
+    // T(es, en): el grupo 1 es el español y el 2 el inglés
+    const grupo = LANG === 'en' ? 2 : 1;
     const lit = '"((?:[^"\\\\]|\\\\.)*)"';
     const pat = new RegExp(
       '(?:setPrompt|say|speak)\\(\\s*T\\(\\s*' + lit + '\\s*,\\s*' + lit +
@@ -223,8 +226,8 @@ const JUEGOS = ['math', 'reading', 'science',
       const src = fs.readFileSync(spec, 'utf8');
       let m;
       while ((m = pat.exec(src))) {
-        const en = m[2].replace(/\\"/g, '"').replace(/\\n/g, ' ').trim();
-        if (en && !/[$]\{/.test(en)) estatico.add(en);
+        const frase = m[grupo].replace(/\\"/g, '"').replace(/\\n/g, ' ').trim();
+        if (frase && !/[$]\{/.test(frase)) estatico.add(frase);
       }
     }
   }
