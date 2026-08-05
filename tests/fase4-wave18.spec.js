@@ -139,9 +139,12 @@ test('Fase 4 · #53: se puede jugar y ganar un nivel, y eso desbloquea el siguie
   }
   expect(await page.locator('.pa53-win.show').count()).toBe(1);
 
-  const saved = await page.evaluate(() =>
-    JSON.parse(localStorage.getItem('pequenautas.f4.formas.v1') || '{}')
-  );
+  // La llave lleva el id del perfil activo (auditoría #7): dos hermanos en
+  // la misma tablet ya no comparten progreso.
+  const saved = await page.evaluate(() => {
+    const k = 'pequenautas.f4.formas.v1.' + window.currentProfile().id;
+    return JSON.parse(localStorage.getItem(k) || '{}');
+  });
   expect(saved['shape:tap']).toBe(1);
   expect(errors).toEqual([]);
 });
