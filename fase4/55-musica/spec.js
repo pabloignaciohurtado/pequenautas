@@ -38,9 +38,30 @@
   if (window.__pa55) return;
   window.__pa55 = true;
 
-  var PKEY = "pequenautas.f4.musica.v1";
-  function loadP() { try { return JSON.parse(localStorage.getItem(PKEY) || "{}") || {}; } catch (e) { return {}; } }
-  function saveP(o) { try { localStorage.setItem(PKEY, JSON.stringify(o)); } catch (e) {} }
+  // Progreso por perfil (auditoría #7): PKEY() lleva el id del niño activo
+  // y migra() copia+borra una única vez la llave vieja de dispositivo.
+  var PKEY_BASE = "pequenautas.f4.musica.v1";
+  // pid() da null si aún no hay perfil activo (p.ej. #home .cards existe en
+  // el HTML estático desde antes de elegir perfil): PKEY() cae entonces a la
+  // llave plana de siempre, y migrar() NO se marca hecho hasta que haya un
+  // perfil de verdad al que migrar.
+  function pid() { var p = (typeof currentProfile === "function") ? currentProfile() : null; return (p && p.id) ? p.id : null; }
+  function PKEY() { var id = pid(); return id ? (PKEY_BASE + "." + id) : PKEY_BASE; }
+  var migrado = false;
+  function migrar() {
+    if (migrado) return;
+    var id = pid();
+    if (!id) return;
+    migrado = true;
+    try {
+      var k = PKEY_BASE + "." + id;
+      if (localStorage.getItem(k) != null) return;
+      var viejo = localStorage.getItem(PKEY_BASE);
+      if (viejo != null) { localStorage.setItem(k, viejo); localStorage.removeItem(PKEY_BASE); }
+    } catch (e) {}
+  }
+  function loadP() { migrar(); try { return JSON.parse(localStorage.getItem(PKEY()) || "{}") || {}; } catch (e) { return {}; } }
+  function saveP(o) { try { localStorage.setItem(PKEY(), JSON.stringify(o)); } catch (e) {} }
   function unlocked(gid) { var p = loadP(); return (typeof p[gid] === "number") ? p[gid] : 0; }
   function setUnlocked(gid, v) { var p = loadP(); if (!(p[gid] >= v)) { p[gid] = v; saveP(p); } }
 
