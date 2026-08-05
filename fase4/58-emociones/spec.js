@@ -9,7 +9,7 @@
 
    Encaja con algo que la app ya hacía a ciegas: #05 detecta frustración
    por telemetría (errores seguidos, abandonos, ritmo) pero hasta ahora
-   sólo sabía bajar la dificultad. Con esta sección la app por fin tiene
+   solo sabía bajar la dificultad. Con esta sección la app por fin tiene
    algo que OFRECER cuando detecta ese estado: "Respira con Rufo" es una
    herramienta de autorregulación real, no un minijuego, y por eso se puede
    abrir sola desde cualquier punto (window.pa58Breathe()).
@@ -23,7 +23,7 @@
    Decisión de arte: las CARAS no son imágenes, son SVG generado aquí.
    Es la misma razón que en #53 con las formas: el contenido jugable tiene
    que ser exacto y combinable —seis emociones × cinco niveles son muchas
-   caras, y todas tienen que ser la MISMA cara cambiando sólo cejas, ojos y
+   caras, y todas tienen que ser la MISMA cara cambiando solo cejas, ojos y
    boca, porque si cambia el animal el niño resuelve por el animal y no por
    la emoción. Grok pone las cinco ilustraciones de marco (tarjeta del home
    y las cuatro viñetas), que es donde la dirección de arte se juega.
@@ -63,6 +63,13 @@
   function T(es, en) { return lang === "en" ? en : es; }
   function say(txt) { try { if (typeof window.speak === "function") window.speak(txt, { lang: lang }); } catch (e) {} }
   function star() { try { if (typeof window.addStar === "function") window.addStar(); } catch (e) {} }
+  // "Pistas guiadas" vive en S.guide dentro de app.js, tan inalcanzable como
+  // S.lang: se lee del mismo interruptor visible que el adulto manipula
+  // (#tgGuide), calcado de appSoundOn() en #57.
+  function guideOn() {
+    var tg = d.getElementById("tgGuide");
+    return tg ? tg.classList.contains("on") : true;
+  }
 
   /* ---------- las seis emociones ----------
      Seis y no más: son las que la literatura de preescolar da por
@@ -82,7 +89,7 @@
   function byId(id) { for (var i = 0; i < EMO.length; i++) if (EMO[i].id === id) return EMO[i]; return EMO[0]; }
 
   /* ---------- la cara ----------
-     Un solo zorro de papel al que sólo le cambian cejas, ojos y boca. Que
+     Un solo zorro de papel al que solo le cambian cejas, ojos y boca. Que
      el animal NO cambie es todo el diseño del juego: si cambiara, el niño
      aprendería "el erizo está triste" en vez de "las cejas caídas y la boca
      hacia abajo son tristeza", que es lo transferible.
@@ -169,7 +176,7 @@
       hes: "Ayudar a regar",          hen: "Help with the watering",  wes: "Pisar las plantas",       wen: "Step on the plants" },
     { ic: "🤗", es: "Su amiga volvió de un viaje largo.",          en: "Their friend came back from a long trip.",  f: "happy",
       hes: "Salir a recibirla",       hen: "Go out to greet them",    wes: "Quedarme jugando solo",   wen: "Keep playing alone" },
-    { ic: "🪑", es: "Nadie le dejó sitio en la mesa.",             en: "Nobody made room for them at the table.",   f: "sad",
+    { ic: "🪩", es: "Nadie le dejó sitio en la mesa.",             en: "Nobody made room for them at the table.",   f: "sad",
       hes: "Hacerle un hueco",        hen: "Make room for them",      wes: "Poner mi mochila ahí",    wen: "Put my backpack there" }
   ];
   function sText(s) { return lang === "en" ? s.en : s.es; }
@@ -358,13 +365,44 @@
     for (var i = 0; i < G.total; i++) P.prog.appendChild(el("i", i < G.done ? "on" : null));
   }
   function good(node) {
-    if (node) node.classList.add("pa58-ok");
+    if (node) { node.classList.remove("pa58-reveal"); node.classList.add("pa58-ok"); }
     G.score++; P.score.textContent = G.score;
   }
-  function bad(node) {
+  /* ---------- pista progresiva ----------
+     Mismo contrato de dos pasos que onWrong() en app.js (1a falla: pista
+     suave; 2a falla: brillo + narración de la respuesta), reimplementado
+     localmente porque S/onWrong de app.js no son alcanzables desde aquí.
+     La frase de emoción calca EXACTO la que ya usa #11 para su propia
+     ronda de emociones ("Se siente <x>. Toca el que brilla."), así que
+     tiene la mejor chance de coincidir con un clip ya horneado. */
+  function resetHint(node) {
+    if (G && G.hintNode) G.hintNode.classList.remove("pa58-reveal");
+    G.attempts = 0; G.revealed = false; G.hintNode = node || null;
+  }
+  function bad(node, hintFn) {
     if (!node) return;
     node.classList.add("pa58-no");
     setTimeout(function () { node.classList.remove("pa58-no"); }, 480);
+    if (!guideOn()) return;
+    G.attempts = (G.attempts || 0) + 1;
+    if (G.attempts === 1) { if (hintFn) hintFn(1); }
+    else if (G.attempts >= 2 && G.hintNode && !G.revealed) {
+      G.revealed = true;
+      G.hintNode.classList.add("pa58-reveal");
+      if (hintFn) hintFn(3);
+    }
+  }
+  function emoHint(target) {
+    return function (lvl) {
+      if (lvl === 1) say(eName(target));
+      else if (lvl === 3) say(T("Se siente " + eName(target).toLowerCase() + ". Toca el que brilla.", "It feels " + eName(target).toLowerCase() + ". Tap the glowing one."));
+    };
+  }
+  function helpHint(rightText) {
+    return function (lvl) {
+      if (lvl === 1) say(T("Piensa en algo amable", "Think of something kind"));
+      else if (lvl === 3) say(T(rightText + ". Toca el que brilla.", rightText + ". Tap the glowing one."));
+    };
   }
   function stepDone() {
     G.done++; setProg();
@@ -438,20 +476,22 @@
       G.replay = function () { setPrompt(G.prompt); };
       setPrompt(T("¿Cómo se siente?", "How do they feel?"));
       tiles.innerHTML = "";
+      var hint = emoHint(target);
       tiles.appendChild(emoTiles(shuffle(opts), function (o, b) {
         if (G.busy) return;
         if (o.id === target.id) {
           G.busy = true; good(b); say(eName(target));
           stepDone();
           setTimeout(function () { G.busy = false; if (G.done < G.total) next(); }, 900);
-        } else { bad(b); }
+        } else { bad(b, hint); }
       }));
+      resetHint(tiles.querySelector('[data-emo="' + target.id + '"]'));
     }
   }
 
   /* 2 · ¿Qué pasó? — de la situación a la emoción.
      Es el salto de la cara al contexto: aquí ya no hay pista visual de la
-     emoción, sólo la escena. Por eso la cara aparece DESPUÉS de acertar,
+     emoción, solo la escena. Por eso la cara aparece DESPUÉS de acertar,
      como confirmación: cierra el círculo con el juego 1. */
   function roundWhat() {
     G.total = 4 + Math.floor(G.level / 2);
@@ -473,6 +513,7 @@
       setPrompt(T("¿Cómo se siente?", "How do they feel?"), false);
       say(sText(s));
       tiles.innerHTML = "";
+      var hint = emoHint(right);
       tiles.appendChild(emoTiles(opts, function (o, b) {
         if (G.busy) return;
         if (o.id === right.id) {
@@ -483,8 +524,9 @@
           say(eName(right));
           stepDone();
           setTimeout(function () { G.busy = false; if (G.done < G.total) next(); }, 1100);
-        } else { bad(b); }
+        } else { bad(b, hint); }
       }));
+      resetHint(tiles.querySelector('[data-emo="' + right.id + '"]'));
     }
   }
 
@@ -518,28 +560,32 @@
       setPrompt(T("¿Qué puedo hacer?", "What can I do?"), false);
       say(sText(s));
       tiles.innerHTML = "";
+      var hint = helpHint(right.t);
+      var targetNode = null;
       opts.forEach(function (o) {
         var b = el("button", "pa58-act", o.t);
         b.setAttribute("data-ok", o.ok ? "1" : "0");
+        if (o.ok) targetNode = b;
         b.addEventListener("click", function () {
           if (G.busy) return;
           if (o.ok) {
             G.busy = true; good(b); say(T("¡Qué amable!", "So kind!"));
             stepDone();
             setTimeout(function () { G.busy = false; if (G.done < G.total) next(); }, 1000);
-          } else { bad(b); }
+          } else { bad(b, hint); }
         });
         tiles.appendChild(b);
       });
+      resetHint(targetNode);
     }
   }
 
   /* 4 · Respira con Rufo — la herramienta, no el juego.
-     Aquí no se puede fallar: no hay acierto ni error, sólo ciclos. Es
+     Aquí no se puede fallar: no hay acierto ni error, solo ciclos. Es
      deliberado. Un niño enfadado no necesita otro reto, necesita algo que
      le baje el pulso, y la respiración lenta es lo único con evidencia a
      esta edad. El círculo crece 4 s, sostiene 1 s y decrece 4 s; el peque
-     sólo tiene que seguirlo con la mano o mirarlo.
+     solo tiene que seguirlo con la mano o mirarlo.
      El nivel no sube la dificultad —no la hay— sino el número de ciclos:
      2, 3, 4, 5, 6. Y el botón 🔁 se esconde porque no hay nada que repetir. */
   var BR_CYCLES = [2, 3, 4, 5, 6];
