@@ -150,6 +150,10 @@ html.pa52 [data-pa34-game="pattern:tap"] .mech{background-image:var(--pa53-patte
 .pa53-tile.pa53-gone{opacity:.22;pointer-events:none;}
 .pa53-no{animation:pa53shake 420ms;}
 @keyframes pa53shake{0%,100%{transform:none;}20%{transform:translateX(-7px);}45%{transform:translateX(6px);}70%{transform:translateX(-4px);}}
+/* pista progresiva: brillo en la 2a falla (mismo hintPulse global que .reveal
+   usa en el juego base, ver index.html) */
+.pa53-tile.pa53-reveal{animation:hintPulse 1.1s var(--ease-in-out) infinite;box-shadow:0 0 0 4px rgba(253,186,77,.55),0 8px 16px rgba(46,59,44,.12);}
+.pa53-bin.pa53-reveal{animation:hintPulse 1.1s var(--ease-in-out) infinite;}
 
 /* canastas de color */
 .pa53-bins{display:flex;gap:18px;justify-content:center;flex-wrap:wrap;}
