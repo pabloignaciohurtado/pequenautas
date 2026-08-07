@@ -483,7 +483,7 @@
   /* ===== 1 · Paso a paso =====
      Se muestran los pasos barajados y hay que tocarlos EN ORDEN. El paso
      acertado se queda con su número y ya no se puede volver a tocar: el
-     rastro de números es la respuesta construéndose a la vista, que es lo
+     rastro de números es la respuesta construyéndose a la vista, que es lo
      que convierte el juego en memoria de la rutina y no en adivinanza.
      Un error no borra nada — deshacer el progreso a esta edad se lee como
      castigo y hace que el niño deje de probar. */
