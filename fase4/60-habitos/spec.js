@@ -395,6 +395,14 @@
   function good(node) {
     if (node) { node.classList.remove("pa60-reveal"); node.classList.add("pa60-ok"); }
     G.score++; P.score.textContent = G.score;
+    // Economía de premios unificada con el modelo base (auditoría #8): cada
+    // acierto suena, brilla en confeti y suma estrella, igual que un acierto
+    // en matemáticas/letras/animales. chime()/confetti() son globales de
+    // app.js (funciones de nivel superior en un script clásico), así que se
+    // llaman directo sin reimplementarlas aquí.
+    try { if (typeof window.chime === "function") window.chime("ok"); } catch (e) {}
+    try { if (typeof window.confetti === "function") window.confetti(); } catch (e) {}
+    star();
   }
   /* ---------- pista progresiva ----------
      Mismo contrato de dos pasos que onWrong() en app.js (1a falla: pista
@@ -430,7 +438,9 @@
   }
   function winLevel() {
     setUnlocked(G.g.id, Math.min(4, G.level + 1));
-    star();
+    // La estrella ya se da por acierto en good() (economía unificada, #8):
+    // el nivel solo desbloquea el siguiente, no regala una estrella extra,
+    // igual que finishGame() en app.js no premia dos veces.
     P.wt.textContent = T("¡Muy bien!", "Great job!");
     P.wp.textContent = G.level < 4
       ? T("Completaste el nivel " + (G.level + 1), "You finished level " + (G.level + 1))
@@ -473,7 +483,7 @@
   /* ===== 1 · Paso a paso =====
      Se muestran los pasos barajados y hay que tocarlos EN ORDEN. El paso
      acertado se queda con su número y ya no se puede volver a tocar: el
-     rastro de números es la respuesta construyéndose a la vista, que es lo
+     rastro de números es la respuesta construéndose a la vista, que es lo
      que convierte el juego en memoria de la rutina y no en adivinanza.
      Un error no borra nada — deshacer el progreso a esta edad se lee como
      castigo y hace que el niño deje de probar. */
