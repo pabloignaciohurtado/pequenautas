@@ -197,7 +197,7 @@
       hes: "Ayudar a regar",          hen: "Help with the watering",  wes: "Pisar las plantas",       wen: "Step on the plants" },
     { ic: "🤗", es: "Su amiga volvió de un viaje largo.",          en: "Their friend came back from a long trip.",  f: "happy",
       hes: "Salir a recibirla",       hen: "Go out to greet them",    wes: "Quedarme jugando solo",   wen: "Keep playing alone" },
-    { ic: "🩩", es: "Nadie le dejó sitio en la mesa.",             en: "Nobody made room for them at the table.",   f: "sad",
+    { ic: "🪩", es: "Nadie le dejó sitio en la mesa.",             en: "Nobody made room for them at the table.",   f: "sad",
       hes: "Hacerle un hueco",        hen: "Make room for them",      wes: "Poner mi mochila ahí",    wen: "Put my backpack there" }
   ];
   function sText(s) { return lang === "en" ? s.en : s.es; }
