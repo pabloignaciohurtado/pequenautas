@@ -395,7 +395,7 @@
       ch.appendChild(b);
     });
     stage.appendChild(ch);
-    var q = S.lang === 'es' ? ('¿Qué come ' + a.es.toLowerCase() + '?') : ('What does ' + a.en.toLowerCase() + '?');
+    var q = S.lang === 'es' ? ('¿Qué come ' + a.es.toLowerCase() + '?') : ('What does ' + a.en.toLowerCase() + ' eat?');
     setSrsPrompt(q, function(){ speak(q); }); speak(q);
   }
 
