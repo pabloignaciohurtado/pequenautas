@@ -352,7 +352,7 @@
       '<div class="pa54-pstar">' + String.fromCodePoint(0x2B50) + ' <span id="pa54score">0</span></div></div>' +
       '<div class="pa54-field" id="pa54field"></div>' +
       '<div class="pa54-pbot"><div class="pa54-prog" id="pa54prog"></div>' +
-      '<button class="pa54-cta" id="pa54replay">🔊</button></div>' +
+      '<button class="pa54-cta" id="pa54replay">🔁</button></div>' +
       '<div class="pa54-win" id="pa54win"><div class="pa54-wc">' +
       '<div class="rf">' + objSVG("leaf") + '</div>' +
       '<h2 id="pa54wt"></h2><p id="pa54wp"></p>' +
