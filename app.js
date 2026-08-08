@@ -210,7 +210,7 @@ function roundScience(){
       else{ onWrong(b,(lvl)=>{ if(lvl===1) speak(S.lang==='es'?('¿Dónde vive '+a[S.lang].toLowerCase()+'?'):('Where does '+a.en.toLowerCase()+' live?')); else if(lvl===3) speak(S.lang==='es'?('Vive en '+(a.hab==='sky'?'el cielo':a.hab==='water'?'el agua':'la tierra')+'. Toca el que brilla.'):((a.hab==='land'?'It lives on land':'It lives in the '+HAB[a.hab].en.toLowerCase())+'. Tap the glowing one.')); }); } };
     ch.appendChild(b); });
   stage.appendChild(ch);
-  const q=S.lang==='es'?('¿Dónde vive '+a.es.toLowerCase()+'?'):('Where does '+a.en.toLowerCase()+'?');
+  const q=S.lang==='es'?('¿Dónde vive '+a.es.toLowerCase()+'?'):('Where does '+a.en.toLowerCase()+' live?');
   setPrompt(q,()=>speak(q)); speak(q);
 }
 function setPrompt(text,sayFn){ $('promptText').innerHTML=text.replace(/\s\s(.+?)\s\s/,' <span class="big">$1</span> '); $('replayBtn').onclick=()=>{ if(sayFn) sayFn(); }; }
