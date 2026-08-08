@@ -215,7 +215,7 @@
         if(num === n){
           b.classList.remove('reveal'); b.classList.add('correct'); chime('ok');
           var nmw = (S.lang === 'es' ? NUM_ES : NUM_EN)[n];
-          speakSeq([{ t:(S.lang === 'es' ? ('¡Sí! Hay ' + nmw + '.') : ('Yes! There are ' + nmw + '.')) }, { t:t.mGreat }]);
+          speakSeq([{ t:(S.lang === 'es' ? ('¡Sí! Hay ' + nmw + '.') : ('Yes! There ' + (n === 1 ? 'is' : 'are') + ' ' + nmw + '.')) }, { t:t.mGreat }]);
           confetti(); srsItemCorrect(item, st);
         } else {
           srsOnWrong(b, function(lvl){
@@ -261,7 +261,7 @@
         } else {
           srsOnWrong(b, function(lvl){
             if(lvl === 1){ peek(); speak(t.mLookAgain); }
-            else if(lvl === 3){ peek(); speak(t.mItWas + ' ' + nWord(n) + '. ' + t.mTapGlow); }
+            else if(lvl === 3){ peek(); speak((n === 1 ? t.mItWas1 : t.mItWas) + ' ' + nWord(n) + '. ' + t.mTapGlow); }
           }, st);
         }
       };
@@ -353,12 +353,12 @@
         if(hh === a.hab){
           b.classList.remove('reveal'); b.classList.add('correct'); chime('ok');
           var name = a[S.lang]; var place = HAB[a.hab][S.lang].toLowerCase();
-          speakSeq([{ t:(S.lang === 'es' ? (name + ' vive en ' + (a.hab === 'sky' ? 'el cielo' : a.hab === 'water' ? 'el agua' : 'la tierra') + '.') : ('Yes! ' + name + ' lives in the ' + place + '.')) }, { t:(S.lang === 'es' ? '¡Excelente!' : 'Well done!') }]);
+          speakSeq([{ t:(S.lang === 'es' ? (name + ' vive en ' + (a.hab === 'sky' ? 'el cielo' : a.hab === 'water' ? 'el agua' : 'la tierra') + '.') : ('Yes! ' + name + (a.hab === 'land' ? ' lives on land.' : ' lives in the ' + place + '.'))) }, { t:(S.lang === 'es' ? '¡Excelente!' : 'Well done!') }]);
           confetti(); srsItemCorrect(item, st);
         } else {
           srsOnWrong(b, function(lvl){
             if(lvl === 1) speak(S.lang === 'es' ? ('¿Dónde vive ' + a[S.lang].toLowerCase() + '?') : ('Where does ' + a.en.toLowerCase() + ' live?'));
-            else if(lvl === 3) speak(S.lang === 'es' ? ('Vive en ' + (a.hab === 'sky' ? 'el cielo' : a.hab === 'water' ? 'el agua' : 'la tierra') + '.') : ('It lives in the ' + HAB[a.hab].en.toLowerCase() + '.'));
+            else if(lvl === 3) speak(S.lang === 'es' ? ('Vive en ' + (a.hab === 'sky' ? 'el cielo' : a.hab === 'water' ? 'el agua' : 'la tierra') + '.') : ((a.hab === 'land' ? 'It lives on land' : 'It lives in the ' + HAB[a.hab].en.toLowerCase()) + '.'));
           }, st);
         }
       };

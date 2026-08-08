@@ -36,6 +36,7 @@
     mOpAddYes:    '¡Sí! En total son',
     mOpTakeYes:   '¡Sí! Quedan',
     mOpTakeYes1:  '¡Sí! Queda',
+    mLeft:        '',
     mTakeAway:    'Quitamos',
     mPatQ:        '¿Qué sigue?',
     mPatYes:      '¡Sí! Sigue',
@@ -51,11 +52,12 @@
     mOpCountAll:  'Count them all, one by one.',
     mOpCountLeft: 'Count the ones that are left.',
     mOpAddYes:    'Yes! In total there are',
-    mOpTakeYes:   'Yes! There are left',
-    mOpTakeYes1:  'Yes! There is left',
+    mOpTakeYes:   'Yes! There are',
+    mOpTakeYes1:  'Yes! There is',
+    mLeft:        ' left',
     mTakeAway:    'We take away',
     mPatQ:        'What comes next?',
-    mPatYes:      'Yes! Next comes',
+    mPatYes:      'Yes! That one comes next',
     mPatLookAgain:'Look at the pattern again.',
     mLenLongQ:    'Tap the longer one.',
     mLenShortQ:   'Tap the shorter one.',
@@ -146,12 +148,12 @@
       bt.onclick=function(){
         if(n===result){
           bt.classList.remove('reveal'); bt.classList.add('correct'); chime('ok');
-          speakSeq([{t:(result===1?t.mOpTakeYes1:t.mOpTakeYes)+' '+nWord(result)+'.'},{t:t.mGreat}]);
+          speakSeq([{t:(result===1?t.mOpTakeYes1:t.mOpTakeYes)+' '+nWord(result)+(t.mLeft||'')+'.'},{t:t.mGreat}]);
           confetti(); afterCorrect('math-take-'+a+'-'+b);
         } else {
           onWrong(bt,function(lvl){
             if(lvl===1) speak(t.mOpCountLeft);
-            else if(lvl===3) speak(t.mItWas+' '+nWord(result)+'. '+t.mTapGlow);
+            else if(lvl===3) speak((result===1?t.mItWas1:t.mItWas)+' '+nWord(result)+'. '+t.mTapGlow);
           });
         }
       };

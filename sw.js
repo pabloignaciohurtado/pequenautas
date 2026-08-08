@@ -33,7 +33,7 @@
    activate() purgue y runPrecache() los baje de una vez, con el portón de #50
    en pantalla, en lugar de que la narradora estrene voz a trozos según qué
    frase toque primero. */
-const CACHE='pequenautas-v6';
+const CACHE='pequenautas-v7';
 const SHELL=['./','./index.html','./app.js','./manifest.webmanifest'];
 const FONT_HOSTS=['fonts.googleapis.com','fonts.gstatic.com'];
 
