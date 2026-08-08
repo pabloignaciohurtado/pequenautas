@@ -87,6 +87,8 @@ test('Fase 4 · Oleada 4: 3 materias (regresión), filas de Ajustes inyectadas y
   await page.evaluate(() => { $('sheet').classList.remove('show'); });
   await page.click('.subject[data-game="math"]');
   await page.click('[data-pa34-app="math"]');
+  await page.waitForTimeout(200);
+  await page.click('.pa34-lvl.cur');
   await page.waitForTimeout(500);
   expect(await page.locator('#stage .choice .cnum').count()).toBeGreaterThan(0);
   const count = await page.$$eval('#stage .obj', (els) => els.length);

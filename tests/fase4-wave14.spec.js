@@ -13,7 +13,12 @@ async function openReadingQuiz(page){
   await page.click('.subject[data-game="reading"]');
   await page.waitForTimeout(300);
   const app = page.locator('[data-pa34-app="reading"]');
-  if (await app.count()) { await app.click(); await page.waitForTimeout(500); }
+  if (await app.count()) {
+    await app.click();
+    await page.waitForTimeout(200);
+    await page.click('.pa34-lvl.cur');
+    await page.waitForTimeout(500);
+  }
 }
 
 test('Fase 4 · #49: carga sin romper el nucleo', async ({ page }) => {
@@ -57,7 +62,12 @@ test('Fase 4 · #49: no hay fuga de clases pa49-* fuera del quiz de letras', asy
   await page.click('.subject[data-game="math"]');
   await page.waitForTimeout(300);
   const mathApp = page.locator('[data-pa34-app="math"]');
-  if (await mathApp.count()) { await mathApp.click(); await page.waitForTimeout(500); }
+  if (await mathApp.count()) {
+    await mathApp.click();
+    await page.waitForTimeout(200);
+    await page.click('.pa34-lvl.cur');
+    await page.waitForTimeout(500);
+  }
   const leaked = await page.evaluate(() => document.querySelectorAll('#stage [class*="pa49-"]').length);
   expect(leaked).toBe(0);
 });
