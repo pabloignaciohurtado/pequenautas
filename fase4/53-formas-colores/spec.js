@@ -303,7 +303,7 @@
       '<div class="pa53-pstar">' + String.fromCodePoint(0x2B50) + ' <span id="pa53score">0</span></div></div>' +
       '<div class="pa53-field" id="pa53field"></div>' +
       '<div class="pa53-pbot"><div class="pa53-prog" id="pa53prog"></div>' +
-      '<button class="pa53-cta" id="pa53replay">🔊</button></div>' +
+      '<button class="pa53-cta" id="pa53replay">🔁</button></div>' +
       '<div class="pa53-win" id="pa53win"><div class="pa53-wc">' +
       '<div class="rf">' + shapeSVG("star", "#E8B22C") + '</div>' +
       '<h2 id="pa53wt"></h2><p id="pa53wp"></p>' +
