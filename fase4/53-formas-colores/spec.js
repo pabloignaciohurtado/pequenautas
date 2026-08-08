@@ -303,7 +303,7 @@
       '<div class="pa53-pstar">' + String.fromCodePoint(0x2B50) + ' <span id="pa53score">0</span></div></div>' +
       '<div class="pa53-field" id="pa53field"></div>' +
       '<div class="pa53-pbot"><div class="pa53-prog" id="pa53prog"></div>' +
-      '<button class="pa53-cta" id="pa53replay">🔊</button></div>' +
+      '<button class="pa53-cta" id="pa53replay">🔁</button></div>' +
       '<div class="pa53-win" id="pa53win"><div class="pa53-wc">' +
       '<div class="rf">' + shapeSVG("star", "#E8B22C") + '</div>' +
       '<h2 id="pa53wt"></h2><p id="pa53wp"></p>' +
@@ -342,6 +342,14 @@
   function good(node) {
     if (node) { node.classList.remove("pa53-reveal"); node.classList.add("pa53-ok"); }
     G.score++; P.score.textContent = G.score;
+    // Economía de premios unificada con el modelo base (auditoría #8): cada
+    // acierto suena, brilla en confeti y suma estrella, igual que un acierto
+    // en matemáticas/letras/animales. chime()/confetti() son globales de
+    // app.js (funciones de nivel superior en un script clásico), así que se
+    // llaman directo sin reimplementarlas aquí.
+    try { if (typeof window.chime === "function") window.chime("ok"); } catch (e) {}
+    try { if (typeof window.confetti === "function") window.confetti(); } catch (e) {}
+    star();
   }
   /* ---------- pista progresiva ----------
      Mismo contrato de dos pasos que onWrong() en app.js (1a falla: pista
@@ -386,7 +394,9 @@
   }
   function winLevel() {
     setUnlocked(G.g.id, Math.min(4, G.level + 1));
-    star();
+    // La estrella ya se da por acierto en good() (economía unificada, #8):
+    // el nivel solo desbloquea el siguiente, no regala una estrella extra,
+    // igual que finishGame() en app.js no premia dos veces.
     P.wt.textContent = T("¡Muy bien!", "Great job!");
     P.wp.textContent = G.level < 4
       ? T("Completaste el nivel " + (G.level + 1), "You finished level " + (G.level + 1))

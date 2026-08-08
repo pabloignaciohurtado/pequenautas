@@ -297,14 +297,22 @@
     pEls.count.textContent=G.placed+" / "+G.need;
     var lf=$("pa34lf"+(G.placed-1)); if(lf) lf.classList.add("on");
     pEls.rufo.classList.add("cheer"); setTimeout(function(){ pEls.rufo.classList.remove("cheer"); },260);
+    // Economía de premios unificada con el modelo base (auditoría #8): cada
+    // acierto suena, brilla en confeti y suma estrella. chime()/confetti()
+    // son globales de app.js (funciones de nivel superior en un script
+    // clásico), así que se llaman directo en vez del playSfx() inexistente
+    // que dejaba esta bellota sin sonido.
+    try{ if(typeof window.chime==="function") window.chime("ok"); }catch(e){}
+    try{ if(typeof window.confetti==="function") window.confetti(); }catch(e){}
+    try{ if(typeof window.addStar==="function") window.addStar(); }catch(e){}
     if(G.placed>=G.need) winLevel();
   }
   function winLevel(){
     pEls.cta.textContent=T(INV+"Listo!","Done!"); pEls.cta.disabled=false;
     G.score++; pEls.score.textContent=G.score;
-    // unlock next level & add a star in the app if possible
+    // unlock next level. La estrella ya se dio por acierto arriba (#8): el
+    // nivel solo desbloquea el siguiente, no regala una estrella extra.
     setUnlocked(G.gid, Math.min(G.level+1,4));
-    try{ if(typeof window.addStar==="function") window.addStar(); }catch(e){}
     pEls.wt.textContent=T(INV+"Muy bien!","Well done!");
     pEls.wp.textContent=T("Contaste y llevaste "+G.need+" bellotas "+String.fromCodePoint(0x1F330),
                            "You counted and carried "+G.need+" acorns "+String.fromCodePoint(0x1F330));
@@ -448,7 +456,10 @@
     if(lp===rp){
       M.selLeft.classList.remove("sel"); M.selLeft.classList.add("done");
       btn.classList.add("done"); M.selLeft=null; M.matched++;
-      try{ if(typeof window.playSfx==="function") window.playSfx("ok"); }catch(e){}
+      // Economía de premios unificada con el modelo base (auditoría #8).
+      try{ if(typeof window.chime==="function") window.chime("ok"); }catch(e){}
+      try{ if(typeof window.confetti==="function") window.confetti(); }catch(e){}
+      try{ if(typeof window.addStar==="function") window.addStar(); }catch(e){}
       if(M.matched>=M.total) matchWin();
     } else {
       var a=M.selLeft; a.classList.add("bad"); btn.classList.add("bad");
@@ -459,7 +470,8 @@
   function matchWin(){
     setUnlocked(M.gid, Math.min(M.level+1,4));
     M.score=(M.score||0)+1; mEls.score.textContent=M.score;
-    try{ if(typeof window.addStar==="function") window.addStar(); }catch(e){}
+    // La estrella ya se dio por acierto en onRight() (#8): el nivel solo
+    // desbloquea el siguiente, no regala una estrella extra.
     mEls.wt.textContent=T(INV+"Muy bien!","Well done!");
     mEls.wp.textContent=T("Uniste "+M.total+" parejas "+String.fromCodePoint(0x1F31F),
                            "You matched "+M.total+" pairs "+String.fromCodePoint(0x1F31F));
@@ -545,7 +557,10 @@
       btn.classList.add("done");
       btn.appendChild(el("div","ord", String(ST.expected+1)));
       ST.expected++;
-      try{ if(typeof window.playSfx==="function") window.playSfx("ok"); }catch(e){}
+      // Economía de premios unificada con el modelo base (auditoría #8).
+      try{ if(typeof window.chime==="function") window.chime("ok"); }catch(e){}
+      try{ if(typeof window.confetti==="function") window.confetti(); }catch(e){}
+      try{ if(typeof window.addStar==="function") window.addStar(); }catch(e){}
       if(ST.expected>=ST.total) sortWin();
     } else {
       btn.classList.add("bad"); setTimeout(function(){ btn.classList.remove("bad"); },320);
@@ -554,7 +569,8 @@
   function sortWin(){
     setUnlocked(ST.gid, Math.min(ST.level+1,4));
     ST.score=(ST.score||0)+1; sEls.score.textContent=ST.score;
-    try{ if(typeof window.addStar==="function") window.addStar(); }catch(e){}
+    // La estrella ya se dio por acierto en onSortTile() (#8): el nivel solo
+    // desbloquea el siguiente, no regala una estrella extra.
     sEls.wt.textContent=T(INV+"Muy bien!","Well done!");
     sEls.wp.textContent=T("Ordenaste "+ST.total+" del m"+ACC+"s chico al m"+ACC+"s grande "+String.fromCodePoint(0x1F31F),
                            "You sorted "+ST.total+" from smallest to biggest "+String.fromCodePoint(0x1F31F));
@@ -660,13 +676,17 @@
     if(i!==TR.reached) return;
     TR.reached++;
     drawTrace();
-    try{ if(typeof window.playSfx==="function") window.playSfx("ok"); }catch(e){}
+    // Economía de premios unificada con el modelo base (auditoría #8).
+    try{ if(typeof window.chime==="function") window.chime("ok"); }catch(e){}
+    try{ if(typeof window.confetti==="function") window.confetti(); }catch(e){}
+    try{ if(typeof window.addStar==="function") window.addStar(); }catch(e){}
     if(TR.reached>=TR.pts.length) traceWin();
   }
   function traceWin(){
     setUnlocked(TR.gid, Math.min(TR.level+1,4));
     TR.score=(TR.score||0)+1; tEls.score.textContent=TR.score;
-    try{ if(typeof window.addStar==="function") window.addStar(); }catch(e){}
+    // La estrella ya se dio por acierto en reachPoint() (#8): el nivel solo
+    // desbloquea el siguiente, no regala una estrella extra.
     var L=TRACE_LETTERS[TR.level]||TRACE_LETTERS[0];
     tEls.wt.textContent=T(INV+"Muy bien!","Well done!");
     tEls.wp.textContent=T("Trazaste la letra "+L.ch+" "+String.fromCodePoint(0x270F,0xFE0F),
@@ -780,7 +800,10 @@
       var item=C.sel; item.classList.remove("sel"); item.classList.add("placed");
       var mini=el("span","pa34-mini", item.innerHTML); slot.appendChild(mini);
       C.sel=null; C.placed++;
-      try{ if(typeof window.playSfx==="function") window.playSfx("ok"); }catch(e){}
+      // Economía de premios unificada con el modelo base (auditoría #8).
+      try{ if(typeof window.chime==="function") window.chime("ok"); }catch(e){}
+      try{ if(typeof window.confetti==="function") window.confetti(); }catch(e){}
+      try{ if(typeof window.addStar==="function") window.addStar(); }catch(e){}
       if(C.placed>=C.total) classifyWin();
     } else {
       var s=C.sel; s.classList.add("bad"); bin.classList.add("bad");
@@ -791,7 +814,8 @@
   function classifyWin(){
     setUnlocked(C.gid, Math.min(C.level+1,4));
     C.score=(C.score||0)+1; cEls.score.textContent=C.score;
-    try{ if(typeof window.addStar==="function") window.addStar(); }catch(e){}
+    // La estrella ya se dio por acierto en onBin() (#8): el nivel solo
+    // desbloquea el siguiente, no regala una estrella extra.
     cEls.wt.textContent=T(INV+"Muy bien!","Well done!");
     cEls.wp.textContent=T("Colocaste "+C.total+" en su lugar "+String.fromCodePoint(0x1F31F),
                            "You placed "+C.total+" in its spot "+String.fromCodePoint(0x1F31F));

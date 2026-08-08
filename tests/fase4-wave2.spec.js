@@ -53,11 +53,27 @@ test('Fase 4 · Oleada 2: 3 materias por defecto (regresión) y nivel-0 de Núme
   await expect(page.locator('#starCount')).toHaveText('1');
 });
 
-test('Fase 4 · #11: materias nuevas opt-in (enable agrega 3 → 6)', async ({ page }) => {
+test('Fase 4 · #11: retirado (auditoría #8) — enable() ya no duplica materias de las capas', async ({ page }) => {
+  // Formas/Emociones/Rutinas de #11 duplicaban, con reglas distintas, el
+  // mismo contenido que #53/#58/#60 ya cubren con su propia capa de 5
+  // niveles. La decisión de producto fue quedarse con la versión de capas y
+  // neutralizar la de #11 (ver cabecera de fase4/11-materias-nuevas/spec.js).
+  // enable() sigue existiendo para no romper la API pública de tooling, pero
+  // ya no debe insertar tarjetas: ni las 3 originales de #11 ni duplicar las
+  // de las capas, sin importar cuántas veces se llame.
   await page.goto(fileUrl);
   await page.waitForTimeout(1200);
-  const n = await page.evaluate(() => { window.__moreSubjects.enable(); return document.querySelectorAll('.subject:not(.pa53-card):not(.pa54-card):not(.pa55-card):not(.pa58-card):not(.pa60-card)').length; });
-  expect(n).toBe(6);
+  const before = await page.evaluate(() => document.querySelectorAll('#home .subject').length);
+  const after = await page.evaluate(() => { window.__moreSubjects.enable(); return document.querySelectorAll('#home .subject').length; });
+  expect(after).toBe(before);
+  const dup = await page.evaluate(() => ({
+    emo: document.getElementById('subj_emotions'),
+    shapes: document.getElementById('subj_shapes'),
+    rout: document.getElementById('subj_routines'),
+  }));
+  expect(dup.emo).toBeNull();
+  expect(dup.shapes).toBeNull();
+  expect(dup.rout).toBeNull();
 });
 
 test('Fase 4 · #15 CMS: CONTENT_API vigente y no-custom por defecto', async ({ page }) => {
