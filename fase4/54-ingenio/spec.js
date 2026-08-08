@@ -31,9 +31,30 @@
   if (window.__pa54) return;
   window.__pa54 = true;
 
-  var PKEY = "pequenautas.f4.ingenio.v1";
-  function loadP() { try { return JSON.parse(localStorage.getItem(PKEY) || "{}") || {}; } catch (e) { return {}; } }
-  function saveP(o) { try { localStorage.setItem(PKEY, JSON.stringify(o)); } catch (e) {} }
+  // Progreso por perfil (auditoría #7): PKEY() lleva el id del niño activo
+  // y migra() copia+borra una única vez la llave vieja de dispositivo.
+  var PKEY_BASE = "pequenautas.f4.ingenio.v1";
+  // pid() da null si aún no hay perfil activo (p.ej. #home .cards existe en
+  // el HTML estático desde antes de elegir perfil): PKEY() cae entonces a la
+  // llave plana de siempre, y migrar() NO se marca hecho hasta que haya un
+  // perfil de verdad al que migrar.
+  function pid() { var p = (typeof currentProfile === "function") ? currentProfile() : null; return (p && p.id) ? p.id : null; }
+  function PKEY() { var id = pid(); return id ? (PKEY_BASE + "." + id) : PKEY_BASE; }
+  var migrado = false;
+  function migrar() {
+    if (migrado) return;
+    var id = pid();
+    if (!id) return;
+    migrado = true;
+    try {
+      var k = PKEY_BASE + "." + id;
+      if (localStorage.getItem(k) != null) return;
+      var viejo = localStorage.getItem(PKEY_BASE);
+      if (viejo != null) { localStorage.setItem(k, viejo); localStorage.removeItem(PKEY_BASE); }
+    } catch (e) {}
+  }
+  function loadP() { migrar(); try { return JSON.parse(localStorage.getItem(PKEY()) || "{}") || {}; } catch (e) { return {}; } }
+  function saveP(o) { try { localStorage.setItem(PKEY(), JSON.stringify(o)); } catch (e) {} }
   function unlocked(gid) { var p = loadP(); return (typeof p[gid] === "number") ? p[gid] : 0; }
   function setUnlocked(gid, v) { var p = loadP(); if (!(p[gid] >= v)) { p[gid] = v; saveP(p); } }
 
@@ -57,6 +78,13 @@
     try { if (typeof window.speak === "function") window.speak(txt, { lang: lang }); } catch (e) {}
   }
   function star() { try { if (typeof window.addStar === "function") window.addStar(); } catch (e) {} }
+  // "Pistas guiadas" vive en S.guide dentro de app.js, tan inalcanzable como
+  // S.lang: se lee del mismo interruptor visible que el adulto manipula
+  // (#tgGuide), calcado de appSoundOn() en #57.
+  function guideOn() {
+    var tg = d.getElementById("tgGuide");
+    return tg ? tg.classList.contains("on") : true;
+  }
 
   var INK = "#3A4438";
 
@@ -66,14 +94,14 @@
      vuelven manchas ambiguas. Los animales de selva viven en las viñetas
      ilustradas de la pantalla de selección, que es donde lucen. */
   var OBJS = {
-    leaf:      { es: "hoja",     en: "leaf",      hex: "#4FA05C" },
-    acorn:     { es: "bellota",  en: "acorn",     hex: "#B4783C" },
-    mushroom:  { es: "hongo",    en: "mushroom",  hex: "#D8452F" },
-    pinecone:  { es: "piña",     en: "pinecone",  hex: "#8A6034" },
-    flower:    { es: "flor",     en: "flower",    hex: "#E0669A" },
-    butterfly: { es: "mariposa", en: "butterfly", hex: "#E8843A" },
-    snail:     { es: "caracol",  en: "snail",     hex: "#C79A4E" },
-    feather:   { es: "pluma",    en: "feather",   hex: "#4EA8DE" }
+    leaf:      { es: "hoja",     en: "leaf",      hex: "#4FA05C", art: "la" },
+    acorn:     { es: "bellota",  en: "acorn",     hex: "#B4783C", art: "la" },
+    mushroom:  { es: "hongo",    en: "mushroom",  hex: "#D8452F", art: "el" },
+    pinecone:  { es: "piña",     en: "pinecone",  hex: "#8A6034", art: "la" },
+    flower:    { es: "flor",     en: "flower",    hex: "#E0669A", art: "la" },
+    butterfly: { es: "mariposa", en: "butterfly", hex: "#E8843A", art: "la" },
+    snail:     { es: "caracol",  en: "snail",     hex: "#C79A4E", art: "el" },
+    feather:   { es: "pluma",    en: "feather",   hex: "#4EA8DE", art: "la" }
   };
   var OBJ_STEPS = [
     ["leaf", "acorn", "mushroom"],
@@ -359,14 +387,41 @@
     for (var i = 0; i < G.total; i++) P.prog.appendChild(el("i", i < G.done ? "on" : null));
   }
   function good(node) {
-    if (node) node.classList.add("pa54-ok");
+    if (node) { node.classList.remove("pa54-reveal"); node.classList.add("pa54-ok"); }
     G.score++; P.score.textContent = G.score;
   }
-  function bad(node) {
+  /* ---------- pista progresiva ----------
+     Mismo contrato de dos pasos que onWrong() en app.js (1a falla: pista
+     suave; 2a falla: brillo + narración de la respuesta), reimplementado
+     localmente porque S/onWrong de app.js no son alcanzables desde aquí. */
+  function resetHint(node) {
+    if (G && G.hintNode) G.hintNode.classList.remove("pa54-reveal");
+    G.attempts = 0; G.revealed = false; G.hintNode = node || null;
+  }
+  function bad(node, hintFn) {
     if (!node) return;
     node.classList.add("pa54-no");
     setTimeout(function () { node.classList.remove("pa54-no"); }, 480);
+    if (!guideOn()) return;
+    G.attempts = (G.attempts || 0) + 1;
+    if (G.attempts === 1) { if (hintFn) hintFn(1); }
+    else if (G.attempts >= 2 && G.hintNode && !G.revealed) {
+      G.revealed = true;
+      G.hintNode.classList.add("pa54-reveal");
+      if (hintFn) hintFn(3);
+    }
   }
+  function indef(k) { return OBJS[k].art === "la" ? "una" : "un"; }
+  function objHint(k) {
+    return function (lvl) {
+      if (lvl === 1) say(T(OBJS[k].es, OBJS[k].en));
+      else if (lvl === 3) say(T("Es " + indef(k) + " " + OBJS[k].es + ". Toca el que brilla.", "It is a " + OBJS[k].en + ". Tap the glowing one."));
+    };
+  }
+  var puzzleHint = function (lvl) {
+    if (lvl === 1) say(T("Busca el hueco de esta pieza", "Find this piece's spot"));
+    else if (lvl === 3) say(T("Aquí va. Toca el que brilla.", "It goes here. Tap the glowing one."));
+  };
   function stepDone() {
     G.done++; setProg();
     if (G.done >= G.total) setTimeout(winLevel, 520);
@@ -436,6 +491,7 @@
         if (p.classList.contains("pa54-gone")) return;
         if (sel) sel.classList.remove("pa54-sel");
         sel = p; p.classList.add("pa54-sel");
+        resetHint(slots[parseInt(p.dataset.ix, 10)]);
       });
       tray.appendChild(p);
     });
@@ -449,7 +505,7 @@
           sel.classList.remove("pa54-sel");
           sel.classList.add("pa54-gone");
           good(s); sel = null; stepDone();
-        } else { bad(s); }
+        } else { bad(s, puzzleHint); }
       });
     });
     P.field.appendChild(board);
@@ -464,7 +520,8 @@
     setPrompt(T("Une cada cosa con su sombra", "Match each thing to its shadow"));
     var wrap = el("div", "pa54-two");
     var colA = el("div", "pa54-row"), colB = el("div", "pa54-row pa54-shadows");
-    var sel = null;
+    var sel = null, hint = null;
+    var shadowByK = {};
     shuffle(pool).forEach(function (k) {
       var a = el("button", "pa54-tile", objSVG(k));
       a.setAttribute("aria-label", lang === "en" ? OBJS[k].en : OBJS[k].es);
@@ -473,6 +530,8 @@
         if (a.classList.contains("pa54-ok")) return;
         if (sel) sel.classList.remove("pa54-sel");
         sel = a; a.classList.add("pa54-sel");
+        hint = objHint(k);
+        resetHint(shadowByK[k]);
         say(lang === "en" ? OBJS[k].en : OBJS[k].es);
       });
       colA.appendChild(a);
@@ -480,6 +539,8 @@
     shuffle(pool).forEach(function (k) {
       var b = el("button", "pa54-tile pa54-sh", objShadow(k));
       b.setAttribute("aria-label", T("sombra", "shadow"));
+      b.dataset.k = k;
+      shadowByK[k] = b;
       b.addEventListener("click", function () {
         if (b.classList.contains("pa54-ok")) return;
         if (!sel) { say(T("Toca primero una figura", "Tap a picture first")); return; }
@@ -487,7 +548,7 @@
           sel.classList.remove("pa54-sel");
           sel.classList.add("pa54-ok"); good(b);
           sel = null; stepDone();
-        } else { bad(b); }
+        } else { bad(b, hint); }
       });
       colB.appendChild(b);
     });
@@ -543,6 +604,11 @@
       box.appendChild(svg);
 
       var step = 0, drawn = [];
+      var nodeByN = {};
+      var pathHint = function (lvl) {
+        if (lvl === 1) say(T("Toca la huella " + (step + 1), "Tap track " + (step + 1)));
+        else if (lvl === 3) say(T("La huella " + (step + 1) + ". Toca la que brilla.", "Track " + (step + 1) + ". Tap the glowing one."));
+      };
       walk.forEach(function (pi, orderIx) {
         var p = pts[pi];
         var btn = el("button", "pa54-foot", String(orderIx + 1));
@@ -550,9 +616,11 @@
         btn.style.top = (p.y / H * 100) + "%";
         btn.setAttribute("aria-label", T("huella ", "track ") + (orderIx + 1));
         btn.dataset.n = String(orderIx);
+        nodeByN[orderIx] = btn;
         btn.addEventListener("click", function () {
           if (btn.classList.contains("pa54-ok")) return;
-          if (orderIx !== step) { bad(btn); return; }
+          if (orderIx !== step) { bad(btn, pathHint); return; }
+          btn.classList.remove("pa54-reveal");
           btn.classList.add("pa54-ok");
           drawn.push(p.x + "," + p.y);
           line.setAttribute("points", drawn.join(" "));
@@ -563,10 +631,13 @@
             done++;
             stepDone();
             if (done < trails) setTimeout(nextTrail, 800);
+          } else {
+            resetHint(nodeByN[step]);
           }
         });
         box.appendChild(btn);
       });
+      resetHint(nodeByN[step]);
       P.field.appendChild(box);
     }
   }
@@ -598,18 +669,26 @@
       if (!balanceMode) {
         setPrompt(T("¿Qué lado pesa más?", "Which side is heavier?"));
         var row = el("div", "pa54-grid");
+        var winSide = (diff > 0) ? "L" : "R";
+        var targetNode = null;
+        var sideHint = function (lvl) {
+          if (lvl === 1) say(T("Cuenta cuántas bellotas hay en cada lado", "Count how many acorns are on each side"));
+          else if (lvl === 3) say(T((winSide === "L" ? "Pesa más la izquierda" : "Pesa más la derecha") + ". Toca el que brilla.",
+            "The " + (winSide === "L" ? "left" : "right") + " side is heavier. Tap the glowing one."));
+        };
         [{ k: "L", n: a, t: T("Izquierda", "Left") }, { k: "R", n: b, t: T("Derecha", "Right") }].forEach(function (o) {
           var t = el("button", "pa54-cta ghost pa54-side", o.t);
           t.setAttribute("aria-label", o.t);
+          if (o.k === winSide) targetNode = t;
           t.addEventListener("click", function () {
             if (t.classList.contains("pa54-ok")) return;
-            var win = (diff > 0) ? "L" : "R";
-            if (o.k === win) { good(t); say(o.t); stepDone(); if (G.done < G.total) setTimeout(nextScale, 850); }
-            else { bad(t); }
+            if (o.k === winSide) { good(t); say(o.t); stepDone(); if (G.done < G.total) setTimeout(nextScale, 850); }
+            else { bad(t, sideHint); }
           });
           row.appendChild(t);
         });
         P.field.appendChild(row);
+        resetHint(targetNode);
       } else {
         setPrompt(T("¿Cuántas bellotas faltan a la derecha?", "How many acorns does the right side need?"));
         var opts = [diff];
@@ -618,9 +697,15 @@
           if (opts.indexOf(o2) < 0) opts.push(o2);
         }
         var grid = el("div", "pa54-grid");
+        var diffNode = null;
+        var diffHint = function (lvl) {
+          if (lvl === 1) say(T("Cuenta las bellotas que faltan para emparejar", "Count the acorns still missing to match"));
+          else if (lvl === 3) say(T("Faltan " + diff + ". Toca el que brilla.", "It needs " + diff + " more. Tap the glowing one."));
+        };
         shuffle(opts).forEach(function (n) {
           var t = el("button", "pa54-tile pa54-num", String(n));
           t.setAttribute("aria-label", String(n));
+          if (n === diff) diffNode = t;
           t.addEventListener("click", function () {
             if (t.classList.contains("pa54-ok")) return;
             if (n === diff) {
@@ -630,11 +715,12 @@
               if (sv) { var g2 = sv.querySelector("g"); if (g2) g2.setAttribute("transform", "rotate(0 150 46)"); }
               stepDone();
               if (G.done < G.total) setTimeout(nextScale, 950);
-            } else { bad(t); }
+            } else { bad(t, diffHint); }
           });
           grid.appendChild(t);
         });
         P.field.appendChild(grid);
+        resetHint(diffNode);
       }
     }
   }

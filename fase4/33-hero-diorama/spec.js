@@ -15,6 +15,20 @@
 
   var EXCL = String.fromCharCode(161); /* signo de exclamacion inicial */
 
+  /* ---------- Idioma (leido del DOM, como en las capas #53-#60) ----------
+     window.S no es global, asi que el idioma se lee de una etiqueta que
+     app.js siempre traduce. El saludo y la barra eran los dos unicos textos
+     del home que se quedaban en espanol al cambiar a ingles. */
+  var lang = 'es';
+  function detectLang(){
+    try{
+      var n = document.getElementById('lblRead');
+      lang = (n && /letter/i.test(n.textContent || '')) ? 'en' : 'es';
+    }catch(e){}
+    return lang;
+  }
+  function T(es, en){ return lang === 'en' ? en : es; }
+
   /* ---------- Saludo con el nombre del perfil (leido del DOM) ---------- */
   function profileName(){
     try{
@@ -26,12 +40,16 @@
   }
   function greetText(){
     var n = profileName();
+    if(lang === 'en') return 'Hi' + (n ? ', ' + n : '') + '!';
     return EXCL + 'Hola' + (n ? ', ' + n : '') + '!';
   }
   function refreshGreet(){
     try{
+      detectLang();
       var hi = document.querySelector('.pa33-hero .pa33-greet .hi');
       if(hi) hi.textContent = greetText();
+      var sub = document.querySelector('.pa33-hero .pa33-greet .sub');
+      if(sub) sub.textContent = T('Vamos a explorar el bosque', "Let's explore the forest");
     }catch(e){}
   }
 
@@ -65,7 +83,7 @@
       hi.textContent = greetText();
       var sub = document.createElement('div');
       sub.className = 'sub';
-      sub.textContent = 'Vamos a explorar el bosque';
+      sub.textContent = T('Vamos a explorar el bosque', "Let's explore the forest");
       panel.appendChild(hi);
       panel.appendChild(sub);
       greet.appendChild(panel);
@@ -132,14 +150,34 @@
   }
 
   /* ---------- Barra inferior ---------- */
-  function buildTab(name, label, active, onClick){
+  var TABS = {
+    home:   { es: 'Inicio',  en: 'Home' },
+    map:    { es: 'Mapa',    en: 'Map' },
+    bag:    { es: 'Mochila', en: 'Backpack' },
+    adults: { es: 'Adultos', en: 'Adults' }
+  };
+  function tabLabel(name){ var t = TABS[name]; return t ? (lang === 'en' ? t.en : t.es) : ''; }
+  function buildTab(name, active, onClick){
     var b = document.createElement('button');
     b.type = 'button';
     b.className = 'pa33-tab' + (active ? ' active' : '');
-    b.setAttribute('aria-label', label);
-    b.innerHTML = ic(name) + '<span>' + label + '</span>';
+    b.setAttribute('data-pa33-tab', name);
+    b.setAttribute('aria-label', tabLabel(name));
+    b.innerHTML = ic(name) + '<span>' + tabLabel(name) + '</span>';
     if(onClick) b.addEventListener('click', onClick);
     return b;
+  }
+  function refreshTabs(){
+    try{
+      var tabs = document.querySelectorAll('.pa33-tabbar .pa33-tab');
+      for(var i = 0; i < tabs.length; i++){
+        var name = tabs[i].getAttribute('data-pa33-tab');
+        var sp = tabs[i].querySelector('span');
+        if(name && sp){ sp.textContent = tabLabel(name); tabs[i].setAttribute('aria-label', tabLabel(name)); }
+      }
+      var bar = document.querySelector('.pa33-tabbar');
+      if(bar) bar.setAttribute('aria-label', T('Navegacion', 'Navigation'));
+    }catch(e){}
   }
   function injectTabbar(){
     try{
@@ -147,16 +185,16 @@
       var bar = document.createElement('div');
       bar.className = 'pa33-tabbar';
       bar.setAttribute('role','navigation');
-      bar.setAttribute('aria-label','Navegacion');
+      bar.setAttribute('aria-label', T('Navegacion', 'Navigation'));
 
-      bar.appendChild(buildTab('home','Inicio', true, function(){ /* ya estamos en el home */ }));
-      bar.appendChild(buildTab('map','Mapa', false, function(){
+      bar.appendChild(buildTab('home', true, function(){ /* ya estamos en el home */ }));
+      bar.appendChild(buildTab('map', false, function(){
         try{ if(window.PEQ32 && window.PEQ32.abrirMapa) window.PEQ32.abrirMapa(); }catch(e){}
       }));
-      bar.appendChild(buildTab('bag','Mochila', false, function(){
+      bar.appendChild(buildTab('bag', false, function(){
         try{ if(window.PEQ32 && window.PEQ32.abrirMochila) window.PEQ32.abrirMochila(); }catch(e){}
       }));
-      bar.appendChild(buildTab('adults','Adultos', false, function(){ openAdults(); }));
+      bar.appendChild(buildTab('adults', false, function(){ openAdults(); }));
 
       (document.body || document.documentElement).appendChild(bar);
       updateTabbar();
@@ -212,9 +250,22 @@
   }
 
   function init(){
+    detectLang();
     injectHero();
     injectTabbar();
     wireCelebra();
+    /* El boton de idioma repinta saludo y barra, igual que hacen las capas.
+       El pequeno retraso deja que app.js traduzca primero sus etiquetas,
+       que son de donde este modulo lee el idioma. */
+    try{
+      var lb = document.getElementById('langBtn');
+      if(lb && !lb.__pa33){
+        lb.__pa33 = true;
+        lb.addEventListener('click', function(){
+          setTimeout(function(){ detectLang(); refreshGreet(); refreshTabs(); }, 60);
+        });
+      }
+    }catch(e){}
   }
 
   if(document.readyState === 'loading'){

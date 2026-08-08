@@ -101,7 +101,11 @@ test('Fase 4 · #60: los cuatro juegos se juegan y premian', async ({ page }) =>
     for (const o of objs) {
       const n = page.locator(`.pa60-steps .pa60-item[data-obj="${o}"]`);
       if (await n.evaluate((x) => x.classList.contains('pa60-ok'))) continue;
-      await n.click();
+      // force:true: tras dos fallas el sistema de pistas (#6 de la auditoría)
+      // agrega pa60-reveal, que anima transform:scale() sin parar — un dedo
+      // real toca igual, pero el chequeo de estabilidad de Playwright nunca
+      // ve el botón "quieto".
+      await n.click({ force: true });
       await page.waitForTimeout(140);
       if (await n.evaluate((x) => x.classList.contains('pa60-ok'))) break;
     }

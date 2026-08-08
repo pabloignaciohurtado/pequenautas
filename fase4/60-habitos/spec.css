@@ -136,7 +136,7 @@ html.pa52 [data-pa34-game="hab:day"]   .mech{background-image:var(--pa60-day) !i
 .pa60-item .nm{font-size:14px;font-weight:800;color:#2E3B2C;text-align:center;line-height:1.2;}
 
 /* El número que deja el paso acertado. Es el rastro de la rutina
-   construyéndose a la vista: por eso se queda y no se desvanece. */
+   construéndose a la vista: por eso se queda y no se desvanece. */
 .pa60-item .num{
   position:absolute;top:-10px;left:-10px;
   width:30px;height:30px;border-radius:50%;
@@ -187,6 +187,12 @@ html.pa52 [data-pa34-game="hab:day"]   .mech{background-image:var(--pa60-day) !i
 .pa60-ok{border-color:#57C596 !important;box-shadow:0 0 0 4px rgba(87,197,150,.40) !important;}
 .pa60-no{animation:pa60shake 420ms;}
 @keyframes pa60shake{0%,100%{transform:none;}20%{transform:translateX(-7px);}45%{transform:translateX(6px);}70%{transform:translateX(-4px);}}
+/* pista progresiva: brillo en la 2a falla (mismo hintPulse global que .reveal
+   usa en el juego base, ver index.html) */
+.pa60-item.pa60-reveal,.pa60-bin.pa60-reveal{
+  animation:hintPulse 1.1s var(--ease-in-out) infinite;
+  box-shadow:0 0 0 4px rgba(253,186,77,.55),0 8px 16px rgba(46,59,44,.12);
+}
 
 /* ---------- 11 · Victoria ---------- */
 .pa60-win{

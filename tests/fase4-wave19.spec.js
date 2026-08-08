@@ -145,9 +145,12 @@ test('Fase 4 · #54: se arma el rompecabezas de verdad y eso desbloquea el nivel
   await page.waitForTimeout(600);
   expect(await page.locator('.pa54-win.show').count()).toBe(1);
 
-  const saved = await page.evaluate(() =>
-    JSON.parse(localStorage.getItem('pequenautas.f4.ingenio.v1') || '{}')
-  );
+  // La llave lleva el id del perfil activo (auditoría #7): dos hermanos en
+  // la misma tablet ya no comparten progreso.
+  const saved = await page.evaluate(() => {
+    const k = 'pequenautas.f4.ingenio.v1.' + window.currentProfile().id;
+    return JSON.parse(localStorage.getItem(k) || '{}');
+  });
   expect(saved['brain:puzzle']).toBe(1);
   expect(errors).toEqual([]);
 });
