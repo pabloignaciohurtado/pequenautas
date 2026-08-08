@@ -722,7 +722,7 @@
     var lb = d.getElementById("langBtn");
     if (lb && !lb.__pa60) {
       lb.__pa60 = true;
-      lb.addEventListener("click", function () { setTimeout(function () { detectLang(); paintCard(); }, 60); });
+      lb.addEventListener("click", function () { setTimeout(function () { detectLang(); paintCard(); if (ov && ov.classList.contains("show")) openGames(); }, 60); });
     }
     /* app.js puede repintar el home; si la casa desaparece, se repone. */
     var host = d.getElementById("home");
