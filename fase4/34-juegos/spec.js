@@ -34,6 +34,21 @@
   function saveP(o){ try{ localStorage.setItem(PKEY(), JSON.stringify(o)); }catch(e){} }
   function unlocked(gid){ var p=loadP(); return (typeof p[gid]==="number")?p[gid]:0; } // highest unlocked level index (0..4)
   function setUnlocked(gid,v){ var p=loadP(); if(!(p[gid]>=v)){ p[gid]=v; saveP(p); } }
+  // Auditoría #12 (dos gramaticas de progresion en la misma rejilla): los
+  // juegos "Con voz de Rufo" (impl:"app") no tienen su propio candado por
+  // gid como los de arrastrar/unir/ordenar/trazar -- reutilizan el mismo
+  // nivel 0..4 que ya escala su dificultad en el motor clasico
+  // (profile.best.<subject>, ver MATH_LEVELS en app.js). unlockedFor() deja
+  // que openLevels() pinte la MISMA rejilla de 5 niveles para los dos tipos
+  // de juego en vez de una pantalla distinta para cada uno.
+  function unlockedFor(g){
+    if(g.impl==="app"){
+      var p=(typeof currentProfile==="function")?currentProfile():null;
+      var v=(p&&p.best&&typeof p.best[g.app]==="number")?p.best[g.app]:0;
+      return Math.max(0,Math.min(v,4));
+    }
+    return unlocked(g.id);
+  }
 
   /* ---------- idioma ----------
      Esta capa era la unica puerta principal que se quedaba en espanol con la
@@ -151,12 +166,10 @@
   }
 
   function pickGame(g){
-    if(g.impl==="app"){
-      closeOv();
-      if(typeof window.startGame==="function"){ try{ window.startGame(g.app); }catch(e){} }
-      return;
-    }
-    if(g.impl==="drag"||g.impl==="match"||g.impl==="sort"||g.impl==="trace"||g.impl==="classify"){ openLevels(g); return; }
+    // Auditoría #12: la rejilla ya no se comporta de dos maneras distintas
+    // segun el juego -- TODOS abren el mismo mapa de niveles (openLevels);
+    // "Con voz de Rufo" solo difiere en qué hace launchLevel() al tocar.
+    if(g.impl==="app"||g.impl==="drag"||g.impl==="match"||g.impl==="sort"||g.impl==="trace"||g.impl==="classify"){ openLevels(g); return; }
     // soon
     toast(T(INV+"Pronto! Este juego llega muy prontito "+String.fromCodePoint(0x1F98A),
              "Coming soon! This game arrives really soon "+String.fromCodePoint(0x1F98A)));
@@ -178,17 +191,26 @@
     backBtn.onclick=function(){ openGames(curSection); };
     hdT.innerHTML = gName(g) + "<small>"+T("Elige un nivel","Choose a level")+"</small>";
     body.innerHTML="";
-    var u=unlocked(g.id);
+    var u=unlockedFor(g);
     var wrap=el("div","pa34-levels");
     for(var i=0;i<5;i++){(function(i){
       if(i>0){ wrap.appendChild(el("div","pa34-link")); }
       var row=el("div","pa34-lvlwrap");
       var state = i<u? "done" : (i===u? "cur":"lock");
       var b=el("button","pa34-lvl "+state, String(i+1));
-      if(state!=="lock" || i===u){
-        b.addEventListener("click",function(){ launchLevel(g,i); });
-      } else {
+      // "Con voz de Rufo" (impl:"app") no permite elegir un nivel especifico
+      // para repasar: el motor clasico siempre juega en profile.best.<subject>
+      // (el mismo indice 0..4 que ya mostraban los badges "Nivel N"), asi que
+      // un nodo "done" ahi no puede honrar un replay a esa dificultad exacta.
+      // Se deja visible (no es un candado: ya se jugo) pero no clicable, en
+      // vez de fingir una opcion que el motor no puede cumplir.
+      var appNonReplayableDone = (g.impl==="app" && state==="done");
+      if(state==="lock"){
         b.innerHTML=String.fromCodePoint(0x1F512); b.disabled=true;
+      } else if(appNonReplayableDone){
+        b.disabled=true;
+      } else {
+        b.addEventListener("click",function(){ launchLevel(g,i); });
       }
       if(state==="done"){ b.appendChild(el("span","st",String.fromCodePoint(0x2B50))); }
       var caps=T(["Muy f"+ACC+"cil","F"+ACC+"cil","Normal","Un reto","Experto"],
@@ -357,6 +379,14 @@
 
   // ---------- level launch dispatch ----------
   function launchLevel(g,level){
+    if(g.impl==="app"){
+      // El nivel tocado siempre es "cur" (ver appNonReplayableDone arriba),
+      // asi que "level" coincide con profile.best.<subject> -- el motor
+      // clasico de app.js decide su propia dificultad internamente.
+      closeOv();
+      if(typeof window.startGame==="function"){ try{ window.startGame(g.app); }catch(e){} }
+      return;
+    }
     if(g.impl==="match"){ launchMatch(g,level); }
     else if(g.impl==="sort"){ launchSort(g,level); }
     else if(g.impl==="trace"){ launchTrace(g,level); }

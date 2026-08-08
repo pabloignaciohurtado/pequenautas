@@ -155,6 +155,8 @@ test('Fase 4 · #62: con la narradora puesta, la ronda de números se sigue prem
   await page.click('.subject[data-game="math"]');
   await page.waitForTimeout(300);
   await page.click('[data-pa34-app="math"]');
+  await page.waitForTimeout(200);
+  await page.click('.pa34-lvl.cur');
   await page.waitForTimeout(600);
   const cuantos = await page.$$eval('#stage .obj', (els) => els.length);
   const botones = await page.$$('#stage .choice');

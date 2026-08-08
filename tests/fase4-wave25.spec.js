@@ -32,6 +32,8 @@ async function entrarYJugar(page) {
   await page.click('.subject[data-game="math"]');
   await page.waitForTimeout(300);
   await page.click('[data-pa34-app="math"]');
+  await page.waitForTimeout(200);
+  await page.click('.pa34-lvl.cur');
   await page.waitForTimeout(600);
 }
 

@@ -27,6 +27,8 @@ async function entrarAJuego(page, key) {
   await tarjeta.waitFor({ state: 'attached' });
   await tarjeta.click();
   await page.click('[data-pa34-app="' + key + '"]');
+  await page.waitForTimeout(200);
+  await page.click('.pa34-lvl.cur');
 }
 
 test('el doc de estrategia bilingue existe y la app carga sin errores', async ({ page }) => {

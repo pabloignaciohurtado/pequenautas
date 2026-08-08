@@ -49,6 +49,8 @@ test('Fase 4 · Oleada 6: seguridad de red — cero peticiones nuevas fuera de f
   await mk(page, 'NetSafe');
   await page.click('.subject[data-game="math"]');
   await page.click('[data-pa34-app="math"]');
+  await page.waitForTimeout(200);
+  await page.click('.pa34-lvl.cur');
   await page.waitForTimeout(500);
   const count = await page.$$eval('#stage .obj', (els) => els.length);
   const btns = await page.$$('#stage .choice');
@@ -67,6 +69,8 @@ test('Fase 4 · Oleada 6: 3 materias (regresión), nivel 0 Números .cnum y estr
   await mk(page, 'W6reg');
   await page.click('.subject[data-game="math"]');
   await page.click('[data-pa34-app="math"]');
+  await page.waitForTimeout(200);
+  await page.click('.pa34-lvl.cur');
   await page.waitForTimeout(500);
   expect(await page.locator('#stage .choice .cnum').count()).toBeGreaterThan(0);
   const count = await page.$$eval('#stage .obj', (els) => els.length);
