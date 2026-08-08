@@ -139,7 +139,6 @@
     setTimeout(function(){ btn.classList.remove('wrong'); }, 450);
     if(!S.guide) return;
     if(st.attempts === 1){ if(hintFn) hintFn(1); }
-    else if(st.attempts === 2){ if(hintFn) hintFn(2); }
     if(st.attempts >= 2 && st.correctBtn && !st.revealed){
       st.revealed = true; st.correctBtn.classList.add('reveal'); if(hintFn) hintFn(3);
     }
@@ -396,7 +395,7 @@
       ch.appendChild(b);
     });
     stage.appendChild(ch);
-    var q = S.lang === 'es' ? ('¿Qué come ' + a.es.toLowerCase() + '?') : ('What does ' + a.en.toLowerCase() + ' eat?');
+    var q = S.lang === 'es' ? ('¿Qué come ' + a.es.toLowerCase() + '?') : ('What does ' + a.en.toLowerCase() + '?');
     setSrsPrompt(q, function(){ speak(q); }); speak(q);
   }
 
