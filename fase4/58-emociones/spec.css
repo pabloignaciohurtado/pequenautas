@@ -8,7 +8,7 @@
    correcta, porque es la sección que queremos que el adulto vea primero.
    En 1 columna el span es inocuo (ya era ancho completo).
 
-   La séptima tarjeta trae su propio par de colores (#35 sólo define
+   La séptima tarjeta trae su propio par de colores (#35 solo define
    :nth-child(1..3)).
 
    Overlay propio (.pa58-ov) por la razón de siempre: #40 hace
@@ -16,7 +16,7 @@
    equivocado. Todo lo de dentro reutiliza .pa34-* y hereda gratis el
    papercraft de #52.
 
-   Lo específico de esta sección es la cara: un SVG que sólo cambia cejas,
+   Lo específico de esta sección es la cara: un SVG que solo cambia cejas,
    ojos y boca. Su estilo vive aquí y no en el JS para que el modo alto
    contraste y prefers-reduced-motion puedan intervenir.
 
@@ -97,10 +97,10 @@ html.pa52 [data-pa34-game="emo:breathe"] .mech{background-image:var(--pa58-breat
 .pa58-cta:active{transform:translateY(2px);box-shadow:0 2px 0 #369468;}
 
 /* ---------- 5 · La cara ----------
-   Un zorro de papel al que sólo le cambian cejas, ojos y boca. El trazo es
+   Un zorro de papel al que solo le cambian cejas, ojos y boca. El trazo es
    grueso a propósito: a 3 años lo que se lee de una cara son las líneas,
    no los matices. --tc lo pone el JS con el color de la emoción y tiñe
-   sólo el halo, nunca la cara: si la cara cambiara de color el niño
+   solo el halo, nunca la cara: si la cara cambiara de color el niño
    resolvería por color y no por expresión. */
 .pa58-stage{
   display:flex;align-items:center;justify-content:center;
@@ -170,7 +170,7 @@ html.pa52 [data-pa34-game="emo:breathe"] .mech{background-image:var(--pa58-breat
 .pa58-act:active{transform:translateY(2px);}
 
 /* ---------- 9 · Respiración ----------
-   Los anillos NO se apagan en prefers-reduced-motion, sólo se suavizan:
+   Los anillos NO se apagan en prefers-reduced-motion, solo se suavizan:
    son el metrónomo del ejercicio, y sin ellos no hay ejercicio. La duración
    se mantiene idéntica a la del JS (4 s dentro, 1 s sostener, 4 s fuera)
    porque el niño sigue el círculo, no la voz. */
@@ -206,6 +206,12 @@ html.pa52 [data-pa34-game="emo:breathe"] .mech{background-image:var(--pa58-breat
 .pa58-ok{border-color:#57C596 !important;box-shadow:0 0 0 4px rgba(87,197,150,.40) !important;}
 .pa58-no{animation:pa58shake 420ms;}
 @keyframes pa58shake{0%,100%{transform:none;}20%{transform:translateX(-7px);}45%{transform:translateX(6px);}70%{transform:translateX(-4px);}}
+/* pista progresiva: brillo en la 2a falla (mismo hintPulse global que .reveal
+   usa en el juego base, ver index.html) */
+.pa58-tile.pa58-reveal,.pa58-act.pa58-reveal{
+  animation:hintPulse 1.1s var(--ease-in-out) infinite;
+  box-shadow:0 0 0 4px rgba(253,186,77,.55),0 8px 16px rgba(46,59,44,.12);
+}
 
 /* ---------- 11 · Victoria ---------- */
 .pa58-win{

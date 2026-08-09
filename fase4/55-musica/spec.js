@@ -14,7 +14,7 @@
 
    Eso obliga a algo que en realidad mejora los cuatro juegos: cada uno
    tiene que ser resoluble MIRANDO. Antes dos lo eran (la onda crece, las
-   barras suben) y dos dependían del oído. Ahora los cuatro tienen pista
+   barras suben) y dos dependian del oído. Ahora los cuatro tienen pista
    visual honesta:
    - ¿Qué suena? pasa a ser onomatopeya: el enunciado escribe y dice el
      sonido ("PUM PUM") y el peque busca quién lo hace. Se sigue entrenando
@@ -38,9 +38,30 @@
   if (window.__pa55) return;
   window.__pa55 = true;
 
-  var PKEY = "pequenautas.f4.musica.v1";
-  function loadP() { try { return JSON.parse(localStorage.getItem(PKEY) || "{}") || {}; } catch (e) { return {}; } }
-  function saveP(o) { try { localStorage.setItem(PKEY, JSON.stringify(o)); } catch (e) {} }
+  // Progreso por perfil (auditoría #7): PKEY() lleva el id del niño activo
+  // y migra() copia+borra una única vez la llave vieja de dispositivo.
+  var PKEY_BASE = "pequenautas.f4.musica.v1";
+  // pid() da null si aún no hay perfil activo (p.ej. #home .cards existe en
+  // el HTML estático desde antes de elegir perfil): PKEY() cae entonces a la
+  // llave plana de siempre, y migrar() NO se marca hecho hasta que haya un
+  // perfil de verdad al que migrar.
+  function pid() { var p = (typeof currentProfile === "function") ? currentProfile() : null; return (p && p.id) ? p.id : null; }
+  function PKEY() { var id = pid(); return id ? (PKEY_BASE + "." + id) : PKEY_BASE; }
+  var migrado = false;
+  function migrar() {
+    if (migrado) return;
+    var id = pid();
+    if (!id) return;
+    migrado = true;
+    try {
+      var k = PKEY_BASE + "." + id;
+      if (localStorage.getItem(k) != null) return;
+      var viejo = localStorage.getItem(PKEY_BASE);
+      if (viejo != null) { localStorage.setItem(k, viejo); localStorage.removeItem(PKEY_BASE); }
+    } catch (e) {}
+  }
+  function loadP() { migrar(); try { return JSON.parse(localStorage.getItem(PKEY()) || "{}") || {}; } catch (e) { return {}; } }
+  function saveP(o) { try { localStorage.setItem(PKEY(), JSON.stringify(o)); } catch (e) {} }
   function unlocked(gid) { var p = loadP(); return (typeof p[gid] === "number") ? p[gid] : 0; }
   function setUnlocked(gid, v) { var p = loadP(); if (!(p[gid] >= v)) { p[gid] = v; saveP(p); } }
 
@@ -59,6 +80,13 @@
   function T(es, en) { return lang === "en" ? en : es; }
   function say(txt) { try { if (typeof window.speak === "function") window.speak(txt, { lang: lang }); } catch (e) {} }
   function star() { try { if (typeof window.addStar === "function") window.addStar(); } catch (e) {} }
+  // "Pistas guiadas" vive en S.guide dentro de app.js, tan inalcanzable como
+  // S.lang: se lee del mismo interruptor visible que el adulto manipula
+  // (#tgGuide), calcado de appSoundOn() en #57.
+  function guideOn() {
+    var tg = d.getElementById("tgGuide");
+    return tg ? tg.classList.contains("on") : true;
+  }
 
   /* ---------- ya no hay motor de sonido ----------
      Aquí vivían el AudioContext perezoso, el oscilador, el ruido filtrado y
@@ -92,9 +120,9 @@
     { id: "music:echo", kind: "echo", mech: "match",
       es: "Repite la melodía", en: "Repeat the tune",
       des: "Toca las notas en el mismo orden", den: "Tap the notes in the same order" },
-    { id: "music:loud", kind: "loud", mech: "drag",
+    { id: "music:loud", kind: "loud", mech: "tap",
       es: "Fuerte o suave", en: "Loud or soft",
-      des: "Di si el sonido fue fuerte o suave", den: "Tell if the sound was loud or soft" },
+      des: "Mira la onda y di si es fuerte o suave", den: "Watch the wave and tell if it is loud or soft" },
     { id: "music:pitch", kind: "pitch", mech: "sort",
       es: "Agudo o grave", en: "High or low",
       des: "Ordena los sonidos del grave al agudo", den: "Sort the sounds from low to high" }
@@ -260,13 +288,39 @@
     for (var i = 0; i < G.total; i++) P.prog.appendChild(el("i", i < G.done ? "on" : null));
   }
   function good(node) {
-    if (node) node.classList.add("pa55-ok");
+    if (node) { node.classList.remove("pa55-reveal"); node.classList.add("pa55-ok"); }
     G.score++; P.score.textContent = G.score;
   }
-  function bad(node) {
+  /* ---------- pista progresiva ----------
+     Mismo contrato de dos pasos que onWrong() en app.js (1a falla: pista
+     suave; 2a falla: brillo + narración de la respuesta), reimplementado
+     localmente porque S/onWrong de app.js no son alcanzables desde aquí.
+     Las frases usan la misma yuxtaposición "<Etiqueta>. Toca el que
+     brilla." que ya graba el catálogo de voz para números y formas, en vez
+     de "Es X" — evita decidir género/artículo para nombres de instrumento
+     que no lo tienen claro (Maracas, Xilófono). */
+  function resetHint(node) {
+    if (G && G.hintNode) G.hintNode.classList.remove("pa55-reveal");
+    G.attempts = 0; G.revealed = false; G.hintNode = node || null;
+  }
+  function bad(node, hintFn) {
     if (!node) return;
     node.classList.add("pa55-no");
     setTimeout(function () { node.classList.remove("pa55-no"); }, 480);
+    if (!guideOn()) return;
+    G.attempts = (G.attempts || 0) + 1;
+    if (G.attempts === 1) { if (hintFn) hintFn(1); }
+    else if (G.attempts >= 2 && G.hintNode && !G.revealed) {
+      G.revealed = true;
+      G.hintNode.classList.add("pa55-reveal");
+      if (hintFn) hintFn(3);
+    }
+  }
+  function labelHint(labelEs, labelEn) {
+    return function (lvl) {
+      if (lvl === 1) say(T(labelEs, labelEn));
+      else if (lvl === 3) say(T(labelEs + ". Toca el que brilla.", labelEn + ". Tap the glowing one."));
+    };
   }
   function stepDone() {
     G.done++; setProg();
@@ -320,10 +374,13 @@
       P.prompt.setAttribute("data-ono", ono);
       G.replay = function () { setPrompt(promptTxt()); pulse(P.prompt); };
       setPrompt(promptTxt());
+      var targetNode = null;
+      var hint = labelHint(target.es, target.en);
       opts.forEach(function (o) {
         var b = el("button", "pa55-tile");
         b.setAttribute("data-instr", o.id);
         b.innerHTML = '<span class="ic">' + o.emo + '</span><span class="nm">' + iName(o) + '</span>';
+        if (o.id === target.id) targetNode = b;
         b.addEventListener("click", function () {
           if (G.busy) return;
           pulse(b);
@@ -332,10 +389,11 @@
             good(b);
             stepDone();
             setTimeout(function () { G.busy = false; if (G.done < G.total) next(); }, 900);
-          } else { bad(b); }
+          } else { bad(b, hint); }
         });
         wrap.appendChild(b);
       });
+      resetHint(targetNode);
     }
   }
 
@@ -361,6 +419,15 @@
     });
     P.field.appendChild(wrap);
     var seq = [], at = 0;
+    // La pista suave YA existe en este juego (fallar reproduce la melodía
+    // entera de nuevo, que es justo el andamiaje que un juego de memoria
+    // puede dar sin regalar la respuesta). La escalada de #55 solo añade el
+    // paso 2: si sigue sin acertar la primera nota tras el repaso, esa nota
+    // brilla — nunca revela más de una nota a la vez, así el juego sigue
+    // siendo de memoria y no de búsqueda visual.
+    var echoHint = function (lvl) {
+      if (lvl === 3) say(T("Empieza aquí. Toca el que brilla.", "Start here. Tap the glowing one."));
+    };
     newSeq();
     function newSeq() {
       var n = ECHO_LEN[G.level], i;
@@ -368,6 +435,7 @@
       at = 0;
       setPrompt(T("Escucha y repite", "Listen and repeat"));
       G.replay = playSeq;
+      resetHint(nodes[seq[0]]);
       setTimeout(playSeq, 560);
     }
     function playSeq() {
@@ -383,6 +451,7 @@
       if (G.busy) return;
       pulse(node);
       if (i === seq[at]) {
+        node.classList.remove("pa55-reveal");
         at++;
         if (at >= seq.length) {
           G.busy = true; good(node); stepDone();
@@ -392,7 +461,7 @@
           }, 900);
         }
       } else {
-        bad(node); at = 0;
+        bad(node, echoHint); at = 0;
         setTimeout(playSeq, 700);
       }
     }
@@ -415,15 +484,18 @@
       { k: "soft", es: "Suave", en: "Soft", emo: "🔈" }
     ];
     var target = "loud";
+    var nodeByK = {};
+    var hint = null;
     OPTS.forEach(function (o) {
       var b = el("button", "pa55-tile");
       b.innerHTML = '<span class="ic">' + o.emo + '</span><span class="nm">' + (lang === "en" ? o.en : o.es) + '</span>';
+      nodeByK[o.k] = b;
       b.addEventListener("click", function () {
         if (G.busy) return;
         if (o.k === target) {
           G.busy = true; good(b); stepDone();
           setTimeout(function () { b.classList.remove("pa55-ok"); G.busy = false; if (G.done < G.total) next(); }, 900);
-        } else { bad(b); }
+        } else { bad(b, hint); }
       });
       row.appendChild(b);
     });
@@ -431,7 +503,13 @@
     function next() {
       target = rnd(2) ? "loud" : "soft";
       G.replay = function () { setPrompt(G.prompt); fire(); };
-      setPrompt(T("¿La onda es grande o pequeña?", "Is the wave big or small?"));
+      // la pregunta usa las MISMAS palabras que los botones: pedir "grande o
+      // pequeña" y ofrecer "Fuerte / Suave" era obligar al niño a hacer solo
+      // el mapeo que este juego existe para enseñar
+      setPrompt(T("¿La onda es fuerte o suave?", "Is the wave loud or soft?"));
+      var opt = target === "loud" ? OPTS[0] : OPTS[1];
+      hint = labelHint(opt.es, opt.en);
+      resetHint(nodeByK[target]);
       setTimeout(fire, 620);
       function fire() {
         wave.className = "pa55-wave " + (target === "loud" ? "big" : "small");
@@ -476,16 +554,19 @@
       var row = el("div", "pa55-tiles");
       P.field.appendChild(row);
       var target = "low";
+      var nodeByK = {};
+      var hint = null;
       LOWHI.forEach(function (o) {
         var b = el("button", "pa55-tile");
         b.innerHTML = '<span class="ic">' + o.emo + '</span><span class="nm">' + (lang === "en" ? o.en : o.es) + '</span>';
+        nodeByK[o.k] = b;
         b.addEventListener("click", function () {
           if (G.busy) return;
           pulse(b);
           if (o.k === target) {
             G.busy = true; good(b); stepDone();
             setTimeout(function () { b.classList.remove("pa55-ok"); G.busy = false; if (G.done < G.total) next(); }, 900);
-          } else { bad(b); }
+          } else { bad(b, hint); }
         });
         row.appendChild(b);
       });
@@ -495,6 +576,9 @@
         var cycles = target === "low" ? (1 + rnd(2)) : (9 + rnd(5));
         G.replay = function () { setPrompt(G.prompt); fire(); };
         setPrompt(T("¿Esta onda es aguda o grave?", "Is this wave high or low?"));
+        var opt = target === "low" ? LOWHI[0] : LOWHI[1];
+        hint = labelHint(opt.es, opt.en);
+        resetHint(nodeByK[target]);
         fire();
         function fire() {
           stage.setAttribute("data-cy", String(cycles));
@@ -526,23 +610,31 @@
           });
         };
         setPrompt(T("Toca del más grave al más agudo", "Tap from lowest to highest"));
+        var nodeByF = {};
+        var sortHint = function (lvl) {
+          if (lvl === 3) say(T("Toca el que brilla.", "Tap the glowing one."));
+        };
         order.forEach(function (f) {
           var b = el("button", "pa55-note");
           b.innerHTML = '<span class="bar" style="height:' + (28 + Math.round((f - 240) / 6)) + 'px"></span>';
           b.setAttribute("data-f", String(f));
+          nodeByF[f] = b;
           b.addEventListener("click", function () {
             if (G.busy || b.classList.contains("pa55-ok")) return;
             pulse(b);
             if (f === freqs[picked]) {
-              picked++; b.classList.add("pa55-ok");
+              picked++; b.classList.remove("pa55-reveal"); b.classList.add("pa55-ok");
               if (picked >= freqs.length) {
                 G.busy = true; G.score++; P.score.textContent = G.score; stepDone();
                 setTimeout(function () { G.busy = false; if (G.done < G.total) next(); }, 900);
+              } else {
+                resetHint(nodeByF[freqs[picked]]);
               }
-            } else { bad(b); }
+            } else { bad(b, sortHint); }
           });
           wrap.appendChild(b);
         });
+        resetHint(nodeByF[freqs[picked]]);
         setTimeout(G.replay, 560);
       }
     }

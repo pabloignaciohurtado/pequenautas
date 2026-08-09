@@ -158,13 +158,14 @@ test('Fase 4 · #55: el progreso vive en su propia clave y no toca el resto', as
     await page.waitForTimeout(1000);
   }
   await expect(page.locator('#pa55win.show')).toHaveCount(1);
-  const saved = await page.evaluate(() =>
-    JSON.parse(localStorage.getItem('pequenautas.f4.musica.v1') || '{}')
-  );
+  // La llave lleva el id del perfil activo (auditoría #7): dos hermanos en
+  // la misma tablet ya no comparten progreso.
+  const key = await page.evaluate(() => 'pequenautas.f4.musica.v1.' + window.currentProfile().id);
+  const saved = await page.evaluate((k) => JSON.parse(localStorage.getItem(k) || '{}'), key);
   expect(saved['music:loud']).toBe(1);
   const despues = await page.evaluate(() => Object.keys(localStorage).sort());
   const nuevas = despues.filter((k) => !antes.includes(k));
-  expect(nuevas).toEqual(['pequenautas.f4.musica.v1']);
+  expect(nuevas).toEqual([key]);
 });
 
 test('Fase 4 · #55: agudo o grave ordena barras de menor a mayor en experto', async ({ page }) => {
@@ -172,7 +173,7 @@ test('Fase 4 · #55: agudo o grave ordena barras de menor a mayor en experto', a
   await entrar(page);
   await page.evaluate(() => {
     localStorage.setItem(
-      'pequenautas.f4.musica.v1',
+      'pequenautas.f4.musica.v1.' + window.currentProfile().id,
       JSON.stringify({ 'music:pitch': 4 })
     );
   });

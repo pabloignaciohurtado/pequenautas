@@ -32,9 +32,30 @@
   if (window.__pa53) return;
   window.__pa53 = true;
 
-  var PKEY = "pequenautas.f4.formas.v1";
-  function loadP() { try { return JSON.parse(localStorage.getItem(PKEY) || "{}") || {}; } catch (e) { return {}; } }
-  function saveP(o) { try { localStorage.setItem(PKEY, JSON.stringify(o)); } catch (e) {} }
+  // Progreso por perfil (auditoría #7): PKEY() lleva el id del niño activo
+  // y migra() copia+borra una única vez la llave vieja de dispositivo.
+  var PKEY_BASE = "pequenautas.f4.formas.v1";
+  // pid() da null si aún no hay perfil activo (p.ej. #home .cards existe en
+  // el HTML estático desde antes de elegir perfil): PKEY() cae entonces a la
+  // llave plana de siempre, y migrar() NO se marca hecho hasta que haya un
+  // perfil de verdad al que migrar.
+  function pid() { var p = (typeof currentProfile === "function") ? currentProfile() : null; return (p && p.id) ? p.id : null; }
+  function PKEY() { var id = pid(); return id ? (PKEY_BASE + "." + id) : PKEY_BASE; }
+  var migrado = false;
+  function migrar() {
+    if (migrado) return;
+    var id = pid();
+    if (!id) return;
+    migrado = true;
+    try {
+      var k = PKEY_BASE + "." + id;
+      if (localStorage.getItem(k) != null) return;
+      var viejo = localStorage.getItem(PKEY_BASE);
+      if (viejo != null) { localStorage.setItem(k, viejo); localStorage.removeItem(PKEY_BASE); }
+    } catch (e) {}
+  }
+  function loadP() { migrar(); try { return JSON.parse(localStorage.getItem(PKEY()) || "{}") || {}; } catch (e) { return {}; } }
+  function saveP(o) { try { localStorage.setItem(PKEY(), JSON.stringify(o)); } catch (e) {} }
   function unlocked(gid) { var p = loadP(); return (typeof p[gid] === "number") ? p[gid] : 0; }
   function setUnlocked(gid, v) { var p = loadP(); if (!(p[gid] >= v)) { p[gid] = v; saveP(p); } }
 
@@ -59,6 +80,13 @@
     try { if (typeof window.speak === "function") window.speak(txt, { lang: lang }); } catch (e) {}
   }
   function star() { try { if (typeof window.addStar === "function") window.addStar(); } catch (e) {} }
+  // "Pistas guiadas" vive en S.guide dentro de app.js, tan inalcanzable como
+  // S.lang: se lee del mismo interruptor visible que el adulto manipula
+  // (#tgGuide), calcado de appSoundOn() en #57.
+  function guideOn() {
+    var tg = d.getElementById("tgGuide");
+    return tg ? tg.classList.contains("on") : true;
+  }
 
   /* ---------- vocabulario ---------- */
   // El artículo va junto al nombre: "estrella" es femenina, y preguntar por
@@ -312,13 +340,45 @@
     }
   }
   function good(node) {
-    if (node) node.classList.add("pa53-ok");
+    if (node) { node.classList.remove("pa53-reveal"); node.classList.add("pa53-ok"); }
     G.score++; P.score.textContent = G.score;
   }
-  function bad(node) {
+  /* ---------- pista progresiva ----------
+     Mismo contrato de dos pasos que onWrong() en app.js (1a falla: pista
+     suave; 2a falla: brillo + narración de la respuesta), reimplementado
+     aquí porque S/onWrong de app.js no son alcanzables desde este módulo
+     (ver nota de idioma más arriba). hintFn(lvl) recibe 1 en la primera
+     falla y 3 en la segunda, calcando la firma de app.js aunque aquí no
+     exista un lvl===2 intermedio. */
+  function resetHint(node) {
+    if (G && G.hintNode) G.hintNode.classList.remove("pa53-reveal");
+    G.attempts = 0; G.revealed = false; G.hintNode = node || null;
+  }
+  function bad(node, hintFn) {
     if (!node) return;
     node.classList.add("pa53-no");
     setTimeout(function () { node.classList.remove("pa53-no"); }, 480);
+    if (!guideOn()) return;
+    G.attempts = (G.attempts || 0) + 1;
+    if (G.attempts === 1) { if (hintFn) hintFn(1); }
+    else if (G.attempts >= 2 && G.hintNode && !G.revealed) {
+      G.revealed = true;
+      G.hintNode.classList.add("pa53-reveal");
+      if (hintFn) hintFn(3);
+    }
+  }
+  function indef(k) { return SHAPES[k].art === "la" ? "una" : "un"; }
+  function shapeHint(k) {
+    return function (lvl) {
+      if (lvl === 1) say(T(SHAPES[k].es, SHAPES[k].en));
+      else if (lvl === 3) say(T("Es " + indef(k) + " " + SHAPES[k].es + ". Toca el que brilla.", "It is a " + SHAPES[k].en + ". Tap the glowing one."));
+    };
+  }
+  function colorHint(c) {
+    return function (lvl) {
+      if (lvl === 1) say(T(COLORS[c].es, COLORS[c].en));
+      else if (lvl === 3) say(T("Es " + COLORS[c].es + ". Toca el que brilla.", "It is " + COLORS[c].en + ". Tap the glowing one."));
+    };
   }
   function stepDone() {
     G.done++; setProg();
@@ -364,17 +424,21 @@
       var colors = shuffle(Object.keys(COLORS));
       setPrompt(T("¿Cuál es " + SHAPES[target].art + " " + SHAPES[target].es + "?", "Which one is the " + SHAPES[target].en + "?"));
       var grid = el("div", "pa53-grid");
+      var targetNode = null;
+      var hint = shapeHint(target);
       picks.forEach(function (k, i) {
         var t = el("button", "pa53-tile", shapeSVG(k, COLORS[colors[i % colors.length]].hex));
         t.setAttribute("aria-label", lang === "en" ? SHAPES[k].en : SHAPES[k].es);
+        if (k === target) targetNode = t;
         t.addEventListener("click", function () {
           if (t.classList.contains("pa53-ok")) return;
           if (k === target) { good(t); say(lang === "en" ? SHAPES[k].en : SHAPES[k].es); stepDone(); if (G.done < G.total) setTimeout(nextPick, 700); }
-          else { bad(t); }
+          else { bad(t, hint); }
         });
         grid.appendChild(t);
       });
       P.field.appendChild(grid);
+      resetHint(targetNode);
     }
   }
 
@@ -387,7 +451,8 @@
     var colors = shuffle(Object.keys(COLORS));
     var wrap = el("div", "pa53-two");
     var colA = el("div", "pa53-col"), colB = el("div", "pa53-col");
-    var sel = null;
+    var sel = null, hint = null;
+    var shadowByK = {};
     shuffle(pool).forEach(function (k, i) {
       var a = el("button", "pa53-tile", shapeSVG(k, COLORS[colors[i % colors.length]].hex));
       a.setAttribute("aria-label", lang === "en" ? SHAPES[k].en : SHAPES[k].es);
@@ -396,6 +461,8 @@
         if (a.classList.contains("pa53-ok")) return;
         if (sel) sel.classList.remove("pa53-sel");
         sel = a; a.classList.add("pa53-sel");
+        hint = shapeHint(k);
+        resetHint(shadowByK[k]);
         say(lang === "en" ? SHAPES[k].en : SHAPES[k].es);
       });
       colA.appendChild(a);
@@ -403,6 +470,8 @@
     shuffle(pool).forEach(function (k) {
       var b = el("button", "pa53-tile pa53-sh", shadowSVG(k));
       b.setAttribute("aria-label", T("sombra", "shadow"));
+      b.dataset.k = k;
+      shadowByK[k] = b;
       b.addEventListener("click", function () {
         if (b.classList.contains("pa53-ok")) return;
         if (!sel) { say(T("Toca primero una forma", "Tap a shape first")); return; }
@@ -410,7 +479,7 @@
           sel.classList.remove("pa53-sel");
           sel.classList.add("pa53-ok"); good(b);
           sel = null; stepDone();
-        } else { bad(b); }
+        } else { bad(b, hint); }
       });
       colB.appendChild(b);
     });
@@ -431,7 +500,8 @@
     setPrompt(T("Guarda cada figura en su canasta", "Put each piece in its basket"));
     var tray = el("div", "pa53-tray");
     var bins = el("div", "pa53-bins");
-    var sel = null;
+    var sel = null, hint = null;
+    var binByC = {};
     items.forEach(function (it) {
       var t = el("button", "pa53-tile pa53-sm", shapeSVG(it.s, COLORS[it.c].hex));
       t.setAttribute("aria-label", lang === "en" ? (COLORS[it.c].en + " " + SHAPES[it.s].en) : (SHAPES[it.s].es + " " + COLORS[it.c].es));
@@ -440,6 +510,8 @@
         if (t.classList.contains("pa53-gone")) return;
         if (sel) sel.classList.remove("pa53-sel");
         sel = t; t.classList.add("pa53-sel");
+        hint = colorHint(it.c);
+        resetHint(binByC[it.c]);
         say(lang === "en" ? COLORS[it.c].en : COLORS[it.c].es);
       });
       tray.appendChild(t);
@@ -448,6 +520,7 @@
       var b = el("button", "pa53-bin", basketSVG(COLORS[c].hex));
       b.setAttribute("aria-label", lang === "en" ? COLORS[c].en : COLORS[c].es);
       b.appendChild(el("span", "bl", lang === "en" ? COLORS[c].en : COLORS[c].es));
+      binByC[c] = b;
       b.addEventListener("click", function () {
         if (!sel) { say(T("Toca primero una figura", "Tap a piece first")); return; }
         if (sel.dataset.c === c) {
@@ -456,7 +529,7 @@
           good(b);
           setTimeout(function () { b.classList.remove("pa53-ok"); }, 420);
           sel = null; stepDone();
-        } else { bad(b); }
+        } else { bad(b, hint); }
       });
       bins.appendChild(b);
     });
@@ -498,10 +571,13 @@
         choices = shuffle(choices);
       }
       var grid = el("div", "pa53-grid");
+      var targetNode = null;
+      var hint = shapeHint(kinds[answer]);
       choices.forEach(function (c) {
         var hex = c.i >= 0 ? COLORS[colors[c.i]].hex : COLORS[shuffle(Object.keys(COLORS))[0]].hex;
         var t = el("button", "pa53-tile", shapeSVG(c.k, hex));
         t.setAttribute("aria-label", lang === "en" ? SHAPES[c.k].en : SHAPES[c.k].es);
+        if (c.i === answer) targetNode = t;
         t.addEventListener("click", function () {
           if (t.classList.contains("pa53-ok")) return;
           if (c.i === answer) {
@@ -511,11 +587,12 @@
             say(lang === "en" ? SHAPES[c.k].en : SHAPES[c.k].es);
             stepDone();
             if (G.done < G.total) setTimeout(nextPat, 900);
-          } else { bad(t); }
+          } else { bad(t, hint); }
         });
         grid.appendChild(t);
       });
       P.field.appendChild(grid);
+      resetHint(targetNode);
     }
   }
 

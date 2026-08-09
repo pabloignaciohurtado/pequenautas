@@ -36,9 +36,30 @@
   if (window.__pa60) return;
   window.__pa60 = true;
 
-  var PKEY = "pequenautas.f4.habitos.v1";
-  function loadP() { try { return JSON.parse(localStorage.getItem(PKEY) || "{}") || {}; } catch (e) { return {}; } }
-  function saveP(o) { try { localStorage.setItem(PKEY, JSON.stringify(o)); } catch (e) {} }
+  // Progreso por perfil (auditoría #7): PKEY() lleva el id del niño activo
+  // y migra() copia+borra una única vez la llave vieja de dispositivo.
+  var PKEY_BASE = "pequenautas.f4.habitos.v1";
+  // pid() da null si aún no hay perfil activo (p.ej. #home .cards existe en
+  // el HTML estático desde antes de elegir perfil): PKEY() cae entonces a la
+  // llave plana de siempre, y migrar() NO se marca hecho hasta que haya un
+  // perfil de verdad al que migrar.
+  function pid() { var p = (typeof currentProfile === "function") ? currentProfile() : null; return (p && p.id) ? p.id : null; }
+  function PKEY() { var id = pid(); return id ? (PKEY_BASE + "." + id) : PKEY_BASE; }
+  var migrado = false;
+  function migrar() {
+    if (migrado) return;
+    var id = pid();
+    if (!id) return;
+    migrado = true;
+    try {
+      var k = PKEY_BASE + "." + id;
+      if (localStorage.getItem(k) != null) return;
+      var viejo = localStorage.getItem(PKEY_BASE);
+      if (viejo != null) { localStorage.setItem(k, viejo); localStorage.removeItem(PKEY_BASE); }
+    } catch (e) {}
+  }
+  function loadP() { migrar(); try { return JSON.parse(localStorage.getItem(PKEY()) || "{}") || {}; } catch (e) { return {}; } }
+  function saveP(o) { try { localStorage.setItem(PKEY(), JSON.stringify(o)); } catch (e) {} }
   function unlocked(gid) { var p = loadP(); return (typeof p[gid] === "number") ? p[gid] : 0; }
   function setUnlocked(gid, v) { var p = loadP(); if (!(p[gid] >= v)) { p[gid] = v; saveP(p); } }
 
@@ -57,6 +78,13 @@
   function T(es, en) { return lang === "en" ? en : es; }
   function say(txt) { try { if (typeof window.speak === "function") window.speak(txt, { lang: lang }); } catch (e) {} }
   function star() { try { if (typeof window.addStar === "function") window.addStar(); } catch (e) {} }
+  // "Pistas guiadas" vive en S.guide dentro de app.js, tan inalcanzable como
+  // S.lang: se lee del mismo interruptor visible que el adulto manipula
+  // (#tgGuide), calcado de appSoundOn() en #57.
+  function guideOn() {
+    var tg = d.getElementById("tgGuide");
+    return tg ? tg.classList.contains("on") : true;
+  }
 
   /* ================= LOS OBJETOS =================
      Un solo juego de piezas de papel para toda la sección. Todas en un
@@ -163,7 +191,7 @@
   ];
   function binName(b) { return lang === "en" ? b.en : b.es; }
 
-  /* 4 · Mi día. Tres momentos; en los dos primeros niveles sólo día y
+  /* 4 · Mi día. Tres momentos; en los dos primeros niveles solo día y
      noche, porque "tarde" es la que menos ancla tiene a los 3 años. */
   var DAY = [
     { id: "morn", o: "sunrise", es: "Mañana", en: "Morning", acts: [
@@ -365,13 +393,35 @@
     for (var i = 0; i < G.total; i++) P.prog.appendChild(el("i", i < G.done ? "on" : null));
   }
   function good(node) {
-    if (node) node.classList.add("pa60-ok");
+    if (node) { node.classList.remove("pa60-reveal"); node.classList.add("pa60-ok"); }
     G.score++; P.score.textContent = G.score;
   }
-  function bad(node) {
+  /* ---------- pista progresiva ----------
+     Mismo contrato de dos pasos que onWrong() en app.js (1a falla: pista
+     suave; 2a falla: brillo + narración de la respuesta), reimplementado
+     localmente porque S/onWrong de app.js no son alcanzables desde aquí. */
+  function resetHint(node) {
+    if (G && G.hintNode) G.hintNode.classList.remove("pa60-reveal");
+    G.attempts = 0; G.revealed = false; G.hintNode = node || null;
+  }
+  function bad(node, hintFn) {
     if (!node) return;
     node.classList.add("pa60-no");
     setTimeout(function () { node.classList.remove("pa60-no"); }, 480);
+    if (!guideOn()) return;
+    G.attempts = (G.attempts || 0) + 1;
+    if (G.attempts === 1) { if (hintFn) hintFn(1); }
+    else if (G.attempts >= 2 && G.hintNode && !G.revealed) {
+      G.revealed = true;
+      G.hintNode.classList.add("pa60-reveal");
+      if (hintFn) hintFn(3);
+    }
+  }
+  function labelHint(labelEs, labelEn) {
+    return function (lvl) {
+      if (lvl === 1) say(T(labelEs, labelEn));
+      else if (lvl === 3) say(T(labelEs + ". Toca el que brilla.", labelEn + ". Tap the glowing one."));
+    };
   }
   function stepDone() {
     G.done++; setProg();
@@ -445,6 +495,11 @@
       G.replay = function () { say(T("Ordena: ", "Put in order: ") + routName(r)); };
       var next = 0;
       var row = el("div", "pa60-steps");
+      var nodeByIdx = [];
+      var stepsHint = function (lvl) {
+        if (lvl === 1) say(T("Toca el paso " + (next + 1), "Tap step " + (next + 1)));
+        else if (lvl === 3) say(T(stepTxt(r.steps[next]) + ". Toca el que brilla.", stepTxt(r.steps[next]) + ". Tap the glowing one."));
+      };
       shuffle(r.steps).forEach(function (s) {
         var b = objCard("step", s.o, stepTxt(s), function (node) {
           if (stale(mine) || G.busy || node.classList.contains("pa60-ok")) return;
@@ -462,12 +517,16 @@
                 idx++;
                 if (idx < order.length && G.done < G.total) play1();
               }, 700);
+            } else {
+              resetHint(nodeByIdx[next]);
             }
-          } else { bad(node); }
+          } else { bad(node, stepsHint); }
         });
+        nodeByIdx[r.steps.indexOf(s)] = b;
         row.appendChild(b);
       });
       P.field.appendChild(row);
+      resetHint(nodeByIdx[next]);
     }
     play1();
   }
@@ -493,8 +552,10 @@
       var others = NEED.filter(function (x) { return x.o !== n.o; });
       var choices = shuffle(sample(others, opts - 1).map(function (x) { return x.o; }).concat([n.o]));
       var row = el("div", "pa60-choices");
+      var targetNode = null;
+      var hint = labelHint(needTxt(n), needTxt(n));
       choices.forEach(function (oid) {
-        row.appendChild(objCard("choice", oid, null, function (node) {
+        var b = objCard("choice", oid, null, function (node) {
           if (stale(mine) || G.busy) return;
           if (oid === n.o) {
             G.busy = true; good(node); say(needTxt(n));
@@ -503,10 +564,13 @@
               G.busy = false; stepDone(); idx++;
               if (idx < queue.length && G.done < G.total) play1();
             }, 640);
-          } else { bad(node); }
-        }));
+          } else { bad(node, hint); }
+        });
+        if (oid === n.o) targetNode = b;
+        row.appendChild(b);
       });
       P.field.appendChild(row);
+      resetHint(targetNode);
     }
     play1();
   }
@@ -548,10 +612,14 @@
       var it = objCard("hold", q.o, null, null);
       it.setAttribute("data-answer", q.bin);
       holder.appendChild(it);
+      var targetNode = null;
       bins.forEach(function (b) {
         var n = binRow.querySelector('[data-bin="' + b.id + '"]');
-        if (n) n.classList.remove("pa60-ok");
+        if (n) { n.classList.remove("pa60-ok"); if (b.id === q.bin) targetNode = n; }
       });
+      var target = bins.filter(function (b) { return b.id === q.bin; })[0];
+      G.placeHint = target ? labelHint(binName(target), binName(target)) : null;
+      resetHint(targetNode);
     }
     function pick(b, node) {
       if (stale(mine) || G.busy) return;
@@ -564,7 +632,7 @@
           G.busy = false; stepDone(); idx++;
           if (idx < queue.length && G.done < G.total) play1();
         }, 620);
-      } else { bad(node); }
+      } else { bad(node, G.placeHint); }
     }
 
     P.field.appendChild(holder);
@@ -576,7 +644,7 @@
      Mismo esqueleto que "¿Dónde va?" a propósito: la mecánica ya está
      aprendida del juego anterior y así el niño gasta la atención en el
      contenido nuevo (el momento del día) y no en entender qué se espera
-     de él. En los dos primeros niveles sólo mañana y noche, que son las
+     de él. En los dos primeros niveles solo mañana y noche, que son las
      que tienen ancla física; la tarde entra después. */
   function roundDay() {
     var mine = G;
@@ -609,10 +677,14 @@
       var it = objCard("hold", q.a.o, stepTxt(q.a), null);
       it.setAttribute("data-answer", q.slot);
       holder.appendChild(it);
+      var targetNode = null;
       slots.forEach(function (s) {
         var n = binRow.querySelector('[data-when="' + s.id + '"]');
-        if (n) n.classList.remove("pa60-ok");
+        if (n) { n.classList.remove("pa60-ok"); if (s.id === q.slot) targetNode = n; }
       });
+      var target = slots.filter(function (s) { return s.id === q.slot; })[0];
+      G.dayHint = target ? labelHint(dayName(target), dayName(target)) : null;
+      resetHint(targetNode);
     }
     function pick(s, node) {
       if (stale(mine) || G.busy) return;
@@ -625,7 +697,7 @@
           G.busy = false; stepDone(); idx++;
           if (idx < queue.length && G.done < G.total) play1();
         }, 620);
-      } else { bad(node); }
+      } else { bad(node, G.dayHint); }
     }
 
     P.field.appendChild(holder);
@@ -659,6 +731,6 @@
     },
     objects: function () { return Object.keys(SH); },
     games: function () { return GAMES.map(function (g) { return g.id; }); },
-    reset: function () { try { localStorage.removeItem(PKEY); } catch (e) {} paintCard(); }
+    reset: function () { try { localStorage.removeItem(PKEY()); } catch (e) {} paintCard(); }
   };
 })();
