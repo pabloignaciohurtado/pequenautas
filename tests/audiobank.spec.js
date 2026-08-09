@@ -42,6 +42,8 @@ test('con el banco cargado, el fallback TTS sigue premiando la ronda de numeros'
   await createProfile(page, 'Voz');
   await page.click('.subject[data-game="math"]');
   await page.click('[data-pa34-app="math"]');
+  await page.waitForTimeout(200);
+  await page.click('.pa34-lvl.cur');
   await page.waitForTimeout(500);
   const count = await page.$$eval('#stage .obj', (els) => els.length);
   const btns = await page.$$('#stage .choice');
