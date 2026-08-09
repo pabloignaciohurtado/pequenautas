@@ -1,37 +1,30 @@
 "use strict";
 /* ==================== #11 Materias nuevas: Emociones · Formas y colores · Rutinas ====================
-   Mejora 100% ADITIVA (no reescribe ninguna función existente de ship/app.js).
-   Añade 3 subject cards nuevas ("mismo motor" que math/reading/science: mismos
-   helpers S/DB/UI/$/rnd/shuffle/sample/chime/speak/speakSeq/confetti/onWrong/
-   afterCorrect/setPrompt) para:
-     - emotions  ("Emociones" / socioemocional): escena -> reconocer la emoción.
-     - shapes    ("Formas y colores"): alterna identificar forma / identificar
-                 color (mismo patrón que renderScienceRound alterna hábitat/dieta).
-     - routines  ("Rutinas"): actividad diaria -> ¿mañana, tarde o noche?
+   RETIRADO (auditoría de coherencia, decisión de producto #8, hallazgo #5):
+   estas 3 materias duplicaban, con un tratamiento inferior (sin capa propia,
+   estrella+confeti+pistas por ronda en vez del mapa de 5 niveles), contenido
+   que ya vive con mejor factura en las capas dedicadas: Formas y colores en
+   #53, Emociones en #58, Rutinas en el sub-juego "Mi día" de #60. El niño no
+   podía construir expectativas viendo la misma pregunta con dos reglas
+   distintas. Se decidió quedarse con la versión de capas y retirar ésta.
 
-   DECISIÓN CLAVE (para no romper los 19 tests actuales, en particular
-   smoke.spec.js: "...lleva al hub con 3 materias" -> expect('.subject').
-   toHaveCount(3)): las 3 tarjetas nuevas NO se insertan en el DOM al cargar.
-   Viven detrás de un toggle nuevo en Ajustes, "Más materias" (setMoreSubjects),
-   OFF por defecto y persistido en DB.settings.moreSubjects (mismo patrón que
-   DB.settings.coplay). Con el toggle apagado (estado por defecto de CUALQUIER
-   perfil existente o nuevo) el hub sigue mostrando exactamente 3 tarjetas, así
-   que ningún test existente se ve afectado. Al encenderlo, se inyectan 3
-   <button class="subject"> más en el mismo contenedor .cards (localizado por
-   selector, sin necesitar id nuevo ni tocar index.html), como children 4-6,
-   así que las reglas :nth-child(4/5/6) de spec.css los alcanzan igual que a
-   los 3 originales.
+   Por eso las secciones 7 y 8 de abajo (el toggle "Más materias" en Ajustes
+   y la inyección de las 3 tarjetas nuevas en .cards) están neutralizadas:
+   ya no hay forma de que un padre las encienda ni de que las tarjetas
+   aparezcan, ni siquiera si DB.settings.moreSubjects quedó en `true` de una
+   sesión vieja.
 
-   Envuelve por reasignación: window.nextRound, window.refreshHome,
-   window.eduFaceOf. Nunca reescribe sus cuerpos; siempre llama primero a la
-   implementación previa (o replica su misma lógica de bookkeeping antes de
-   delegar, ver comentario en el wrap de nextRound). Cablea #langBtn/#tabSet
-   con addEventListener (nunca .onclick=), para no romper la cadena de
-   listeners ya existente. Bajo file:// no abre red (nada nuevo aquí toca
-   fetch/XHR/WebSocket). Solo anima transform/opacity (ver spec.css) y respeta
-   prefers-reduced-motion vía la regla global "*" ya existente en index.html.
-   Evidencia: CASEL (aprendizaje socioemocional) · NAEYC 2022 (formas/colores
-   y rutinas como contenido preescolar núcleo) · Piaget (clasificación).
+   El resto del módulo (contenido, rondas, y sobre todo los wraps de
+   window.nextRound / window.refreshHome / window.eduFaceOf) se deja intacto
+   a propósito: fase4.js carga "11-materias-nuevas" ANTES de "12-mates-
+   avanzadas"/"13-lectura-avanzada"/"14-ciencias-avanzada" precisamente
+   porque esos módulos envuelven a su vez el eduFaceOf que #11 ya envolvió
+   (ver comentario en fase4/fase4.js). Como NEW_GAMES nunca vuelve a
+   recibir S.game==='emotions'/'shapes'/'routines' (no hay tarjeta que
+   dispare esos juegos), los tres wraps quedan como una capa transparente
+   que siempre delega a la implementación anterior — se conserva el orden
+   de envoltura sin reintroducir el contenido duplicado. Borrar el módulo
+   entero movería esa costura y arriesgaría rompar #12-#15 sin necesidad.
    ================================================================= */
 (function(){
 
@@ -328,26 +321,9 @@
   }
   function moreOn(){ return !!moreCfg().moreSubjects; }
 
-  function ensureMoreSettingRow(){
-    var set=$('setView'); if(!set) return;
-    var row=$('setMoreSubjects');
-    if(!row){
-      row=document.createElement('div'); row.className='setting'; row.id='setMoreSubjects';
-      row.innerHTML='<div><div class="name" id="setMoreN"></div><div class="desc" id="setMoreD"></div></div>'
-        +'<button class="toggle" id="tgMoreSubjects" role="switch"><span class="knob"></span></button>';
-      var anchor=$('tipText');
-      if(anchor && anchor.parentNode===set) set.insertBefore(row, anchor); else set.appendChild(row);
-    }
-    var tg=$('tgMoreSubjects');
-    if(tg && !tg._msWired){ tg._msWired=true;
-      tg.addEventListener('click', function(){
-        var c=moreCfg(); c.moreSubjects=!c.moreSubjects; if(typeof saveDB==='function') saveDB();
-        syncMoreRow(); syncMoreSubjectsUI();
-        if(typeof speak==='function'){ var t=UI[S.lang]; speak(c.moreSubjects?t.setMoreN:t.close); }
-      });
-    }
-    applyMoreLangRow(); syncMoreRow();
-  }
+  /* Neutralizado (decisión #8/hallazgo #5): ya no se inserta la fila de
+     Ajustes, así que no hay forma de encender las 3 materias duplicadas. */
+  function ensureMoreSettingRow(){ /* no-op a propósito: ver cabecera del archivo */ }
   function syncMoreRow(){ var tg=$('tgMoreSubjects'); if(tg){ tg.classList.toggle('on', moreOn()); tg.setAttribute('aria-checked', String(moreOn())); } }
   function applyMoreLangRow(){
     var t=UI[S.lang]; if(!t) return;
@@ -373,11 +349,10 @@
     b.addEventListener('click', function(){ if(typeof ac==='function') ac(); startGame(def.game); });
     return b;
   }
-  function ensureExtraSubjectCards(){
-    var host=document.querySelector('.cards'); if(!host) return;
-    NEW_SUBJECTS.forEach(function(def){ if(!$('subj_'+def.game)) host.appendChild(buildSubjectCard(def)); });
-    paintNewSubjectLabels(); syncNewSubjectBadges();
-  }
+  /* Neutralizado (decisión #8/hallazgo #5): las 3 tarjetas duplicadas no se
+     inyectan nunca, ni con DB.settings.moreSubjects=true heredado de una
+     sesión anterior. La versión que queda es la de las capas #53/#58/#60. */
+  function ensureExtraSubjectCards(){ /* no-op a propósito: ver cabecera del archivo */ }
   function removeExtraSubjectCards(){
     NEW_SUBJECTS.forEach(function(def){ var el=$('subj_'+def.game); if(el) el.remove(); });
   }

@@ -164,7 +164,6 @@ function onWrong(btn,hintFn){
   setTimeout(()=>btn.classList.remove('wrong'),450);
   if(!S.guide) return;
   if(S.attempts===1){ if(hintFn) hintFn(1); }
-  else if(S.attempts===2){ if(hintFn) hintFn(2); }
   if(S.attempts>=2 && S.correctBtn && !S.revealed){ S.revealed=true; S.correctBtn.classList.add('reveal'); if(hintFn) hintFn(3); }
 }
 
