@@ -23,6 +23,13 @@
    Aditivo: no toca app.js, ni index.html, ni STORE_KEY. */
 
 @import url("img/em-home.css");
+@import url("img/em-home-2.css");
+@import url("img/em-home-3.css");
+@import url("img/em-home-4.css");
+@import url("img/em-home-5.css");
+@import url("img/em-home-6.css");
+@import url("img/em-home-7.css");
+@import url("img/em-home-8.css");
 @import url("img/em-face.css");
 @import url("img/em-what.css");
 @import url("img/em-help.css");
@@ -34,7 +41,16 @@
   --pa35c:#57C596; --pa35cd:#369468;
   min-height:132px !important;
 }
-.subject.pa58-card::before{background-image:var(--pa58-home);background-position:center 38%;}
+/* La banda del home en HD, en ocho columnas recompuestas (mismo esquema que
+   #53). El recorte es 2.80:1 —apenas más cuadrado que la banda en su punto
+   más estrecho (380/132)— así que cubre en cualquier viewport; el antiguo
+   `center 38%` sobra porque el encuadre ya viene en el recorte. */
+.subject.pa58-card::before{
+  background-image:var(--pa58-home1),var(--pa58-home2),var(--pa58-home3),var(--pa58-home4),var(--pa58-home5),var(--pa58-home6),var(--pa58-home7),var(--pa58-home8);
+  background-size:12.75% auto;
+  background-repeat:no-repeat;
+  background-position:0 50%,14.286% 50%,28.571% 50%,42.857% 50%,57.143% 50%,71.429% 50%,85.714% 50%,100% 50%;
+}
 .screen.active .subject.pa58-card{animation:pa35in 460ms var(--ease-out,cubic-bezier(.2,.8,.3,1)) 390ms forwards !important;opacity:0;}
 @media (prefers-reduced-motion:reduce){
   .screen.active .subject.pa58-card{animation:none !important;opacity:1 !important;transform:none !important;}
