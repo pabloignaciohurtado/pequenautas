@@ -146,7 +146,17 @@ html.pa52 [data-pa34-game="pattern:tap"] .mech{background-image:var(--pa53-patte
 .pa53-svg{width:100%;height:100%;display:block;}
 .pa53-tile:active{transform:translateY(2px);}
 .pa53-tile.pa53-sel{border-color:#E8B22C;box-shadow:0 0 0 4px rgba(232,178,44,.35),0 8px 16px rgba(46,59,44,.14);transform:translateY(-3px);}
-.pa53-tile.pa53-ok{border-color:#57C596;box-shadow:0 0 0 4px rgba(87,197,150,.40);}
+/* La pareja lograda queda PINTADA, no solo contorneada: relleno menta y
+   checkmark, el mismo lenguaje de "logrado" que las parejas de #34
+   (.pa34-mcard.done). Un contorno tenue no le dice nada a un nino de 3
+   anos; el relleno si. */
+.pa53-tile.pa53-ok{
+  border-color:#57C596;
+  background:#DDF3E6;
+  box-shadow:0 0 0 4px rgba(87,197,150,.40),0 4px 0 #9FD9BC;
+  position:relative;
+}
+.pa53-tile.pa53-ok::after{content:"\2713";position:absolute;top:3px;right:8px;color:#369468;font-weight:800;font-size:16px;}
 .pa53-tile.pa53-gone{opacity:.22;pointer-events:none;}
 .pa53-no{animation:pa53shake 420ms;}
 @keyframes pa53shake{0%,100%{transform:none;}20%{transform:translateX(-7px);}45%{transform:translateX(6px);}70%{transform:translateX(-4px);}}
