@@ -49,6 +49,9 @@
 @import url("img/ig-sci-drag.css");
 @import url("img/ig-sci-sort.css");
 @import url("img/ig-sci-match.css");
+@import url("img/ig-math-memory.css");
+@import url("img/ig-read-memory.css");
+@import url("img/ig-sci-memory.css");
 
 /* ---------- 1 · La rejilla respira ---------- */
 html.pa52 .pa34-games{gap:15px 13px;}
@@ -116,6 +119,9 @@ html.pa52 [data-pa34-game="sci:tap"]    .mech{background-image:var(--pa52-sci-ta
 html.pa52 [data-pa34-game="sci:drag"]   .mech{background-image:var(--pa52-sci-drag) !important;}
 html.pa52 [data-pa34-game="sci:sort"]   .mech{background-image:var(--pa52-sci-sort) !important;}
 html.pa52 [data-pa34-game="sci:match"]  .mech{background-image:var(--pa52-sci-match) !important;}
+html.pa52 [data-pa34-game="math:memory"] .mech{background-image:var(--pa52-math-memory) !important;}
+html.pa52 [data-pa34-game="read:memory"] .mech{background-image:var(--pa52-read-memory) !important;}
+html.pa52 [data-pa34-game="sci:memory"]  .mech{background-image:var(--pa52-sci-memory) !important;}
 
 /* ---------- 5 · Tipografía encima del papel en blanco ---------- */
 /* Las viñetas de "Mayúscula y minúscula" y "Une cantidad y número" traen la
@@ -133,6 +139,15 @@ html.pa52 [data-pa34-game="math:match"] .mech::after{
   position:absolute;right:11%;top:46%;
   font-family:'Baloo 2','Fredoka',system-ui,sans-serif;
   font-weight:800;font-size:26px;color:#8A5A2B;line-height:1;
+}
+/* Las dos cartas en blanco de "Memoria" (letras) reciben su pareja de
+   mayuscula y minuscula con la fuente real, igual que read:match. */
+html.pa52 [data-pa34-game="read:memory"] .mech::after{
+  content:"A a";
+  position:absolute;left:0;right:0;top:40%;
+  font-family:'Baloo 2','Fredoka',system-ui,sans-serif;
+  font-weight:800;font-size:24px;word-spacing:52px;text-align:center;
+  color:#2F6B3C;line-height:1;
 }
 
 /* ---------- 6 · Nombre y progreso ---------- */
