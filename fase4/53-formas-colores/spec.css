@@ -25,6 +25,13 @@
    Aditivo: no toca app.js, ni index.html, ni STORE_KEY. */
 
 @import url("img/ig-home.css");
+@import url("img/ig-home-2.css");
+@import url("img/ig-home-3.css");
+@import url("img/ig-home-4.css");
+@import url("img/ig-home-5.css");
+@import url("img/ig-home-6.css");
+@import url("img/ig-home-7.css");
+@import url("img/ig-home-8.css");
 @import url("img/ig-shape-tap.css");
 @import url("img/ig-shape-match.css");
 @import url("img/ig-color-classify.css");
@@ -36,7 +43,20 @@
   .cards{grid-template-columns:1fr !important;max-width:420px !important;}
 }
 .subject.pa53-card{--pa35c:#8A5BB0;--pa35cd:#66408A;}
-.subject.pa53-card::before{background-image:var(--pa53-home);}
+/* La casa del home en HD, en ocho columnas: una sola imagen al ancho al que
+   la tarjeta se pinta de verdad (~1000 px físicos) no cabe en el techo de
+   subida, así que la escena viaja partida en img/ig-home*.css y se recompone
+   aquí en capas. background-size con alto `auto` emula `cover` dirigido por
+   ancho: la escena está recortada a 1.70:1, más "cuadrada" que la tarjeta en
+   cualquier viewport, de modo que siempre cubre y el sobrante se recorta
+   arriba y abajo, centrado. El 12.75% (8×12.75 = 102%) solapa un pelo cada
+   columna con la siguiente para que no asomen costuras. */
+.subject.pa53-card::before{
+  background-image:var(--pa53-home1),var(--pa53-home2),var(--pa53-home3),var(--pa53-home4),var(--pa53-home5),var(--pa53-home6),var(--pa53-home7),var(--pa53-home8);
+  background-size:12.75% auto;
+  background-repeat:no-repeat;
+  background-position:0 50%,14.286% 50%,28.571% 50%,42.857% 50%,57.143% 50%,71.429% 50%,85.714% 50%,100% 50%;
+}
 .screen.active .subject.pa53-card{animation:pa35in 460ms var(--ease-out,cubic-bezier(.2,.8,.3,1)) 230ms forwards !important;opacity:0;}
 @media (prefers-reduced-motion:reduce){
   .screen.active .subject.pa53-card{animation:none !important;opacity:1 !important;transform:none !important;}
