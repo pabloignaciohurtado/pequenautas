@@ -56,10 +56,17 @@
 
 /* --- selector de avatar (#avpick): la ficha de papel de #31 se queda como
    fondo y el retrato va encima. Tamano y color tambien con !important por el
-   mismo motivo que arriba: el shorthand `background` de #31 los resetea. --- */
+   mismo motivo que arriba: el shorthand `background` de #31 los resetea.
+   Y no solo tamano y color: el shorthand tambien devuelve background-repeat
+   a `repeat` y background-position a `0% 0%`, asi que sin re-declararlos con
+   !important el retrato seleccionado se anclaba arriba-izquierda y se
+   repetia en mosaico dentro de la casilla (se asomaba un segundo zorro por
+   el borde). --- */
 #avpick .avopt[data-pa48]{
   background-size:46px 46px !important;
   background-color:#F4F1E4 !important;
+  background-repeat:no-repeat !important;
+  background-position:center !important;
 }
 #avpick .avopt[data-pa48].sel{
   background-size:50px 50px !important;
