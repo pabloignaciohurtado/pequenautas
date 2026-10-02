@@ -24,6 +24,13 @@
    Aditivo: no toca app.js, ni index.html, ni STORE_KEY. */
 
 @import url("img/ig-home.css");
+@import url("img/ig-home-2.css");
+@import url("img/ig-home-3.css");
+@import url("img/ig-home-4.css");
+@import url("img/ig-home-5.css");
+@import url("img/ig-home-6.css");
+@import url("img/ig-home-7.css");
+@import url("img/ig-home-8.css");
 @import url("img/ig-puzzle.css");
 @import url("img/ig-shadow.css");
 @import url("img/ig-path.css");
@@ -38,7 +45,15 @@
   .cards{grid-template-columns:1fr !important;max-width:420px !important;}
 }
 .subject.pa54-card{--pa35c:#2F7FA8;--pa35cd:#1F5C7C;}
-.subject.pa54-card::before{background-image:var(--pa54-home);}
+/* La casa del home en HD, en ocho columnas recompuestas (mismo esquema que
+   #53: la escena entera no cabe en el techo de subida). Recorte 1.70:1 y
+   alto `auto` = `cover` dirigido por ancho; 12.75% solapa las costuras. */
+.subject.pa54-card::before{
+  background-image:var(--pa54-home1),var(--pa54-home2),var(--pa54-home3),var(--pa54-home4),var(--pa54-home5),var(--pa54-home6),var(--pa54-home7),var(--pa54-home8);
+  background-size:12.75% auto;
+  background-repeat:no-repeat;
+  background-position:0 50%,14.286% 50%,28.571% 50%,42.857% 50%,57.143% 50%,71.429% 50%,85.714% 50%,100% 50%;
+}
 .screen.active .subject.pa54-card{animation:pa35in 460ms var(--ease-out,cubic-bezier(.2,.8,.3,1)) 290ms forwards !important;opacity:0;}
 @media (prefers-reduced-motion:reduce){
   .screen.active .subject.pa54-card{animation:none !important;opacity:1 !important;transform:none !important;}
