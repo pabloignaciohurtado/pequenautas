@@ -6,8 +6,9 @@
    1. Inyecta la webfont Baloo 2 (600/800). Es la tipografía de portada:
       más redonda y con más peso que la Fredoka de la interfaz, para que el
       título "Aventuras en el Bosque" lea como título de cuento y no como
-      una etiqueta más. sw.js ya cachea fonts.googleapis/fonts.gstatic con
-      estrategia cache-first, así que en la segunda visita entra offline.
+      una etiqueta más. Se sirve desde el propio dominio (fonts/fonts.css)
+      y sw.js la precachea con el shell, así que entra offline desde la
+      primera instalación y sin pedir nada a terceros.
 
    2. Marca <html class="pa51">. TODA la hoja de estilos cuelga de esa
       clase: si el módulo no llega a cargar (red, error, orden), el hero de
@@ -23,15 +24,13 @@
   "use strict";
   if (window.__pa51) return; window.__pa51 = true;
 
-  var FONT_HREF = 'https://fonts.googleapis.com/css2?family=Baloo+2:wght@600;800&display=swap';
+  // Servida desde el propio dominio (fonts/, ver tools/fonts/fetch_fonts.py):
+  // la app no hace ninguna petición a terceros (política de Familias de Play).
+  var FONT_HREF = 'fonts/fonts.css';
 
   function injectFont() {
     try {
       if (document.querySelector('link[data-pa51font]')) return;
-      var pre = document.createElement('link');
-      pre.rel = 'preconnect'; pre.href = 'https://fonts.gstatic.com';
-      pre.crossOrigin = 'anonymous';
-      (document.head || document.documentElement).appendChild(pre);
       var l = document.createElement('link');
       l.rel = 'stylesheet'; l.href = FONT_HREF;
       l.setAttribute('data-pa51font', '1');
