@@ -24,6 +24,13 @@
    Aditivo: no toca app.js, ni index.html, ni STORE_KEY. */
 
 @import url("img/mu-home.css");
+@import url("img/mu-home-2.css");
+@import url("img/mu-home-3.css");
+@import url("img/mu-home-4.css");
+@import url("img/mu-home-5.css");
+@import url("img/mu-home-6.css");
+@import url("img/mu-home-7.css");
+@import url("img/mu-home-8.css");
 @import url("img/mu-instr.css");
 @import url("img/mu-echo.css");
 @import url("img/mu-loud.css");
@@ -38,7 +45,15 @@
   .cards{grid-template-columns:1fr !important;max-width:420px !important;}
 }
 .subject.pa55-card{--pa35c:#B4643C;--pa35cd:#8A452A;}
-.subject.pa55-card::before{background-image:var(--pa55-home);}
+/* La casa del home en HD, en ocho columnas recompuestas (mismo esquema que
+   #53: la escena entera no cabe en el techo de subida). Recorte 1.70:1 y
+   alto `auto` = `cover` dirigido por ancho; 12.75% solapa las costuras. */
+.subject.pa55-card::before{
+  background-image:var(--pa55-home1),var(--pa55-home2),var(--pa55-home3),var(--pa55-home4),var(--pa55-home5),var(--pa55-home6),var(--pa55-home7),var(--pa55-home8);
+  background-size:12.75% auto;
+  background-repeat:no-repeat;
+  background-position:0 50%,14.286% 50%,28.571% 50%,42.857% 50%,57.143% 50%,71.429% 50%,85.714% 50%,100% 50%;
+}
 .screen.active .subject.pa55-card{animation:pa35in 460ms var(--ease-out,cubic-bezier(.2,.8,.3,1)) 330ms forwards !important;opacity:0;}
 @media (prefers-reduced-motion:reduce){
   .screen.active .subject.pa55-card{animation:none !important;opacity:1 !important;transform:none !important;}
