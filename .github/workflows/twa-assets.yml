@@ -48,6 +48,10 @@ jobs:
           pip install pillow==12.3.0
           npm install
           npx playwright install --with-deps chromium
+          # Emoji en color, como en un teléfono de verdad: sin esta fuente el
+          # runner dibuja los emoji de los juegos (caras, objetos) en contorno
+          # monocromo y las capturas de tienda no representan la app.
+          sudo apt-get install -y -q fonts-noto-color-emoji
 
       - name: Fuentes desde el propio dominio
         run: python3 tools/fonts/fetch_fonts.py
