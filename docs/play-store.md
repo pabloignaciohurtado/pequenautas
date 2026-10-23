@@ -39,6 +39,26 @@ bubblewrap build --skipPwaValidation     # app-release-bundle.aab (Play) y app-r
 Para cada versión nueva en Play: subir `appVersionCode` (y `appVersion`) en
 `tools/twa/twa-manifest.json`.
 
+## Cambiar el arte (ícono o gráfico destacado)
+
+Todo el arte lo dibuja Grok (regla del proyecto). Para cambiarlo:
+
+1. Generar la imagen nueva con Grok y elegir la toma.
+2. En `tools/twa/arte-grok.json`, reemplazar `url` y `sha256` de la pieza
+   (`sha256sum` del PNG original que entrega Grok) y borrar el `.webp`
+   correspondiente de `assets/brand/` en la misma rama.
+3. Al hacer push en una rama `feat/**`, el flujo `twa-assets.yml` descarga el
+   original, verifica la huella, lo guarda en `assets/brand/` y regenera
+   `icons/` y `store/feature-graphic.png`. Las URLs de Grok caducan en
+   unas horas: este paso hay que hacerlo el mismo día en que se genera.
+4. Recompilar el AAB (sección anterior) y subir una versión nueva si cambió el
+   ícono del lanzador.
+
+`make_icons.py` deja el ícono a sangre aunque Grok lo entregue como cuadrado
+redondeado sobre blanco (lo hace casi siempre): rellena las esquinas y lo
+recompone sobre un fondo liso para que el ícono adaptable no muestre un
+cuadrado fantasma.
+
 ## Pasos en Play Console (los hace Ignacio)
 
 1. **Cuenta de desarrollador** en play.google.com/console (pago único de 25 USD,
