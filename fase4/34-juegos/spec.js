@@ -83,19 +83,22 @@
       {id:"math:count", name:"Contar y arrastrar", nameEn:"Count and drag", mech:"drag", impl:"drag", desc:"Lleva las bellotas a la canasta", descEn:"Carry the acorns to the basket"},
       {id:"math:tap", name:"Cu"+ACC+"ntos ves", nameEn:"How many do you see", mech:"tap", impl:"app", app:"math", desc:"Cuenta y toca el n"+UACC+"mero", descEn:"Count and tap the number"},
       {id:"math:sort", name:"Ordena los n"+UACC+"meros", nameEn:"Sort the numbers", mech:"sort", impl:"sort", gen:"ordernum", desc:"Toca del m"+ACC+"s chico al m"+ACC+"s grande", descEn:"Tap from smallest to biggest"},
-      {id:"math:match", name:"Une cantidad y n"+UACC+"mero", nameEn:"Match amount and number", mech:"match", impl:"match", gen:"countnum", desc:"Une la cantidad con su n"+UACC+"mero", descEn:"Match the amount with its number"}
+      {id:"math:match", name:"Une cantidad y n"+UACC+"mero", nameEn:"Match amount and number", mech:"match", impl:"match", gen:"countnum", desc:"Une la cantidad con su n"+UACC+"mero", descEn:"Match the amount with its number"},
+      {id:"math:memory", name:"Memoria", nameEn:"Memory", mech:"match", impl:"memory", gen:"countnum", desc:"Encuentra las parejas de n"+UACC+"mero y cantidad", descEn:"Find the pairs of number and amount"}
     ]},
     reading: { name:"Letras", nameEn:"Letters", games:[
       {id:"read:tap", name:"Con qu"+ch(0xE9)+" letra empieza", nameEn:"Which letter it starts with", mech:"tap", impl:"app", app:"reading", desc:"Toca la letra inicial", descEn:"Tap the first letter"},
       {id:"read:drag", name:"Letra a su sombra", nameEn:"Letter to its shadow", mech:"drag", impl:"classify", gen:"shadow", desc:"Toca la letra y luego su sombra", descEn:"Tap the letter, then its shadow"},
       {id:"read:match", name:"May"+UACC+"scula y min"+UACC+"scula", nameEn:"Uppercase and lowercase", mech:"match", impl:"match", gen:"caseAa", desc:"Une la letra grande con la peque"+NTIL+"a", descEn:"Match the big letter with the small one"},
-      {id:"read:trace", name:"Traza la letra", nameEn:"Trace the letter", mech:"trace", impl:"trace", gen:"trace", desc:"Une los puntos y traza la letra", descEn:"Join the dots and trace the letter"}
+      {id:"read:trace", name:"Traza la letra", nameEn:"Trace the letter", mech:"trace", impl:"trace", gen:"trace", desc:"Une los puntos y traza la letra", descEn:"Join the dots and trace the letter"},
+      {id:"read:memory", name:"Memoria", nameEn:"Memory", mech:"match", impl:"memory", gen:"caseAa", desc:"Encuentra las parejas de letras", descEn:"Find the letter pairs"}
     ]},
     science: { name:"Animales", nameEn:"Animals", games:[
       {id:"sci:tap", name:"D"+OACC+"nde vive", nameEn:"Where it lives", mech:"tap", impl:"app", app:"science", desc:"Toca el h"+ACC+"bitat", descEn:"Tap the habitat"},
       {id:"sci:drag", name:"Cada uno a su casa", nameEn:"Each one to its home", mech:"drag", impl:"classify", gen:"habitat", desc:"Toca el animal y luego su casa", descEn:"Tap the animal, then its home"},
       {id:"sci:sort", name:"Grandes y chicos", nameEn:"Big and small", mech:"sort", impl:"sort", gen:"ordersize", desc:"Toca del m"+ACC+"s chico al m"+ACC+"s grande", descEn:"Tap from smallest to biggest"},
-      {id:"sci:match", name:"Mam"+ACC+" y beb"+ch(0xE9), nameEn:"Mom and baby", mech:"match", impl:"match", gen:"babies", desc:"Une cada mam"+ACC+" con su beb"+ch(0xE9), descEn:"Match each mom with her baby"}
+      {id:"sci:match", name:"Mam"+ACC+" y beb"+ch(0xE9), nameEn:"Mom and baby", mech:"match", impl:"match", gen:"babies", desc:"Une cada mam"+ACC+" con su beb"+ch(0xE9), descEn:"Match each mom with her baby"},
+      {id:"sci:memory", name:"Memoria", nameEn:"Memory", mech:"match", impl:"memory", gen:"babies", desc:"Encuentra las parejas de animales", descEn:"Find the animal pairs"}
     ]}
   };
   function secName(sec){ return lang==="en" ? (sec.nameEn||sec.name) : sec.name; }
@@ -154,7 +157,7 @@
       var mech=el("div","pa34-m-"+g.mech+" mech", mechEmoji(g.mech));
       var nm=el("div","gn",gName(g));
       var pr;
-      if(g.impl==="drag"||g.impl==="match"||g.impl==="sort"||g.impl==="trace"||g.impl==="classify"){ var u=unlocked(g.id); pr=el("div","gp",T("Nivel "+(u+1)+" de 5","Level "+(u+1)+" of 5")); }
+      if(g.impl==="drag"||g.impl==="match"||g.impl==="sort"||g.impl==="trace"||g.impl==="classify"||g.impl==="memory"){ var u=unlocked(g.id); pr=el("div","gp",T("Nivel "+(u+1)+" de 5","Level "+(u+1)+" of 5")); }
       else if(g.impl==="app"){ pr=el("div","gp",T("Con voz de Rufo","With Rufo's voice")); }
       else { pr=el("div","gp",T("Pronto","Coming soon")); }
       b.appendChild(mech); b.appendChild(nm); b.appendChild(pr);
@@ -169,7 +172,7 @@
     // Auditoría #12: la rejilla ya no se comporta de dos maneras distintas
     // segun el juego -- TODOS abren el mismo mapa de niveles (openLevels);
     // "Con voz de Rufo" solo difiere en qué hace launchLevel() al tocar.
-    if(g.impl==="app"||g.impl==="drag"||g.impl==="match"||g.impl==="sort"||g.impl==="trace"||g.impl==="classify"){ openLevels(g); return; }
+    if(g.impl==="app"||g.impl==="drag"||g.impl==="match"||g.impl==="sort"||g.impl==="trace"||g.impl==="classify"||g.impl==="memory"){ openLevels(g); return; }
     // soon
     toast(T(INV+"Pronto! Este juego llega muy prontito "+String.fromCodePoint(0x1F98A),
              "Coming soon! This game arrives really soon "+String.fromCodePoint(0x1F98A)));
@@ -391,6 +394,7 @@
     else if(g.impl==="sort"){ launchSort(g,level); }
     else if(g.impl==="trace"){ launchTrace(g,level); }
     else if(g.impl==="classify"){ launchClassify(g,level); }
+    else if(g.impl==="memory"){ launchMemory(g,level); }
     else { launchDrag(g,level); }
   }
 
@@ -855,6 +859,201 @@
     setTimeout(function(){ burstIn(cplay); cEls.win.classList.add("show"); },300);
   }
 
+  // ================= MEMORY GAME ENGINE (memoria: arrastrar para revelar y unir) =================
+  /* Renacido del PR #43 con las convenciones de hoy: T(es,en) bilingue,
+     narracion via say(), progreso por perfil (setUnlocked/PKEY), y la
+     economia de premios de la auditoria #8 -- cada pareja confirmada suena,
+     brilla en confeti y suma estrella; ganar el nivel solo desbloquea el
+     siguiente. La mecanica es la del PR original: arrastrar una carta hacia
+     arriba la voltea; dos cartas iguales reveladas quedan "matchable" y se
+     confirman arrastrando una sobre la otra. */
+  var MEMORY_LEVELS = [3,4,5,6,8]; // pares por nivel
+  function buildMemPairs(g,level){
+    var n=MEMORY_LEVELS[level]||3, out=[];
+    if(g.gen==="countnum"){
+      var maxN=[4,6,7,8,9][level]||n;
+      var nums=shuffle(function(){var r=[];for(var i=1;i<=maxN;i++)r.push(i);return r;}()).slice(0,n);
+      nums.forEach(function(v){ out.push({a:{k:"dots",v:v}, b:{k:"text",v:String(v)}}); });
+    } else if(g.gen==="caseAa"){
+      var ls=shuffle(LETTERS_POOL).slice(0,n);
+      ls.forEach(function(v){ out.push({a:{k:"text",v:v}, b:{k:"text",v:v.toLowerCase()}}); });
+    } else { // babies
+      var ps=shuffle(BABY_PAIRS).slice(0,n);
+      ps.forEach(function(p){ out.push({a:{k:"emoji",v:p[0]}, b:{k:"emoji",v:p[1]}}); });
+    }
+    return out;
+  }
+  var mmplay=null, mmEls={}, MM={ gid:null, level:0, g:null, cards:[], active:[], matchedCount:0, total:0, score:0 };
+  var MM_REVEAL_PX = 34;      // arrastre vertical minimo para revelar
+  var MM_OVERLAP_PX = 46;     // distancia maxima entre centros para considerar "juntas"
+  function ensureMMPlay(){
+    if(mmplay) return;
+    mmplay=el("div","pa34-mmplay");
+    mmplay.innerHTML=
+      '<div class="pa34-ptop"><button class="pa34-x" id="pa34mmX" aria-label="'+T("Salir","Exit")+'">&times;</button>'+
+        '<div class="pa34-prompt" id="pa34mmprompt"></div>'+
+        '<div class="pa34-pstar">'+String.fromCodePoint(0x2B50)+' <span id="pa34mmscore">0</span></div></div>'+
+      '<div class="pa34-mmhint" id="pa34mmhint"></div>'+
+      '<div class="pa34-mmgrid" id="pa34mmgrid"></div>'+
+      '<div class="pa34-win" id="pa34mmwin"><div class="pa34-wc">'+
+        '<div class="rf">'+rufoSVG(true)+'</div><h2 id="pa34mmwt"></h2><p id="pa34mmwp"></p>'+
+        '<div class="row"><button class="pa34-cta ghost" id="pa34mmwmap"></button><button class="pa34-cta" id="pa34mmwnext"></button></div>'+
+      '</div></div>';
+    document.body.appendChild(mmplay);
+    mmEls={ grid:$("pa34mmgrid"), prompt:$("pa34mmprompt"), score:$("pa34mmscore"), hint:$("pa34mmhint"),
+      win:$("pa34mmwin"), wt:$("pa34mmwt"), wp:$("pa34mmwp"), wnext:$("pa34mmwnext"), wmap:$("pa34mmwmap"), x:$("pa34mmX") };
+    $("pa34mmX").addEventListener("click",function(){ mmplay.classList.remove("show"); });
+    mmEls.wnext.onclick=function(){
+      mmEls.win.classList.remove("show");
+      if(MM.level>=4){ mmplay.classList.remove("show"); if(MM.g) openLevels(MM.g); }
+      else { launchMemory(MM.g, MM.level+1); }
+    };
+    mmEls.wmap.onclick=function(){ mmEls.win.classList.remove("show"); mmplay.classList.remove("show"); if(MM.g) openLevels(MM.g); };
+  }
+  function launchMemory(g,level){
+    ensureMMPlay(); closeOv();
+    detectLang();
+    if(mmEls.x) mmEls.x.setAttribute("aria-label",T("Salir","Exit"));
+    MM.gid=g.id; MM.level=level; MM.g=g; MM.active=[]; MM.matchedCount=0; MM.cards=[];
+    var pairs=buildMemPairs(g,level); MM.total=pairs.length;
+    mmplay.classList.add("show"); mmEls.win.classList.remove("show");
+    var promptTxt = gDesc(g) || T("Encuentra las parejas","Find the pairs");
+    mmEls.prompt.innerHTML=promptTxt;
+    mmEls.hint.textContent=T("Arrastra una carta hacia arriba para verla","Drag a card up to see it");
+    mmEls.hint.style.display="";
+    say(promptTxt);
+    mmEls.grid.innerHTML="";
+    var totalCards = pairs.length*2;
+    var MM_COLS = {6:3,8:4,10:5,12:4,16:4};
+    var cols = MM_COLS[totalCards] || 4;
+    mmEls.grid.style.gridTemplateColumns="repeat("+cols+",1fr)";
+    var deck=[];
+    pairs.forEach(function(p,idx){ deck.push({tok:p.a,pid:idx}); deck.push({tok:p.b,pid:idx}); });
+    deck=shuffle(deck);
+    deck.forEach(function(cardData,i){
+      var card=el("div","pa34-memcard");
+      card.setAttribute("data-pid", cardData.pid);
+      card.setAttribute("data-idx", i);
+      var inner=el("div","pa34-memcard-inner");
+      var back=el("div","pa34-memface pa34-memback", acornSVG());
+      var front=el("div","pa34-memface pa34-memfront", tokenHTML(cardData.tok));
+      inner.appendChild(back); inner.appendChild(front);
+      card.appendChild(inner);
+      mmEls.grid.appendChild(card);
+      MM.cards.push({ el:card, inner:inner, pid:cardData.pid, revealed:false, matched:false });
+      wireMemCard(MM.cards[i]);
+    });
+  }
+  function wireMemCard(c){
+    var dragging=false, mode=null, startX=0, startY=0, dy=0;
+    function start(e){
+      if(c.matched) return;
+      dragging=true; dy=0;
+      var p=pointXY(e);
+      startX=p.x; startY=p.y;
+      mode = c.revealed ? "move" : "reveal";
+      c.el.classList.add("dragging");
+      e.preventDefault();
+    }
+    function move(e){
+      if(!dragging) return;
+      var p=pointXY(e);
+      if(mode==="reveal"){
+        dy = startY - p.y;
+        var clamped = Math.max(0, Math.min(dy, MM_REVEAL_PX));
+        var deg = (clamped/MM_REVEAL_PX)*180;
+        c.inner.style.transform = "translateY("+(-clamped*0.5)+"px) rotateY("+deg+"deg)";
+      } else if(mode==="move"){
+        var dx=p.x-startX, ddy=p.y-startY;
+        c.el.style.transform = "translate("+dx+"px,"+ddy+"px)";
+        c.el.style.zIndex = "30";
+        var target=findMatchable(c);
+        if(target){ target.el.classList.toggle("hot", isNear(c.el, target.el)); }
+      }
+      e.preventDefault();
+    }
+    function end(e){
+      if(!dragging) return;
+      dragging=false; c.el.classList.remove("dragging");
+      if(mode==="reveal"){
+        c.inner.style.transform="";
+        if(dy>=MM_REVEAL_PX){ revealCard(c); }
+      } else if(mode==="move"){
+        var target=findMatchable(c);
+        var matched=false;
+        if(target && isNear(c.el, target.el)){ matched=true; }
+        c.el.style.transform=""; c.el.style.zIndex="";
+        if(target) target.el.classList.remove("hot");
+        if(matched && target){ lockPair(c, target); }
+        /* si no: vuelve a su sitio y sigue revelada/matchable */
+      }
+      mode=null;
+    }
+    c.el.addEventListener("mousedown",start); c.el.addEventListener("touchstart",start,{passive:false});
+    window.addEventListener("mousemove",move); window.addEventListener("touchmove",move,{passive:false});
+    window.addEventListener("mouseup",end); window.addEventListener("touchend",end);
+  }
+  function isNear(elA,elB){
+    var ra=elA.getBoundingClientRect(), rb=elB.getBoundingClientRect();
+    var cax=ra.left+ra.width/2, cay=ra.top+ra.height/2, cbx=rb.left+rb.width/2, cby=rb.top+rb.height/2;
+    var d=Math.sqrt((cax-cbx)*(cax-cbx)+(cay-cby)*(cay-cby));
+    return d < (ra.width*0.9 + MM_OVERLAP_PX);
+  }
+  function findMatchable(c){
+    for(var i=0;i<MM.cards.length;i++){
+      var o=MM.cards[i];
+      if(o!==c && o.el.classList.contains("matchable") && !o.matched) return o;
+    }
+    return null;
+  }
+  function revealCard(c){
+    if(c.revealed || c.matched) return;
+    c.revealed=true;
+    c.el.classList.add("face-up");
+    mmEls.hint.style.display="none";
+    MM.active.push(c);
+    if(MM.active.length===2){
+      var a=MM.active[0], b=MM.active[1];
+      if(a.pid===b.pid){
+        a.el.classList.add("matchable"); b.el.classList.add("matchable");
+        MM.active=[];
+      } else {
+        a.el.classList.add("mismatch"); b.el.classList.add("mismatch");
+        setTimeout(function(){
+          if(!a.matched){ a.revealed=false; a.el.classList.remove("face-up","mismatch"); }
+          if(!b.matched){ b.revealed=false; b.el.classList.remove("face-up","mismatch"); }
+          MM.active=[];
+        },900);
+      }
+    }
+  }
+  function lockPair(c,target){
+    c.matched=true; target.matched=true;
+    c.el.classList.remove("matchable","dragging"); target.el.classList.remove("matchable","dragging");
+    c.el.classList.add("matched"); target.el.classList.add("matched");
+    c.el.classList.add("sparkle"); target.el.classList.add("sparkle");
+    setTimeout(function(){ c.el.classList.remove("sparkle"); target.el.classList.remove("sparkle"); },700);
+    // Economia de premios unificada con el modelo base (auditoria #8).
+    try{ if(typeof window.chime==="function") window.chime("ok"); }catch(e){}
+    try{ if(typeof window.confetti==="function") window.confetti(); }catch(e){}
+    try{ if(typeof window.addStar==="function") window.addStar(); }catch(e){}
+    MM.matchedCount++;
+    if(MM.matchedCount>=MM.total) memoryWin();
+  }
+  function memoryWin(){
+    setUnlocked(MM.gid, Math.min(MM.level+1,4));
+    MM.score=(MM.score||0)+1; mmEls.score.textContent=MM.score;
+    // La estrella ya se dio por pareja en lockPair() (#8): el nivel solo
+    // desbloquea el siguiente, no regala una estrella extra.
+    mmEls.wt.textContent=T(INV+"Muy bien!","Well done!");
+    mmEls.wp.textContent=T("Encontraste "+MM.total+" parejas "+String.fromCodePoint(0x1F31F),
+                            "You found "+MM.total+" pairs "+String.fromCodePoint(0x1F31F));
+    mmEls.wnext.textContent = MM.level>=4 ? T(INV+"Terminado!","All done!") : T("Siguiente","Next");
+    mmEls.wmap.textContent = T("Mapa","Map");
+    say(T(INV+"Muy bien!","Well done!"));
+    setTimeout(function(){ burstIn(mmplay); mmEls.win.classList.add("show"); },300);
+  }
+
   // ---------- refrescar al cambiar de idioma ----------
   /* El boton de idioma puede pulsarse con cualquiera de las pantallas de
      esta capa abierta. La rejilla y el mapa de niveles se repintan enteros
@@ -891,6 +1090,11 @@
     if(cplay && cplay.classList.contains("show") && C.g){
       cEls.prompt.innerHTML = gDesc(C.g) || T("Toca y coloca","Tap and place");
       if(cEls.x) cEls.x.setAttribute("aria-label",T("Salir","Exit"));
+    }
+    if(mmplay && mmplay.classList.contains("show") && MM.g){
+      mmEls.prompt.innerHTML = gDesc(MM.g) || T("Encuentra las parejas","Find the pairs");
+      mmEls.hint.textContent = T("Arrastra una carta hacia arriba para verla","Drag a card up to see it");
+      if(mmEls.x) mmEls.x.setAttribute("aria-label",T("Salir","Exit"));
     }
   }
   function wireLangBtn(){

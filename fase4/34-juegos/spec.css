@@ -156,4 +156,31 @@
   text-shadow:0 2px 0 rgba(46,59,44,.06);}
 .pa34-mini{font-size:24px;line-height:1;}
 
+/* ---- memoria (arrastrar para revelar y unir) ---- */
+.pa34-mmplay{position:fixed;inset:0;z-index:1500;display:none;flex-direction:column;
+  background:linear-gradient(180deg,#FDF6E9,#F3E9D2);font-family:'Plus Jakarta Sans',sans-serif;}
+.pa34-mmplay.show{display:flex;animation:pa34fade .25s;}
+.pa34-mmhint{text-align:center;font-weight:700;font-size:14px;color:#8A9478;padding:4px 16px;}
+.pa34-mmgrid{display:grid;gap:12px;padding:14px 18px;align-content:start;justify-content:center;
+  flex:1;overflow:auto;max-width:520px;margin:0 auto;width:100%;box-sizing:border-box;}
+.pa34-memcard{position:relative;aspect-ratio:3/4;min-height:86px;perspective:600px;cursor:grab;
+  touch-action:none;user-select:none;-webkit-user-select:none;}
+.pa34-memcard.dragging{cursor:grabbing;}
+.pa34-memcard-inner{position:absolute;inset:0;transform-style:preserve-3d;transition:transform .28s;}
+.pa34-memcard.face-up .pa34-memcard-inner{transform:rotateY(180deg);}
+.pa34-memface{position:absolute;inset:0;backface-visibility:hidden;-webkit-backface-visibility:hidden;
+  border-radius:14px;display:flex;align-items:center;justify-content:center;
+  border:3px solid #D8CBAA;box-shadow:0 4px 10px rgba(46,59,44,.12);}
+.pa34-memback{background:linear-gradient(160deg,#A8703A,#8B5E2F);}
+.pa34-memback svg{width:56%;height:56%;opacity:.9;}
+.pa34-memfront{background:#FFFDF7;transform:rotateY(180deg);}
+.pa34-memcard.matchable .pa34-memface{border-color:#57C596;box-shadow:0 0 0 3px rgba(87,197,150,.35),0 4px 10px rgba(46,59,44,.12);}
+.pa34-memcard.hot .pa34-memface{border-color:#2E9E6B;box-shadow:0 0 0 5px rgba(87,197,150,.55),0 4px 10px rgba(46,59,44,.12);}
+.pa34-memcard.mismatch{animation:pa34shake .3s;}
+.pa34-memcard.matched{pointer-events:none;}
+.pa34-memcard.matched .pa34-memface{border-color:#57C596;opacity:.55;}
+.pa34-memcard.sparkle::after{content:"";position:absolute;inset:-6px;border-radius:18px;
+  background:radial-gradient(circle,rgba(253,186,77,.5),transparent 65%);animation:pa34sparkle .7s;}
+@keyframes pa34sparkle{0%{opacity:0;transform:scale(.6);}45%{opacity:1;transform:scale(1.08);}100%{opacity:0;transform:scale(1.25);}}
+
 @media(prefers-reduced-motion:reduce){.pa34-ov.show,*[class*="pa34"]{animation:none!important;transition:none!important;}}

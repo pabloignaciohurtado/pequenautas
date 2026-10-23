@@ -55,17 +55,17 @@ test('Fase 4 · #52: cada juego tiene SU propia ilustración, y grande', async (
       };
     });
   });
-  expect(r.length).toBe(4);
+  expect(r.length).toBe(5); // 5ta carta: Memoria (PR #78)
   for (const c of r) {
     // el icono era de 42px con dibujo de 30px: eso era la queja
     expect(c.h).toBeGreaterThan(88);
     expect(c.img).toContain('data:image/webp');
   }
   // y no comparten dibujo: una viñeta por juego, no una por mecánica
-  expect(new Set(r.map((c) => c.img)).size).toBe(4);
+  expect(new Set(r.map((c) => c.img)).size).toBe(5);
 });
 
-test('Fase 4 · #52: las tres secciones traen doce viñetas distintas', async ({ page }) => {
+test('Fase 4 · #52: las tres secciones traen quince viñetas distintas', async ({ page }) => {
   await entrar(page);
   const vistas = new Set();
   for (let i = 0; i < 3; i++) {
@@ -78,7 +78,7 @@ test('Fase 4 · #52: las tres secciones traen doce viñetas distintas', async ({
     await page.locator('.pa34-x').first().click();
     await page.waitForTimeout(500);
   }
-  expect(vistas.size).toBe(12);
+  expect(vistas.size).toBe(15); // 12 + las 3 de Memoria (PR #78)
 });
 
 test('Fase 4 · #52: la tarjeta deja de ser un rectángulo blanco flotante', async ({ page }) => {
@@ -121,13 +121,13 @@ test('Fase 4 · #52: registrado en el loader y en el precache del sw', () => {
   expect([...all].sort()).toEqual([...pick(sw, 'FASE4_MODULES')].sort());
   expect(new Set(all).size).toBe(all.length);
 
-  // las doce viñetas viajan embebidas: nada de binarios en el repo
+  // las quince viñetas viajan embebidas: nada de binarios en el repo
   const imgDir = path.join(root, 'fase4/52-juegos-tarjetas/img');
   const hojas = fs.readdirSync(imgDir).filter((f) => f.endsWith('.css'));
   const css = hojas.map((f) => fs.readFileSync(path.join(imgDir, f), 'utf8')).join('\n');
   const vars = [...css.matchAll(/--pa52-([a-z-]+):url\("?data:image\/webp;base64,/g)].map((m) => m[1]);
-  expect(vars.length).toBe(12);
-  expect(new Set(vars).size).toBe(12);
+  expect(vars.length).toBe(15);
+  expect(new Set(vars).size).toBe(15);
   // y spec.css las importa todas: si una hoja no se importa, el sw no la
   // precachea y el dibujo desaparece al quedarse sin red.
   const hoja = fs.readFileSync(path.join(root, 'fase4/52-juegos-tarjetas/spec.css'), 'utf8');
