@@ -1,0 +1,12 @@
+[
+  {
+    "relation": ["delegate_permission/common.handle_all_urls"],
+    "target": {
+      "namespace": "android_app",
+      "package_name": "com.pequenautas.bosque",
+      "sha256_cert_fingerprints": [
+        "2C:E9:B3:50:86:0D:FF:BD:84:4E:3A:4B:5F:DC:E1:DD:40:9B:56:2A:2D:C1:A4:27:8F:97:D5:A7:E6:BE:DE:10"
+      ]
+    }
+  }
+]

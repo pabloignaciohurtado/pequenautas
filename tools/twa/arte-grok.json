@@ -1,0 +1,16 @@
+[
+  {
+    "archivo": "assets/brand/rufo-icono.webp",
+    "url": "https://imgen.x.ai/xai-imgen/xai-tmp-imgen-5df6c5e0-8204-9606-83a5-c0908f192088-63a63abd.png",
+    "sha256": "4d8d14f0451e412aa4a5de6ccc251f251b822cd8eb859eba9a7993fa24037a9b",
+    "ancho": 1024,
+    "nota": "Ícono de la app: cabeza de Rufo en papercraft sobre menta. Grok (grok-imagine-image-quality, 2k), 23-10-2026."
+  },
+  {
+    "archivo": "assets/brand/grafico-destacado.webp",
+    "url": "https://imgen.x.ai/xai-imgen/xai-tmp-imgen-b6c3b804-5638-97c2-9e81-8072d3240338-c47719e2.png",
+    "sha256": "299874e8dd9e3cb368e566219e57eea08a9422c78aa028956efbf1f35e70ca87",
+    "ancho": 2048,
+    "nota": "Gráfico destacado de la ficha de Play: Rufo y sus amigos en el bosque. Grok (grok-imagine-image-quality, 2k), 23-10-2026."
+  }
+]

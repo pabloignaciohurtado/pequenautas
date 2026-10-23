@@ -1,0 +1,82 @@
+name: Recursos de la app instalable
+
+# Fabrica los binarios que la app de Google Play necesita y los deja escritos
+# en la propia rama: fuentes servidas desde el dominio (fonts/), el arte de
+# Grok (assets/brand/), íconos PNG (icons/), el gráfico destacado (store/) y
+# las capturas de tienda (screenshots/).
+#
+# Mismo motivo que voz.yml: los binarios no se pueden subir a mano por el
+# conector de GitHub, pero sí los scripts que los producen, que son texto
+# legible y revisable en un diff. Cambiar un script en una rama de trabajo
+# vuelve a generar sus salidas aquí.
+#
+# El filtro por ruta evita que se llame a sí mismo: escribe en fonts/, assets/,
+# icons/, store/ y screenshots/, que no disparan el flujo (y además los pushes hechos con
+# GITHUB_TOKEN no lanzan flujos nuevos).
+
+on:
+  push:
+    branches: ["feat/**"]
+    paths:
+      - "tools/twa/**"
+      - "tools/fonts/**"
+      - ".github/workflows/twa-assets.yml"
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+concurrency:
+  group: twa-assets-${{ github.ref }}
+  cancel-in-progress: false
+
+jobs:
+  recursos:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+
+      - name: Dependencias
+        run: |
+          pip install pillow==12.3.0
+          npm install
+          npx playwright install --with-deps chromium
+          # Emoji en color, como en un teléfono de verdad: sin esta fuente el
+          # runner dibuja los emoji de los juegos (caras, objetos) en contorno
+          # monocromo y las capturas de tienda no representan la app.
+          sudo apt-get install -y -q fonts-noto-color-emoji
+
+      - name: Fuentes desde el propio dominio
+        run: python3 tools/fonts/fetch_fonts.py
+
+      - name: Arte de Grok (fuentes verificadas por sha256)
+        run: python3 tools/twa/fetch_art.py
+
+      - name: Íconos y gráfico destacado
+        run: python3 tools/twa/make_icons.py
+
+      - name: Capturas de tienda
+        run: node tools/twa/screenshots.js
+
+      - name: Huellas de lo generado
+        run: sha256sum fonts/* assets/brand/* icons/* store/* screenshots/*
+
+      - name: Commit en la rama
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add fonts assets icons store screenshots
+          if git diff --cached --quiet; then
+            echo "Sin cambios en los recursos."
+            exit 0
+          fi
+          git commit -m "build(twa): regenerar fuentes, íconos y capturas de tienda"
+          git push origin HEAD:${GITHUB_REF_NAME}
