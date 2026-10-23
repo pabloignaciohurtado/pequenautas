@@ -30,6 +30,24 @@ async function seccion(page, card, ov, juego) {
   await page.waitForTimeout(1500);
 }
 
+// En un teléfono los emoji siempre salen en color. En el runner de CI no:
+// GNU FreeFont trae caritas en contorno monocromo y Chromium las elige antes
+// que Noto Color Emoji, así que "Triste" o "Enojado" salían como dibujos de
+// línea. Se antepone a cada elemento una familia que solo cubre los rangos de
+// emoji y apunta a la fuente de color; el resto del texto no cambia.
+async function emojiEnColor(page) {
+  await page.addStyleTag({ content:
+    '@font-face{font-family:"PEmojiColor";src:local("Noto Color Emoji");' +
+    'unicode-range:U+1F000-1FAFF,U+2600-27BF,U+2B00-2BFF,U+FE0F,U+200D;}' });
+  await page.evaluate(() => {
+    for (const el of document.querySelectorAll('body *')) {
+      const ff = getComputedStyle(el).fontFamily;
+      if (ff && ff.indexOf('PEmojiColor') === -1) el.style.fontFamily = '"PEmojiColor", ' + ff;
+    }
+  });
+  await page.waitForTimeout(300);
+}
+
 (async () => {
   fs.mkdirSync(OUT, { recursive: true });
   const launch = process.env.CHROMIUM_PATH ? { executablePath: process.env.CHROMIUM_PATH } : {};
@@ -56,6 +74,7 @@ async function seccion(page, card, ov, juego) {
     const page = await ctx.newPage();
     await entrar(page);
     await paso(page);
+    await emojiEnColor(page);
     await page.screenshot({ path: path.join(OUT, nombre + '.png') });
     console.log(nombre);
     await ctx.close();
