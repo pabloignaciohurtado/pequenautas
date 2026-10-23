@@ -71,6 +71,22 @@ test('Play · manifest: íconos PNG any + maskable a 192 y 512, capturas 16:9 y 
   }
 });
 
+test('Play · arte de la ficha hecho con Grok: ícono definitivo y gráfico destacado 1024x500', async () => {
+  // Regla del proyecto: todo el arte lo dibuja Grok. Las fuentes viven en
+  // assets/brand/ (las trae tools/twa/fetch_art.py verificando su sha256); si
+  // faltaran, make_icons.py caería al ícono provisorio sin avisar.
+  const arte = JSON.parse(fs.readFileSync(path.join(root, 'tools/twa/arte-grok.json'), 'utf8'));
+  for (const a of arte) {
+    expect(a.sha256).toMatch(/^[0-9a-f]{64}$/);
+    const buf = fs.readFileSync(path.join(root, a.archivo));
+    expect(buf.slice(8, 12).toString()).toBe('WEBP');
+  }
+  const fg = path.join(root, 'store/feature-graphic.png');
+  expect(pngSize(fg)).toEqual({ w: 1024, h: 500 });
+  // Play lo pide en JPEG o PNG de 24 bits sin alfa: tipo de color 2 (RGB)
+  expect(fs.readFileSync(fg)[25]).toBe(2);
+});
+
 test('Play · assetlinks verifica el paquete com.pequenautas.bosque y la TWA apunta al mismo dominio', async () => {
   const al = JSON.parse(fs.readFileSync(path.join(root, '.well-known/assetlinks.json'), 'utf8'));
   const t = al[0].target;

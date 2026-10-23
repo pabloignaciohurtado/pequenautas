@@ -1,16 +1,17 @@
 name: Recursos de la app instalable
 
 # Fabrica los binarios que la app de Google Play necesita y los deja escritos
-# en la propia rama: fuentes servidas desde el dominio (fonts/), íconos PNG
-# (icons/) y capturas de tienda (screenshots/).
+# en la propia rama: fuentes servidas desde el dominio (fonts/), el arte de
+# Grok (assets/brand/), íconos PNG (icons/), el gráfico destacado (store/) y
+# las capturas de tienda (screenshots/).
 #
 # Mismo motivo que voz.yml: los binarios no se pueden subir a mano por el
 # conector de GitHub, pero sí los scripts que los producen, que son texto
 # legible y revisable en un diff. Cambiar un script en una rama de trabajo
 # vuelve a generar sus salidas aquí.
 #
-# El filtro por ruta evita que se llame a sí mismo: escribe en fonts/, icons/
-# y screenshots/, que no disparan el flujo (y además los pushes hechos con
+# El filtro por ruta evita que se llame a sí mismo: escribe en fonts/, assets/,
+# icons/, store/ y screenshots/, que no disparan el flujo (y además los pushes hechos con
 # GITHUB_TOKEN no lanzan flujos nuevos).
 
 on:
@@ -56,20 +57,23 @@ jobs:
       - name: Fuentes desde el propio dominio
         run: python3 tools/fonts/fetch_fonts.py
 
-      - name: Íconos
+      - name: Arte de Grok (fuentes verificadas por sha256)
+        run: python3 tools/twa/fetch_art.py
+
+      - name: Íconos y gráfico destacado
         run: python3 tools/twa/make_icons.py
 
       - name: Capturas de tienda
         run: node tools/twa/screenshots.js
 
       - name: Huellas de lo generado
-        run: sha256sum fonts/* icons/* screenshots/*
+        run: sha256sum fonts/* assets/brand/* icons/* store/* screenshots/*
 
       - name: Commit en la rama
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          git add fonts icons screenshots
+          git add fonts assets icons store screenshots
           if git diff --cached --quiet; then
             echo "Sin cambios en los recursos."
             exit 0

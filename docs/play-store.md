@@ -12,12 +12,14 @@ algo del envoltorio (ícono, nombre, orientación, paquete, versión de Android)
 |---|---|---|
 | ID de paquete | `com.pequenautas.bosque` | Permanente: no se puede cambiar después de publicar. |
 | Configuración TWA | `tools/twa/twa-manifest.json` | Bubblewrap 1.27, target API 36, minSdk 24, horizontal fija, sin notificaciones ni atajo a ajustes de Chrome. |
-| Íconos | `icons/` (192/512, any + maskable) | Generados por `tools/twa/make_icons.py` a partir del Rufo de Grok. |
+| Arte de Grok | `assets/brand/` | Ícono de Rufo y gráfico destacado. Los trae `tools/twa/fetch_art.py` desde `tools/twa/arte-grok.json` verificando su sha256. |
+| Íconos | `icons/` (192/512, any + maskable) | Generados por `tools/twa/make_icons.py` a partir del ícono de Grok. |
+| Gráfico destacado | `store/feature-graphic.png` (1024×500) | Para la ficha de Play; lo genera `make_icons.py`. |
 | Capturas de tienda | `screenshots/` (1920×1080) | Generadas por `tools/twa/screenshots.js`. |
 | Fuentes | `fonts/` | Servidas desde el dominio: la app no llama a ningún tercero. |
 | Verificación de dominio | `.well-known/assetlinks.json` | Hoy lleva la huella de la **clave de subida**. Falta la de la **clave de firma de Play** (paso 4). |
 | Política de privacidad | `privacy.html` | ES/EN, enlazada desde Ajustes (área de adultos). URL para la ficha: `https://pequenautas-rfj5.vercel.app/privacy.html` |
-| Regeneración | `.github/workflows/twa-assets.yml` | Al cambiar `tools/twa/**` o `tools/fonts/**` en una rama `feat/**`, vuelve a fabricar fuentes, íconos y capturas. |
+| Regeneración | `.github/workflows/twa-assets.yml` | Al cambiar `tools/twa/**` o `tools/fonts/**` en una rama `feat/**`, vuelve a fabricar fuentes, arte, íconos y capturas. |
 
 La **clave de subida** (`upload-key.jks` + contraseña) **no** está en el repo. La
 tiene Ignacio. Si se pierde, Play permite pedir un reinicio de la clave de subida
@@ -63,14 +65,12 @@ Para cada versión nueva en Play: subir `appVersionCode` (y `appVersion`) en
 8. **Clasificación de contenido** (cuestionario IARC): educativa, sin violencia,
    sin interacción entre usuarios, sin compras.
 9. **Ficha de Play Store**: descripción corta y completa, ícono 512×512
-   (`icons/icon-512.png`), **gráfico destacado 1024×500** (pendiente: generarlo
-   con Grok), y las capturas de `screenshots/`.
+   (`icons/icon-512.png`), **gráfico destacado 1024×500**
+   (`store/feature-graphic.png`), y las capturas de `screenshots/`.
 10. **Política de privacidad**: `https://pequenautas-rfj5.vercel.app/privacy.html`.
 
 ## Pendientes
 
-- Ícono definitivo y gráfico destacado hechos con Grok (sin créditos al preparar
-  esta versión; el ícono actual reutiliza el Rufo de Grok de la portada).
 - Revisión legal de `privacy.html` por un abogado con experiencia en privacidad
   infantil antes de pasar a producción.
 - Dominio propio (opcional): si se cambia, hay que publicar `assetlinks.json` en
