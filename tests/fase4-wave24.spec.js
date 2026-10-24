@@ -88,24 +88,26 @@ test('Fase 4 · #58: la cara es la misma cara con distinta expresión', async ({
   await page.waitForTimeout(600);
 
   await expect(page.locator('.pa58-play.show')).toHaveCount(1);
+  // v2 (revisión de Ignacio): la pregunta es la palabra y las respuestas son
+  // caras del MISMO Rufo de Grok; ninguna ficha lleva otro dibujo ni emoji.
   const face = await page.evaluate(() => {
     const s = document.querySelector('.pa58-stage');
-    const svg = s && s.querySelector('svg.pa58-fsvg');
+    const caras = [...document.querySelectorAll('.pa58-tile .pa58-rf')];
     return {
       emo: s && s.getAttribute('data-face'),
-      head: !!(svg && svg.querySelector('.head')),
-      ears: svg ? svg.querySelectorAll('.ear').length : 0,
-      brow: !!(svg && svg.querySelector('.brow')),
-      mouth: !!(svg && svg.querySelector('.mouth')),
-      viewBox: svg && svg.getAttribute('viewBox')
+      palabra: s && s.textContent.trim(),
+      caras: caras.length,
+      img: caras.every(c => /data:image\/webp/.test(getComputedStyle(c).backgroundImage)),
+      emojis: [...document.querySelectorAll('.pa58-tile')].some(t => /\p{Extended_Pictographic}/u.test(t.textContent)),
+      prompt: document.getElementById('pa58prompt') ? document.getElementById('pa58prompt').textContent : document.querySelector('.pa58-play.show [class*=prompt]').textContent
     };
   });
   expect(['happy', 'sad', 'angry', 'scared', 'surp', 'calm']).toContain(face.emo);
-  expect(face.head).toBe(true);
-  expect(face.ears).toBe(2);          // el mismo zorro siempre
-  expect(face.brow).toBe(true);       // las cejas son la mitad de la emoción
-  expect(face.mouth).toBe(true);
-  expect(face.viewBox).toBe('0 0 100 100');
+  expect(face.palabra.length).toBeGreaterThan(3);
+  expect(face.prompt).toContain('Rufo');
+  expect(face.caras).toBeGreaterThanOrEqual(2);
+  expect(face.img).toBe(true);
+  expect(face.emojis).toBe(false);
 
   // y hay fichas de emoción para responder, con su color propio
   const tiles = await page.$$eval('.pa58-tile', ns => ns.map(n => n.getAttribute('data-emo')));

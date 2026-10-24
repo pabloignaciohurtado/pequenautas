@@ -137,7 +137,7 @@ test('Fase 4 · #63: el botón atrás cierra la capa de arriba en vez de salir d
   await expect(page.locator('#home.active')).toHaveCount(1);
 });
 
-test('Fase 4 · #63: juegos nuevos sobre el bosque, íconos de Grok en vez de emoji, idioma recordado', async ({ page }) => {
+test('Fase 4 · #63: juegos nuevos sobre el bosque, íconos y caras de Grok en vez de emoji, idioma recordado', async ({ page }) => {
   await entrarHorizontal(page);
   await page.evaluate(() => document.querySelector('#pa58Card').click());
   await page.waitForTimeout(600);
@@ -147,17 +147,16 @@ test('Fase 4 · #63: juegos nuevos sobre el bosque, íconos de Grok en vez de em
   await page.waitForTimeout(900);
   const r = await page.evaluate(() => {
     const play = document.querySelector('.pa58-play.show');
-    const ic = document.querySelector('.pa58-tile .ic');
+    const ic = document.querySelector('.pa58-tile .pa58-rf');
     const rep = document.querySelector('#pa58replay');
     return {
       bg: getComputedStyle(play).backgroundImage,
-      ic: getComputedStyle(ic).backgroundImage, icFont: getComputedStyle(ic).fontSize,
+      ic: getComputedStyle(ic).backgroundImage,
       rep: getComputedStyle(rep).backgroundImage, repFont: getComputedStyle(rep).fontSize,
     };
   });
   expect(r.bg).toContain('data:image/webp');
   expect(r.ic).toContain('data:image/webp');
-  expect(r.icFont).toBe('0px');
   expect(r.rep).toContain('data:image/webp');
   expect(r.repFont).toBe('0px');
   await page.locator('.pa58-play.show .pa34-x').click();
