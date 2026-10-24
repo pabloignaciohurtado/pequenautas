@@ -87,5 +87,57 @@
     setTimeout(function () { pendiente = false; sincronizar(); }, 80);
   }).observe(document.documentElement, { subtree: true, childList: true, attributes: true, attributeFilter: ["class", "style", "hidden"] });
 
+  /* ---- Fondo de bosque también en los juegos de las materias nuevas ----
+     Los juegos de #34 (Números, Letras, Animales) se juegan sobre el claro
+     del bosque de #34/img/bg.css; los 20 juegos de #53–#60 tenían un crema
+     liso, y el niño pasaba de un mundo a otro según la materia. En lugar de
+     duplicar la imagen embebida, se toma la que ya pintó #34 (mismo archivo,
+     ya en caché) y se aplica a las cinco superficies. */
+  function fondoBosque() {
+    try {
+      var sonda = document.createElement("div");
+      sonda.className = "pa34-play";
+      sonda.style.display = "none";
+      document.body.appendChild(sonda);
+      var img = getComputedStyle(sonda).backgroundImage;
+      sonda.remove();
+      if (!img || img === "none") return false;
+      var st = document.createElement("style");
+      st.id = "pa63bosque";
+      st.textContent =
+        ".pa53-play,.pa54-play,.pa55-play,.pa58-play,.pa60-play{" +
+        "background:" + img + " center/cover no-repeat,#DDEFD6 !important;}";
+      document.head.appendChild(st);
+      return true;
+    } catch (e) { return false; }
+  }
+  if (!fondoBosque()) {
+    var intentos = 0;
+    var t = setInterval(function () { if (fondoBosque() || ++intentos > 20) clearInterval(t); }, 500);
+  }
+
+  /* ---- El idioma se recuerda ----
+     app.js arranca siempre en español (S.lang no se guarda): una familia que
+     eligió inglés lo perdía en cada apertura. Se guarda cada cambio (se
+     observa el atributo lang de <html>, que applyLang() mantiene al día, así
+     vale venga del botón que venga) y al abrir se repone pulsando el mismo
+     #langBtn, para que todos los módulos que escuchan ese botón se repinten,
+     con la voz silenciada para que no diga "English" al arrancar. */
+  var CLAVE_IDIOMA = "pa63_lang";
+  try {
+    var guardado = localStorage.getItem(CLAVE_IDIOMA);
+    var actual = document.documentElement.lang;
+    var lb = document.getElementById("langBtn");
+    if ((guardado === "en" || guardado === "es") && guardado !== actual && lb) {
+      var sonido = (typeof S !== "undefined") ? S.sound : null;
+      if (sonido !== null) S.sound = false;
+      lb.click();
+      if (sonido !== null) S.sound = sonido;
+    }
+  } catch (e) {}
+  new MutationObserver(function () {
+    try { localStorage.setItem(CLAVE_IDIOMA, document.documentElement.lang); } catch (e) {}
+  }).observe(document.documentElement, { attributes: true, attributeFilter: ["lang"] });
+
   window.PA63 = { capaArriba: capaArriba, sincronizar: sincronizar };
 })();
