@@ -1,0 +1,105 @@
+/* ===== Fase 4 #63 · Ajustes de coherencia y de pantalla horizontal =====
+   Nace de la auditoría del APK de prueba: en un teléfono en horizontal
+   (~892x412) varias pantallas dejaban al niño sin salida o con el juego
+   cortado. Todo vive aquí, en un solo módulo aditivo, en lugar de repartir
+   parches por cinco materias: no toca app.js ni los módulos que corrige. */
+
+/* 1 · Hojas de sección y mapa de niveles de #53, #54, #55, #58 y #60.
+   El overlay alinea la hoja abajo (flex-end) y la hoja no tenía alto
+   máximo: en horizontal crecía más que la pantalla, la cabecera y la ×
+   quedaban por ENCIMA del borde superior y el nivel 1 también, sin forma de
+   desplazarse. Con alto máximo, el cuerpo (flex:1; overflow:auto de #34)
+   vuelve a desplazarse y la × queda siempre visible. */
+.pa53-ov .pa34-sheet,.pa54-ov .pa34-sheet,.pa55-ov .pa34-sheet,
+.pa58-ov .pa34-sheet,.pa60-ov .pa34-sheet{max-height:100%;}
+.pa53-ov .pa34-body,.pa54-ov .pa34-body,.pa55-ov .pa34-body,
+.pa58-ov .pa34-body,.pa60-ov .pa34-body{min-height:0;}
+
+/* 2 · Campo de juego. Estaba centrado en vertical con overflow:auto, y un
+   flex centrado que desborda recorta por arriba SIN poder desplazarse hasta
+   ahí: las tarjetas de "¿Cómo se siente?" o las almohadillas de Música
+   salían cortadas. `safe center` centra cuando cabe y alinea arriba cuando
+   no, de modo que todo queda alcanzable. */
+.pa53-field,.pa54-field,.pa55-field,.pa58-field,.pa60-field{justify-content:safe center;}
+
+/* 3 · Tipografía. Los <button> no heredan la fuente: las etiquetas de las
+   tarjetas de inicio y de los perfiles ("Números", "Nivel 1", "Lea") salían
+   en la fuente por defecto del navegador. Y las cinco materias nuevas
+   pedían 'Plus Jakarta Sans', que nunca se carga: caían a la del sistema.
+   La app usa Fredoka para el texto y Baloo 2 para titulares. */
+button,input,select,textarea{font-family:inherit;}
+.pa53-play,.pa54-play,.pa55-play,.pa58-play,.pa60-play,
+.pa53-ov,.pa54-ov,.pa55-ov,.pa58-ov,.pa60-ov{font-family:'Fredoka',system-ui,sans-serif !important;}
+
+/* 4 · Objetivos táctiles de al menos 48 px (para 3–5 años, cuanto más mejor).
+   Las × de salida, el "volver" de los mapas y el botón de repetir medían 42. */
+.pa34-x,.pa34-back{min-width:48px !important;min-height:48px !important;}
+.pa53-cta,.pa54-cta,.pa55-cta,.pa58-cta,.pa60-cta{min-height:48px;}
+.pa54-foot{min-width:48px;min-height:48px;}
+
+/* 5 · El engranaje de adultos (#36) se montaba sobre el botón de sonido.
+   Baja por debajo de la fila de botones de la cabecera. */
+.pa36-adult{top:calc(70px + env(safe-area-inset-top)) !important;}
+
+/* 6 · Teléfono en horizontal: la altura es lo que escasea. */
+@media (orientation:landscape) and (max-height:520px){
+  /* cabecera y pie de los juegos más finos: ~30 px más de campo */
+  .pa53-ptop,.pa54-ptop,.pa55-ptop,.pa58-ptop,.pa60-ptop{padding-top:6px !important;padding-bottom:6px !important;}
+  .pa53-pbot,.pa54-pbot,.pa55-pbot,.pa58-pbot,.pa60-pbot{padding-top:6px !important;padding-bottom:calc(6px + env(safe-area-inset-bottom,0px)) !important;}
+  .pa53-prompt,.pa54-prompt,.pa55-prompt,.pa58-prompt,.pa60-prompt{font-size:16px;}
+  .pa53-field,.pa54-field,.pa55-field,.pa58-field,.pa60-field{padding-top:10px !important;padding-bottom:10px !important;gap:12px !important;}
+
+  /* #54 "Arma el paisaje": tablero y bandeja uno al lado del otro. Apilados
+     no cabían y las piezas quedaban fuera de la pantalla. */
+  .pa54-field:has(> .pa54-board){flex-direction:row !important;align-items:center;justify-content:center;flex-wrap:nowrap;}
+  .pa54-field:has(> .pa54-board) > *{width:auto !important;}
+  .pa54-board{height:calc(100dvh - 150px);width:auto !important;max-width:none !important;margin:0 !important;flex:0 0 auto;}
+  .pa54-field:has(> .pa54-board) > .pa54-tray{flex:0 1 300px;max-height:calc(100dvh - 150px);overflow-y:auto;align-content:flex-start;}
+  .pa54-piece{width:64px;}
+
+  /* #54 "Sigue el sendero": el claro se acota por alto, no por ancho */
+  .pa54-trail{width:auto !important;height:calc(100dvh - 150px);max-width:none !important;}
+
+  /* #58: la escena (cara o situación) a la izquierda y las respuestas a la
+     derecha. Apiladas, las respuestas quedaban bajo el pie de la pantalla. */
+  .pa58-field:has(> .pa58-stage),.pa58-field:has(> .pa58-sit){flex-direction:row !important;align-items:center;}
+  .pa58-field:has(> .pa58-stage) > *,.pa58-field:has(> .pa58-sit) > *{width:auto !important;flex:0 1 auto;}
+  .pa58-field > .pa58-sit{max-width:44% !important;}
+  .pa58-field > .pa58-acts{flex:0 1 400px;}
+  .pa58-stage .pa58-fsvg{width:min(170px,40dvh) !important;height:min(170px,40dvh) !important;}
+  .pa58-sit .ic{font-size:40px;}
+  .pa58-sit .face .pa58-fsvg{width:84px !important;height:84px !important;}
+  .pa58-sit .face.static{height:90px;}
+
+  /* #55 "Escucha y repite": las cuatro almohadillas caben por alto */
+  .pa55-pads{width:min(360px,calc(100dvh - 160px)) !important;}
+  .pa55-pad{font-size:32px;}
+
+  /* #34 "Traza la letra": el lienzo se acota por alto (86vw era para vertical) */
+  .pa34-tsvg{width:min(86vw,340px,calc(100dvh - 150px)) !important;height:min(86vw,340px,calc(100dvh - 150px)) !important;}
+  .pa34-tarea{padding:8px !important;min-height:0;}
+
+  /* Juegos clásicos (app.js): enunciado, figura y respuestas apiladas
+     pasaban del alto de la pantalla; se compactan. */
+  #game .prompt{padding:8px 18px !important;margin-bottom:8px !important;}
+  #game .stage{gap:10px !important;justify-content:safe center !important;overflow-y:auto;}
+  #stage .choices > .choice{min-height:88px !important;padding:8px 6px !important;}
+  #stage .choices > .choice > .cnum{font-size:44px;}
+  #stage .lettertile{width:104px !important;height:104px !important;font-size:64px !important;}
+  #stage .animalBig{font-size:80px !important;height:auto !important;line-height:1.1;}
+  #stage .choices.habitats > .choice{min-height:84px !important;}
+
+  /* Inicio: que la barra Inicio/Mapa/Mochila no tape la última fila */
+  #home{padding-bottom:96px !important;}
+}
+
+/* 7 · Escalonado de entrada de las tarjetas de inicio: un paso fijo de 60 ms
+   en lugar de 0/90/160/230/290/330/390/450 repartidos entre módulos. */
+.screen.active .subject:nth-child(1){animation-delay:0ms !important;}
+.screen.active .subject:nth-child(2){animation-delay:60ms !important;}
+.screen.active .subject:nth-child(3){animation-delay:120ms !important;}
+.screen.active .subject.pa53-card{animation-delay:180ms !important;}
+.screen.active .subject.pa54-card{animation-delay:240ms !important;}
+.screen.active .subject.pa55-card{animation-delay:300ms !important;}
+.screen.active .subject.pa58-card{animation-delay:360ms !important;}
+.screen.active .subject.pa60-card{animation-delay:420ms !important;}
