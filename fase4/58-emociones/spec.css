@@ -34,6 +34,12 @@
 @import url("img/em-what.css");
 @import url("img/em-help.css");
 @import url("img/em-breathe.css");
+@import url("img/rf-happy.css");
+@import url("img/rf-sad.css");
+@import url("img/rf-angry.css");
+@import url("img/rf-scared.css");
+@import url("img/rf-surp.css");
+@import url("img/rf-calm.css");
 
 /* ---------- 1 · Home: la séptima casa es una banda ---------- */
 .subject.pa58-card{
@@ -275,3 +281,23 @@ html.a11y-hc .pa58-fsvg .brow,
 html.a11y-hc .pa58-fsvg .mouth{stroke:#000;stroke-width:4.2;}
 html.a11y-hc .pa58-act,
 html.a11y-hc .pa58-tile{border-color:#000 !important;}
+
+
+/* ---------- v2: las caras son Rufo de Grok (ver faceSvg en spec.js) ---------- */
+.pa58-rf{background-position:center;background-size:contain;background-repeat:no-repeat;}
+.pa58-rf[data-emo="happy"]{background-image:var(--pa58-rf-happy);}
+.pa58-rf[data-emo="sad"]{background-image:var(--pa58-rf-sad);}
+.pa58-rf[data-emo="angry"]{background-image:var(--pa58-rf-angry);}
+.pa58-rf[data-emo="scared"]{background-image:var(--pa58-rf-scared);}
+.pa58-rf[data-emo="surp"]{background-image:var(--pa58-rf-surp);}
+.pa58-rf[data-emo="calm"]{background-image:var(--pa58-rf-calm);}
+.pa58-tile{width:124px;}
+.pa58-tile .ic{display:block;width:100px;height:88px;margin:0 auto;font-size:0;}
+.pa58-tile .ic .pa58-rf{width:100%;height:100%;}
+@media (max-width:400px){ .pa58-tile{width:96px;} .pa58-tile .ic{width:78px;height:68px;} }
+/* juego 1: la pregunta es la palabra, grande y en el color de la emoción;
+   tocarla la repite en voz alta */
+.pa58-ask{border:0;cursor:pointer;background:#FFFDF6;border-radius:24px;padding:18px 26px;
+  box-shadow:0 5px 0 rgba(0,0,0,.08);border:4px solid var(--tc,#E8843A);min-width:160px;min-height:0;font-family:inherit;}
+.pa58-ask .wd{display:block;font-size:34px;font-weight:800;color:#2E3B2C;line-height:1.1;}
+.pa58-ask.in{animation:pa58pop 560ms cubic-bezier(.2,.9,.3,1.2);}

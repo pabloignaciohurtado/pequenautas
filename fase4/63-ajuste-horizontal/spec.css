@@ -6,12 +6,6 @@
 
 @import url("img/ic-replay.css");
 @import url("img/ic-lock.css");
-@import url("img/ic-happy.css");
-@import url("img/ic-sad.css");
-@import url("img/ic-angry.css");
-@import url("img/ic-scared.css");
-@import url("img/ic-surp.css");
-@import url("img/ic-calm.css");
 
 
 /* 1 · Hojas de sección y mapa de niveles de #53, #54, #55, #58 y #60.
@@ -75,6 +69,10 @@ button,input,select,textarea{font-family:inherit;}
   .pa58-field:has(> .pa58-stage),.pa58-field:has(> .pa58-sit){flex-direction:row !important;align-items:center;}
   .pa58-field:has(> .pa58-stage) > *,.pa58-field:has(> .pa58-sit) > *{width:auto !important;flex:0 1 auto;}
   .pa58-field > .pa58-sit{max-width:44% !important;}
+  /* Respira con Rufo: los anillos (230 px, crecen al inspirar) más el botón
+     "Ya estoy bien" debajo no cabían en ~300 px; el botón pasa al costado */
+  .pa58-field:has(> .pa58-breathe){flex-direction:row !important;align-items:center;justify-content:center !important;gap:40px !important;}
+  .pa58-field > .pa58-breathe{min-height:0 !important;height:100%;width:300px;flex:0 0 auto;}
   .pa58-field > .pa58-acts{flex:0 1 400px;}
   .pa58-stage .pa58-fsvg{width:min(170px,40dvh) !important;height:min(170px,40dvh) !important;}
   .pa58-sit .ic{font-size:40px;}
@@ -115,9 +113,9 @@ button,input,select,textarea{font-family:inherit;}
 .screen.active .subject.pa60-card{animation-delay:420ms !important;}
 
 /* 8 · Íconos de Grok en lugar de emoji del sistema. El resto de la app es
-   papercraft dibujado por Grok; el 🔁 de repetir, el 🔒 de los niveles y
-   las caritas de las fichas de Emociones eran los emoji del teléfono, que
-   además cambian de dibujo según la marca. Se oculta el emoji (sigue en el
+   papercraft dibujado por Grok; el 🔁 de repetir y el 🔒 de los niveles
+   eran los emoji del teléfono (las caras de Emociones se resolvieron en
+   #58, con Rufo), que además cambian de dibujo según la marca. Se oculta el emoji (sigue en el
    DOM para lectores de pantalla y tests) y se pinta el ícono encima. */
 #pa53replay,#pa54replay,#pa55replay,#pa58replay,#pa60replay{
   font-size:0 !important;min-width:64px;
@@ -131,14 +129,6 @@ button,input,select,textarea{font-family:inherit;}
 }
 .pa34-game .lock{font-size:0 !important;width:24px;height:24px;
   background:var(--pa63-ic-lock) center/contain no-repeat;}
-.pa58-tile .ic{font-size:0 !important;display:block;width:48px;height:48px;margin:0 auto;
-  background-position:center;background-size:contain;background-repeat:no-repeat;}
-.pa58-tile[data-emo="happy"] .ic{background-image:var(--pa63-ic-happy);}
-.pa58-tile[data-emo="sad"] .ic{background-image:var(--pa63-ic-sad);}
-.pa58-tile[data-emo="angry"] .ic{background-image:var(--pa63-ic-angry);}
-.pa58-tile[data-emo="scared"] .ic{background-image:var(--pa63-ic-scared);}
-.pa58-tile[data-emo="surp"] .ic{background-image:var(--pa63-ic-surp);}
-.pa58-tile[data-emo="calm"] .ic{background-image:var(--pa63-ic-calm);}
 
 /* 9 · Una sola forma de salir. Los juegos de #34 tenían la × dentro de una
    columna centrada de 440 px (en horizontal, a mitad de pantalla); en las
