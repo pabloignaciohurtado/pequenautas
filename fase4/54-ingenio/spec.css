@@ -202,11 +202,11 @@ html.pa52 [data-pa34-game="brain:scale"]  .mech{background-image:var(--pa54-scal
 .pa54-scale{width:100%;height:auto;display:block;filter:drop-shadow(0 6px 10px rgba(46,59,44,.20));}
 .pa54-pans{position:absolute;inset:0;display:flex;justify-content:space-between;align-items:flex-start;pointer-events:none;padding:0 4%;}
 .pa54-pan{
-  width:38%;min-height:56px;
+  width:38%;min-height:0;
   display:flex;flex-wrap:wrap;gap:3px;align-content:flex-end;justify-content:center;
   padding-bottom:6px;
 }
-.pa54-w{width:22px;height:22px;display:block;}
+.pa54-w{width:24px;height:24px;display:block;}
 .pa54-w .pa54-svg{width:100%;height:100%;}
 .pa54-new{animation:pa54pop 380ms ease;}
 @keyframes pa54pop{0%{transform:scale(.2);opacity:0;}70%{transform:scale(1.15);}100%{transform:none;opacity:1;}}
