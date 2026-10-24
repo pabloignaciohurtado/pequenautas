@@ -171,3 +171,58 @@ test('Fase 4 · #63: juegos nuevos sobre el bosque, íconos y caras de Grok en v
   await page.waitForTimeout(3500);
   expect(await page.evaluate(() => document.documentElement.lang)).toBe('en');
 });
+
+async function abrirJuego(page, card, ov, i) {
+  await page.goto('file://' + path.resolve(__dirname, '../index.html'));
+  await page.waitForTimeout(3300);
+  await page.evaluate((c) => document.querySelector(c).click(), card);
+  await page.waitForTimeout(600);
+  await page.evaluate(([o, i]) => document.querySelectorAll(o + ' .pa34-game')[i].click(), [ov, i]);
+  await page.waitForTimeout(450);
+  await page.evaluate((o) => document.querySelector(o + ' .pa34-lvl.cur').click(), ov);
+  await page.waitForTimeout(1200);
+}
+
+test('Fase 4 · coherencia: la balanza baja del lado con MÁS bellotas y se responde tocando el platillo', async ({ page }) => {
+  await entrarHorizontal(page);
+  for (let k = 0; k < 3; k++) {
+    await abrirJuego(page, '.subject.pa54-card', '.pa54-ov', 3);
+    const r = await page.evaluate(() => {
+      const pans = document.querySelectorAll('.pa54-play.show .pa54-pan');
+      const g = document.querySelector('.pa54-play.show .pa54-scale g');
+      const ang = parseFloat(/rotate\((-?[\d.]+)/.exec(g.getAttribute('transform'))[1]);
+      const top = [...pans].map((p) => p.getBoundingClientRect().top);
+      return { a: pans[0].children.length, b: pans[1].children.length, ang, top };
+    });
+    // izquierda más pesada => ángulo negativo (baja la izquierda) y su platillo queda más abajo
+    if (r.a > r.b) { expect(r.ang).toBeLessThan(0); expect(r.top[0]).toBeGreaterThan(r.top[1]); }
+    else { expect(r.ang).toBeGreaterThan(0); expect(r.top[1]).toBeGreaterThan(r.top[0]); }
+  }
+  // tocar el platillo pesado cuenta como respuesta
+  const lado = await page.evaluate(() => {
+    const p = document.querySelectorAll('.pa54-play.show .pa54-pan');
+    return p[0].children.length > p[1].children.length ? 0 : 1;
+  });
+  await page.evaluate((i) => document.querySelectorAll('.pa54-play.show .pa54-pan')[i].click(), lado);
+  await page.waitForTimeout(300);
+  expect(await page.evaluate(() => document.querySelector('.pa54-play.show [class*=pstar], .pa54-play.show [id$=score]').textContent)).toContain('1');
+});
+
+test('Fase 4 · coherencia: Mamá y bebé y Grandes y chicos usan arte de Grok, no emoji', async ({ page }) => {
+  await entrarHorizontal(page);
+  await abrirJuego(page, '.subject[data-game="science"]', '.pa34-ov', 3);
+  const m = await page.evaluate(() => {
+    const cards = [...document.querySelectorAll('.pa34-mplay.show .pa34-mcard')];
+    return { arte: cards.filter((c) => c.querySelector('.pa34-art')).length, total: cards.length,
+      emoji: cards.some((c) => /\p{Extended_Pictographic}/u.test(c.textContent)) };
+  });
+  expect(m.total).toBeGreaterThanOrEqual(6);
+  expect(m.arte).toBe(m.total);
+  expect(m.emoji).toBe(false);
+
+  await abrirJuego(page, '.subject[data-game="science"]', '.pa34-ov', 2);
+  const s = await page.evaluate(() => [...document.querySelectorAll('.pa34-splay.show .pa34-scard .pa34-art')]
+    .map((a) => a.getBoundingClientRect().width));
+  expect(s.length).toBeGreaterThanOrEqual(3);
+  expect(new Set(s).size).toBe(s.length); // cada animal a su escala: se VE quién es más grande
+});
