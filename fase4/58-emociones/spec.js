@@ -110,46 +110,23 @@
   function byId(id) { for (var i = 0; i < EMO.length; i++) if (EMO[i].id === id) return EMO[i]; return EMO[0]; }
 
   /* ---------- la cara ----------
-     Un solo zorro de papel al que solo le cambian cejas, ojos y boca. Que
-     el animal NO cambie es todo el diseño del juego: si cambiara, el niño
-     aprendería "el erizo está triste" en vez de "las cejas caídas y la boca
-     hacia abajo son tristeza", que es lo transferible.
-     Geometría en un viewBox 100x100 para que escale sin pensar. */
-  var FACE = {
-    happy:  { brow: "M26 33 Q33 28 40 32 M60 32 Q67 28 74 33", eye: "open", mouth: "M34 62 Q50 76 66 62", blush: true },
-    sad:    { brow: "M26 28 Q33 33 40 35 M60 35 Q67 33 74 28", eye: "open", mouth: "M34 70 Q50 58 66 70", tear: true },
-    angry:  { brow: "M26 26 Q33 33 40 36 M60 36 Q67 33 74 26", eye: "open", mouth: "M34 70 Q50 62 66 70", steam: true },
-    scared: { brow: "M26 30 Q33 24 40 30 M60 30 Q67 24 74 30", eye: "wide", mouth: "M50 68 m-9 0 a9 11 0 1 0 18 0 a9 11 0 1 0 -18 0" },
-    surp:   { brow: "M25 26 Q33 21 41 26 M59 26 Q67 21 75 26", eye: "wide", mouth: "M50 67 m-8 0 a8 9 0 1 0 16 0 a8 9 0 1 0 -16 0" },
-    calm:   { brow: "M27 31 Q33 29 39 31 M61 31 Q67 29 73 31", eye: "closed", mouth: "M40 64 Q50 71 60 64", blush: true }
-  };
+     Un solo zorro al que solo le cambia la expresión. Que el animal NO
+     cambie es todo el diseño del juego: si cambiara, el niño aprendería "el
+     erizo está triste" en vez de "las cejas caídas y la boca hacia abajo son
+     tristeza", que es lo transferible.
+     v2 (revisión de Ignacio, oct-2026): el zorro era un SVG plano y las
+     fichas de respuesta mostraban OTRA cara (emoji, luego bolitas de Grok),
+     así que el niño tenía que emparejar dos personajes distintos y el juego
+     "no hacía sentido". Ahora las seis expresiones son Rufo en papercraft,
+     dibujadas por Grok en UNA sola hoja de expresiones (mismo personaje por
+     construcción) y recortadas a img/rf-*.css. La misma cara se usa en
+     todas partes: fichas, confirmación de los juegos 2 y 3 y la respiración.
+     Se mantiene el nombre faceSvg() y la clase .pa58-fsvg para no tocar los
+     tamaños ni los llamadores. */
   function faceSvg(id) {
-    var f = FACE[id] || FACE.happy, s = "";
-    s += '<svg viewBox="0 0 100 100" class="pa58-fsvg" aria-hidden="true">';
-    /* orejas */
-    s += '<path class="ear" d="M18 34 L14 8 L38 20 Z"/><path class="ear" d="M82 34 L86 8 L62 20 Z"/>';
-    s += '<path class="earin" d="M22 31 L20 15 L34 22 Z"/><path class="earin" d="M78 31 L80 15 L66 22 Z"/>';
-    /* cabeza */
-    s += '<ellipse class="head" cx="50" cy="55" rx="36" ry="34"/>';
-    s += '<ellipse class="snout" cx="50" cy="64" rx="21" ry="17"/>';
-    /* ojos */
-    if (f.eye === "closed") {
-      s += '<path class="lid" d="M31 45 Q38 51 45 45"/><path class="lid" d="M55 45 Q62 51 69 45"/>';
-    } else {
-      var r = f.eye === "wide" ? 8 : 6;
-      s += '<circle class="eye" cx="38" cy="45" r="' + r + '"/><circle class="eye" cx="62" cy="45" r="' + r + '"/>';
-      s += '<circle class="glint" cx="40" cy="43" r="2.1"/><circle class="glint" cx="64" cy="43" r="2.1"/>';
-    }
-    /* cejas */
-    s += '<path class="brow" d="' + f.brow + '"/>';
-    /* nariz + boca */
-    s += '<ellipse class="nose" cx="50" cy="56" rx="5" ry="4"/>';
-    s += '<path class="mouth" d="' + f.mouth + '"/>';
-    if (f.blush) s += '<ellipse class="blush" cx="27" cy="60" rx="6" ry="4"/><ellipse class="blush" cx="73" cy="60" rx="6" ry="4"/>';
-    if (f.tear) s += '<path class="tear" d="M38 53 q-3 6 0 9 q3 -3 0 -9 Z"/>';
-    if (f.steam) s += '<path class="steam" d="M20 22 q4 -6 0 -11 M80 22 q-4 -6 0 -11"/>';
-    s += "</svg>";
-    return s;
+    var e = byId(id);
+    return '<span class="pa58-fsvg pa58-rf" data-emo="' + e.id + '" role="img" aria-label="Rufo ' +
+      eName(e).toLowerCase() + '"></span>';
   }
 
   /* ---------- 20 situaciones ----------
@@ -207,7 +184,7 @@
   var GAMES = [
     { id: "emo:face", kind: "face", mech: "tap",
       es: "¿Cómo se siente?", en: "How do they feel?",
-      des: "Mira la cara y dime la emoción", den: "Look at the face and name the feeling" },
+      des: "Busca la cara de Rufo que te digo", den: "Find the Rufo face I say" },
     { id: "emo:what", kind: "what", mech: "match",
       es: "¿Qué pasó?", en: "What happened?",
       des: "Qué siente en esta situación", den: "What they feel in this situation" },
@@ -467,16 +444,22 @@
     else roundBreathe();
   }
 
-  /* Fichas de emoción: color + emoji + palabra. Las tres pistas a la vez
-     porque el niño de 3 años todavía no lee: el color y el emoji sostienen,
-     la palabra se aprende de tanto verla al lado. */
-  function emoTiles(opts, onPick) {
+  /* Fichas de emoción: color + cara de Rufo + palabra. Las tres pistas a
+     la vez porque el niño de 3 años todavía no lee: el color y la cara
+     sostienen, la palabra se aprende de tanto verla al lado. En el juego 1
+     la palabra se omite (sinPalabra): ahí la palabra ES la pregunta, y
+     dejarla en la ficha convertiría el juego en emparejar letras. */
+  function emoTiles(opts, onPick, sinPalabra) {
     var wrap = el("div", "pa58-tiles");
     opts.forEach(function (o) {
       var b = el("button", "pa58-tile");
       b.setAttribute("data-emo", o.id);
-      b.style.setProperty("--tc", o.c);
-      b.innerHTML = '<span class="ic">' + o.emo + '</span><span class="nm">' + eName(o) + '</span>';
+      // juego 1: borde neutro; si cada ficha llevara el color de su emoción
+      // y la palabra el suyo, se acertaría emparejando colores sin mirar la cara
+      b.style.setProperty("--tc", sinPalabra ? "#D8C7A4" : o.c);
+      b.setAttribute("aria-label", eName(o));
+      b.innerHTML = '<span class="ic">' + faceSvg(o.id) + '</span>' +
+        (sinPalabra ? '' : '<span class="nm">' + eName(o) + '</span>');
       b.addEventListener("click", function () { onPick(o, b); });
       wrap.appendChild(b);
     });
@@ -484,6 +467,11 @@
   }
 
   /* 1 · ¿Cómo se siente? — leer la cara.
+     v2: la pregunta va de la palabra a la cara ("¿Dónde está Rufo
+     triste?") y las respuestas son las caras de Rufo. Antes era al revés
+     (cara grande → ficha con OTRA cara), y emparejar dos dibujos distintos
+     confundía. Así el niño escucha la emoción y la busca en el mismo
+     personaje, que es exactamente leer la expresión.
      Sube el número de opciones antes que el de rondas: lo difícil no es
      mirar más caras, es descartar entre emociones parecidas (triste y
      enojado se confunden, y esa confusión es justo la que hay que romper). */
@@ -491,21 +479,24 @@
   function roundFace() {
     G.total = 4 + Math.floor(G.level / 2);
     setProg();
-    var stage = el("div", "pa58-stage");
+    var stage = el("button", "pa58-stage pa58-ask");
     var tiles = el("div", "pa58-tilewrap");
     P.field.appendChild(stage); P.field.appendChild(tiles);
+    stage.addEventListener("click", function () { if (G.replay) G.replay(); });
     next();
     function next() {
       var opts = sample(EMO, FACE_OPTS[G.level]);
       var target = opts[rnd(opts.length)];
-      stage.innerHTML = faceSvg(target.id);
-      stage.style.setProperty("--tc", target.c);
+      var nom = eName(target).toLowerCase();
+      stage.innerHTML = '<span class="wd">' + nom + '</span>';
+      stage.style.setProperty("--tc", "#E8843A");
       stage.setAttribute("data-face", target.id);
+      stage.setAttribute("aria-label", nom);
       void stage.offsetWidth;
       stage.classList.add("in");
       setTimeout(function () { stage.classList.remove("in"); }, 620);
       G.replay = function () { setPrompt(G.prompt); };
-      setPrompt(T("¿Cómo se siente?", "How do they feel?"));
+      setPrompt(T("¿Dónde está Rufo " + nom + "?", "Where is " + nom + " Rufo?"));
       tiles.innerHTML = "";
       var hint = emoHint(target);
       tiles.appendChild(emoTiles(shuffle(opts), function (o, b) {
@@ -515,7 +506,7 @@
           stepDone();
           setTimeout(function () { G.busy = false; if (G.done < G.total) next(); }, 900);
         } else { bad(b, hint); }
-      }));
+      }, true));
       resetHint(tiles.querySelector('[data-emo="' + target.id + '"]'));
     }
   }

@@ -666,7 +666,12 @@
       while (a === b) { b = 1 + rnd(maxN); }
       var diff = a - b;
       var wrap = el("div", "pa54-scalewrap");
-      wrap.innerHTML = scaleSVG(diff > 0 ? 9 : -9);
+      /* El lado que pesa más BAJA. En SVG rotate() positivo es horario
+         (baja el extremo derecho), así que si pesa más la izquierda el
+         ángulo es negativo. Antes iba al revés: la balanza bajaba del lado
+         con MENOS bellotas y el dibujo contradecía la respuesta. */
+      var tilt = diff > 0 ? -9 : 9;
+      wrap.innerHTML = scaleSVG(tilt);
       var pans = el("div", "pa54-pans");
       var left = el("div", "pa54-pan"), right = el("div", "pa54-pan");
       var i;
@@ -675,6 +680,22 @@
       pans.appendChild(left); pans.appendChild(right);
       wrap.appendChild(pans);
       P.field.appendChild(wrap);
+      /* Las bellotas van SOBRE su platillo y suben o bajan con él. El
+         platillo cuelga a 100 u del pivote (150,46) del viewBox 300x150; su
+         borde superior está en y=74 y se desplaza ±100·sin(ángulo). */
+      function ponerPlatillos(t) {
+        var dy = 100 * Math.sin(t * Math.PI / 180);
+        [[left, 50, -dy], [right, 250, dy]].forEach(function (q) {
+          var st = q[0].style;
+          st.position = "absolute";
+          st.left = ((q[1] - 40) / 300 * 100) + "%";
+          st.width = (80 / 300 * 100) + "%";
+          st.top = ((90 + q[2]) / 150 * 100) + "%"; // dentro del cuenco (74–100)
+          st.transform = "translateY(-100%)";
+          st.transition = "top .5s ease";
+        });
+      }
+      ponerPlatillos(tilt);
 
       if (!balanceMode) {
         setPrompt(T("¿Qué lado pesa más?", "Which side is heavier?"));
@@ -696,6 +717,12 @@
             else { bad(t, sideHint); }
           });
           row.appendChild(t);
+          /* A los 3–5 años "izquierda/derecha" escrito no se lee y de oído
+             todavía se confunde: se puede responder tocando el platillo. */
+          var pan = o.k === "L" ? left : right;
+          pan.style.pointerEvents = "auto"; pan.style.cursor = "pointer";
+          pan.style.minHeight = "40px";
+          pan.addEventListener("click", function () { t.click(); });
         });
         P.field.appendChild(row);
         resetHint(targetNode);
@@ -723,6 +750,7 @@
               for (var j = 0; j < diff; j++) right.appendChild(el("span", "pa54-w pa54-new", objSVG("acorn")));
               var sv = wrap.querySelector(".pa54-scale");
               if (sv) { var g2 = sv.querySelector("g"); if (g2) g2.setAttribute("transform", "rotate(0 150 46)"); }
+              ponerPlatillos(0);
               stepDone();
               if (G.done < G.total) setTimeout(nextScale, 950);
             } else { bad(t, diffHint); }

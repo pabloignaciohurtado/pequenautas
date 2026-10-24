@@ -399,14 +399,22 @@
   var LETTERS_POOL = ["A","B","C","D","E","F","L","M","O","P","S","T","U","N"];
   function cp(n){ return String.fromCodePoint(n); }
   // parejas mamá/bebé por punto de código (fuente ASCII-safe, ver nota arriba)
-  var BABY_PAIRS = [ [cp(0x1F404),cp(0x1F42E)], [cp(0x1F415),cp(0x1F436)],
-    [cp(0x1F408),cp(0x1F431)], [cp(0x1F416),cp(0x1F437)],
-    [cp(0x1F414),cp(0x1F423)], [cp(0x1F40E),cp(0x1F434)] ];
+  /* v2 (revisión de coherencia, oct-2026): con emoji, cinco de los seis
+     "bebés" eran la CARA del mismo animal (vaca → cara de vaca, caballo →
+     cabeza de caballo): el juego enseñaba "cuerpo ↔ cara", no "mamá ↔
+     cría". Ahora cada pareja es papercraft de Grok sacada de UNA hoja
+     (madre y cría juntas, mismo estilo) y la cría conserva su tamaño
+     relativo: se ve más chica de verdad. Ver img/an-*.css. */
+  var BABY_PAIRS = [ ["an-cow","an-calf","vaca","cow","ternero","calf"], ["an-dog","an-puppy","perro","dog","cachorro","puppy"],
+    ["an-cat","an-kitten","gata","cat","gatito","kitten"], ["an-pig","an-piglet","cerda","pig","cerdito","piglet"],
+    ["an-hen","an-chick","gallina","hen","pollito","chick"], ["an-horse","an-foal","yegua","horse","potrillo","foal"] ];
   function shuffle(arr){ var a=arr.slice(); for(var i=a.length-1;i>0;i--){ var j=Math.floor(Math.random()*(i+1)); var t=a[i];a[i]=a[j];a[j]=t; } return a; }
   function dotsHTML(n){ var s='<div class="pa34-dots">'; for(var i=0;i<n;i++){ s+='<span></span>'; } return s+'</div>'; }
   function tokenHTML(tk){
     if(tk.k==="dots") return dotsHTML(tk.v);
     if(tk.k==="emoji") return '<span class="pa34-emoji">'+tk.v+'</span>';
+    if(tk.k==="art") return '<span class="pa34-art" role="img" aria-label="'+(tk.label||"")+'" style="background-image:var(--pa34-'+tk.v+');'+
+      (tk.px?"width:"+tk.px+"px;height:"+tk.px+"px;":"")+'"></span>';
     return '<span class="pa34-big">'+tk.v+'</span>';
   }
   // build [{a,b}] pairs for a game+level
@@ -421,7 +429,7 @@
       ls.forEach(function(v){ out.push({a:{k:"text",v:v}, b:{k:"text",v:v.toLowerCase()}}); });
     } else { // babies
       var ps=shuffle(BABY_PAIRS).slice(0,n);
-      ps.forEach(function(p){ out.push({a:{k:"emoji",v:p[0]}, b:{k:"emoji",v:p[1]}}); });
+      ps.forEach(function(p){ out.push({a:{k:"art",v:p[0],label:T(p[2],p[3])}, b:{k:"art",v:p[1],label:T(p[4],p[5])}}); });
     }
     return out;
   }
@@ -525,12 +533,17 @@
   // ================= SORT GAME ENGINE =================
   var SORT_LEVELS = [3,3,4,4,5];
   // ranking chico -> grande (puntos de código)
-  var ANIMAL_SIZES = [0x1F41C,0x1F401,0x1F407,0x1F408,0x1F415,0x1F416,0x1F40E,0x1F404,0x1F418];
+  /* v2: papercraft de Grok (img/sz-*.css) dibujado a escala creciente. Con
+     emoji los nueve animales medían lo mismo en pantalla y "del más chico
+     al más grande" dependía de saber de memoria cuánto mide un caballo; a
+     los 3–5 años el título "Grandes y chicos" se tiene que VER. */
+  var ANIMAL_SIZES = [["sz-ant","hormiga","ant"],["sz-mouse","ratón","mouse"],["sz-rabbit","conejo","rabbit"],["sz-cat","gato","cat"],
+    ["sz-dog","perro","dog"],["sz-pig","cerdo","pig"],["sz-horse","caballo","horse"],["sz-cow","vaca","cow"],["sz-elephant","elefante","elephant"]];
   function buildSort(g,level){
     var n=SORT_LEVELS[level]||3, out=[];
     if(g.gen==="ordersize"){
       var idx=shuffle(ANIMAL_SIZES.map(function(_,i){return i;})).slice(0,n).sort(function(a,b){return a-b;});
-      idx.forEach(function(ai,rank){ out.push({tok:{k:"emoji",v:cp(ANIMAL_SIZES[ai])}, rank:rank}); });
+      idx.forEach(function(ai,rank){ var A=ANIMAL_SIZES[ai]; out.push({tok:{k:"art",v:A[0],label:T(A[1],A[2]),px:26+ai*9}, rank:rank}); });
     } else {
       var maxN=[5,6,7,8,9][level]||n;
       var nums=shuffle(function(){var r=[];for(var i=1;i<=maxN;i++)r.push(i);return r;}()).slice(0,n).sort(function(a,b){return a-b;});
