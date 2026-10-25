@@ -90,16 +90,8 @@
     // refreshHome/passGate/startGame; PIN off por defecto).
     "17-accesibilidad",
     "18-dislexia",
-    // #61 trae los clips locutados de Rufo y va JUSTO ANTES de #16 a
-    // propósito: las dos envuelven speak(), y la que envuelve después queda
-    // por fuera. Así #16 sigue siendo la capa externa —la que reconoce la
-    // frase, estampa opts.key y mueve la boca de la mascota— y #61 se limita
-    // a poner el sonido por debajo. Al revés, Rufo hablaría con boca quieta.
-    "61-voz-rufo",
-    // #62 va después de #61 y antes de #16: por fuera de Rufo, para poder
-    // dejarle sus dieciocho frases intactas antes de decidir nada; por dentro
-    // de #16, que sigue moviendo la boca de la mascota.
-    "62-voz-narradora",
+    // #61 (voz de Rufo) y #62 (narradora) se retiraron en oct-2026: la app
+    // pasa a ser SIN VOCES por decisión de producto (ver #63 §13).
     "16-voces-mascota",
     "20-animaciones-personaje",
     "30-controles-parentales",

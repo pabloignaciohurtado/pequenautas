@@ -152,13 +152,12 @@ test('Fase 4 · #63: juegos nuevos sobre el bosque, íconos y caras de Grok en v
     return {
       bg: getComputedStyle(play).backgroundImage,
       ic: getComputedStyle(ic).backgroundImage,
-      rep: getComputedStyle(rep).backgroundImage, repFont: getComputedStyle(rep).fontSize,
+      repOculto: getComputedStyle(rep).display === 'none',
     };
   });
   expect(r.bg).toContain('data:image/webp');
   expect(r.ic).toContain('data:image/webp');
-  expect(r.rep).toContain('data:image/webp');
-  expect(r.repFont).toBe('0px');
+  expect(r.repOculto).toBe(true); // sin voces no hay "volver a oír"
   await page.locator('.pa58-play.show .pa34-x').click();
   await page.waitForTimeout(500);
   await page.evaluate(() => { const x = document.querySelector('.pa58-ov.show .pa34-x'); if (x) x.click(); });
@@ -227,7 +226,7 @@ test('Fase 4 · coherencia: Mamá y bebé y Grandes y chicos usan arte de Grok, 
   expect(new Set(s).size).toBe(s.length); // cada animal a su escala: se VE quién es más grande
 });
 
-test('Fase 4 · coherencia: un solo marco — los juegos de #34 tienen banda con progreso y repetir; el clásico, solo ×', async ({ page }) => {
+test('Fase 4 · coherencia: un solo marco — los juegos de #34 tienen banda con progreso; el clásico, solo ×', async ({ page }) => {
   await entrarHorizontal(page);
   await abrirJuego(page, '.subject[data-game="reading"]', '.pa34-ov', 2); // Mayúscula y minúscula (match)
   const antes = await page.evaluate(() => {
@@ -235,7 +234,7 @@ test('Fase 4 · coherencia: un solo marco — los juegos de #34 tienen banda con
     return { replay: !!s.querySelector('.pa63-pbot .pa63-replay'), dash: s.querySelectorAll('.pa63-prog i').length,
       on: s.querySelectorAll('.pa63-prog i.on').length };
   });
-  expect(antes.replay).toBe(true);
+  expect(antes.replay).toBe(false); // sin voces no hay botón repetir
   expect(antes.dash).toBeGreaterThanOrEqual(3);
   expect(antes.on).toBe(0);
   // ninguna minúscula queda en la misma fila que su mayúscula
@@ -268,4 +267,25 @@ test('Fase 4 · coherencia: un solo marco — los juegos de #34 tienen banda con
   await expect(page.locator('#game.active')).toHaveCount(1);
   for (const id of ['#backBtn', '#profileChip', '#langBtn']) await expect(page.locator(id)).toBeHidden();
   await expect(page.locator('#homeBtn')).toBeVisible();
+});
+
+test('Fase 4 · sin voces: nadie habla, los clips no se cargan y Música conserva su "repetir" sonoro', async ({ page }) => {
+  await page.addInitScript(() => {
+    window.__habla = 0;
+    const orig = window.speechSynthesis && window.speechSynthesis.speak.bind(window.speechSynthesis);
+    if (orig) window.speechSynthesis.speak = function () { window.__habla++; };
+  });
+  const pedidos = [];
+  page.on('request', (r) => pedidos.push(r.url()));
+  await entrarHorizontal(page);
+  // una ronda clásica y una de #34: con la app antes hablando en ambas
+  await abrirJuego(page, '.subject[data-game="reading"]', '.pa34-ov', 2);
+  await page.waitForTimeout(500);
+  expect(await page.evaluate(() => window.__habla || 0)).toBe(0);
+  expect(await page.evaluate(() => { window.speak('hola'); window.speakSeq([{ t: 'hola' }]); return window.__habla || 0; })).toBe(0);
+  expect(pedidos.some((u) => /61-voz-rufo|62-voz-narradora/.test(u))).toBe(false);
+  // Música: el botón repetir sigue, porque repite el sonido, no una voz
+  await abrirJuego(page, '.subject.pa55-card', '.pa55-ov', 0);
+  await expect(page.locator('#pa55replay')).toBeVisible();
+  await expect(page.locator('#pa53replay, #pa58replay, #replayBtn')).toHaveCount(await page.locator('#pa53replay, #pa58replay, #replayBtn').count());
 });

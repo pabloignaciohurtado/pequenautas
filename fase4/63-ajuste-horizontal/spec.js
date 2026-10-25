@@ -82,13 +82,10 @@
 
   /* ---- Un solo marco de juego (ver §11 en spec.css) ----
      Los juegos de #34 no tenían banda inferior: se agrega con la barra de
-     progreso (calculada del propio tablero: fichas .done / .placed) y el
-     botón "repetir", que vuelve a decir el enunciado. El de las bellotas ya
-     tenía barra; solo se le suma "repetir". */
+     progreso (calculada del propio tablero: fichas .done / .placed). El de
+     las bellotas ya tenía barra. (El botón "repetir" se retiró con las
+     voces, ver §13.) */
   var SUPERFICIES = ".pa34-play,.pa34-mplay,.pa34-splay,.pa34-cplay,.pa34-tplay";
-  function decir(t) {
-    try { if (typeof window.speak === "function") window.speak(t, { lang: document.documentElement.lang === "en" ? "en" : "es" }); } catch (e) {}
-  }
   function marco(s) {
     if (!s.__pa63) {
       s.__pa63 = true;
@@ -99,14 +96,6 @@
         bot.innerHTML = '<div class="pa63-prog"></div>';
         s.insertBefore(bot, s.querySelector(".pa34-win"));
       }
-      var rp = document.createElement("button");
-      rp.className = "pa63-replay";
-      rp.setAttribute("aria-label", document.documentElement.lang === "en" ? "Hear again" : "Escuchar otra vez");
-      rp.addEventListener("click", function () {
-        var p = s.querySelector(".pa34-prompt");
-        if (p) decir(p.textContent.trim());
-      });
-      bot.appendChild(rp);
     }
     var pr = s.querySelector(".pa63-prog");
     if (!pr) return;
@@ -183,6 +172,17 @@
   new MutationObserver(function () {
     try { localStorage.setItem(CLAVE_IDIOMA, document.documentElement.lang); } catch (e) {}
   }).observe(document.documentElement, { attributes: true, attributeFilter: ["lang"] });
+
+  /* ---- §13 · App sin voces (decisión de producto, oct-2026) ----
+     Se retiraron los clips de #61/#62 y app.js ya no habla (VOCES=false).
+     Este módulo carga el último, así que además deja mudas las dos puertas
+     por las que cualquier capa podría hablar: window.speak/speakSeq (que
+     AudioBank y otros envuelven) y speechSynthesis.speak. Los sonidos de
+     acierto, el ambiente del bosque y la sección Música no son voz y siguen. */
+  function mudo() {}
+  window.speak = mudo;
+  window.speakSeq = mudo;
+  try { if (window.speechSynthesis) { window.speechSynthesis.cancel(); window.speechSynthesis.speak = mudo; } } catch (e) {}
 
   window.PA63 = { capaArriba: capaArriba, sincronizar: sincronizar, marcos: marcos };
 })();

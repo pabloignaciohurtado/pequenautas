@@ -199,3 +199,8 @@ button,input,select,textarea{font-family:inherit;}
   .pa34-cplay .pa34-cbin{flex:1 1 28% !important;min-height:84px !important;min-width:0 !important;}
   .pa34-cplay .pa34-cbins{flex-wrap:nowrap !important;}
 }
+
+/* 13 · Sin voces: fuera los botones que solo servían para volver a oír el
+   enunciado (el altavoz del juego clásico y "repetir" de las materias).
+   El de Música se queda: ahí repite el SONIDO que hay que reconocer. */
+#replayBtn,#pa53replay,#pa54replay,#pa58replay,#pa60replay,.pa63-replay{display:none !important;}
