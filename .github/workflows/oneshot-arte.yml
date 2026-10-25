@@ -1,0 +1,221 @@
+name: oneshot-arte
+on:
+  push:
+    branches: [fix/porton-carga]
+    paths: ['.github/workflows/oneshot-arte.yml']
+permissions:
+  contents: write
+jobs:
+  aplicar:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: fix/porton-carga
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.13'
+      - name: Aplicar parche y generar el arte de Grok
+        run: |
+          pip install -q pillow==12.3.0 numpy==2.5.3 scipy==1.18.1
+          cat > /tmp/p.b64 <<'B64'
+          H4sICDLq3WoCA2FydGUucGF0Y2gArFtfbyNHcn/fT9GePZxmVpwRKZISRVlrc7WSvYm9uyfJdhCt
+          stucaZKjHU7z5o+0lCwgeTnkIcgF93S4PAR+yMMFMJDAQC4wEBxgfRN/geQj5FfdPcMhRdF7hyxg
+          kezqqq6urqr+VXc7CAcD5rrDMGN8Y8BT0drYarr8PE8z4Y5kEl7JOOPRRjoRvuenKeu/T68HYRyI
+          d6yzvbm5zX3P41s7W41mmzXq9a1W64Hruu832oP19fX3HPHjj5m7WW/VmmydPhpNhpZ+nmUyroXx
+          JM9qqYiEn9Uy8S7jieDXA0hwB3wcRtNuGI9EEma7Nw8Y/ok4j/2QB5LZImI8yviFvGIBvp/nYiiZ
+          H91+k4a+ZFNmJWIisjCxQGYRT9mYZ5DEU8dTog4iInx++z36c5YK9stcBLzL+Oj2WwbeMBMMco9f
+          PH/29AUR2YhP1WcifBlLXyQee7TxgD1E54hPn2Rx7eGEt5v6p/reqnzvzL5v1c13D9+brv5xHYQp
+          fXZjGQv2QTieyCTjMc18/cH6xiPWaLEf/sC+iKGsjDjzYbR+wv3w9rvYY72IDXnME5bHLA4vyDgT
+          2NK//ZbHmFyYMmvMU19mPLUerGP6GC0LsVApqMPb72NW2LBLIo7ygWTQJpYwOTv+8hNmP2y2nBpo
+          nIk0S0QEFeyH7aZTU+KofSTPVRv1mzIxluch+99/+cf/xJ/f/A5//u1fidqusYftDv5s1Z1ddmfl
+          aAglMUvkQEiw/fpXmB4cC/MOxXiSiGLqWkseiWEiaiRpHKZjqM0nIvETPsiwwErUJ4l8S4t9MJZ+
+          COumpEfHUcu3jjVottzLMGZeMqAVaTfnfs3T2nO/OtVfW/Xy10MoPxlND8gE16SC8ug0vBLdenVp
+          L8MgG3Ubm/XJu2rzSITDUdZt1Fvz7WOeDMMYInieSbY1T6Rh+tx/O0xkHgfdC57Yrqt0TAbuiE8m
+          UweGixEDGz5FKFSNJfme4NmCu82ZhD1mj+bNUrbc7dO+09JZbJmZiVpWeH2wJAG2XJ4gzdAERBwG
+          ckn2u7fLg1hcskEYCTaWcAaT8XQ+rOt/ntfabDc32wOVCDcCcbER51E0n+zuH4AyXb1WZ+uNWpuy
+          nArbPfrHDsHLWnB6FcQ9CCCHVI6JAIvyIUIXDTpoKJ+liE8x5ppdefGXImFqqPPUY/s84GwSiitE
+          BSKAeMsQLATbfs7hiKoxrenoUJIQwGE0FyiU1jBoAorU+RL5Y+KoVIf1wFichePhxodh8JimqkPn
+          Y71cLE8i2yIyeCJBdMvZXULuI0PFfAVdrGJGyllBDd+u4g2TYAU1kv7bdCU9TeV4RQfJk2DIx6s0
+          kPLtCip2Q5EMoun9XXy+aoJ+JPNgJfkyHoTpaEWXhPfvpwYymozCeEUHJLxV1HyF+YLcX2EbwYer
+          fGoQ5dkKMuIqECv0HoaD7H7qiI+xZaxQbpQP7yeGvvABZ1bMPMJudD8V6Z77fIVjjvN0lMhVnhnT
+          RnI/WV6uCKkEW0RfXq7oALe/n5pGQqxwiXSShCtsl2YrZWcyWTHrNI8H8HixQkLG+6u8KhNBsCIY
+          szzJVrFf8otV1BFfxfxuGgE8YDssu6gdeatV7pVhHIWxcFXeKjCE1xTjEjioHxciyQBtI5dH4TDu
+          ut5mG63zMMGdyDTM4IVdDQ12KyQFVwxUqLZryNAtwQMhBuxzg9AfAU0OE44dNVWbiEw1uEu7tLkE
+          YT8/l4DhccAJ5bGJBFAfA/YV24/e/WhneYj1Hwrmyf45U3OvFS3+SCKudON1MfdGuzp59UvDGACS
+          CQ/mem/Oum6qfu+PM85/Emacvx/KEP52o843/3SUcT4HMhpNjTKsHOACoDz0M2v3/xd09PIgRLCh
+          jKCevkQxJqgCY7b0M5R1m1tOl2USBRmVHGYEjR4AMyoQQxcdevQaQ6vi2H/x/ORAFVggAbKGpctQ
+          WZLTsAD9MYkvlNTFgYhufw9QjTpwynw+7odKP+NipqKBGkihPoeG5IrwJZHhE6UTOXWCGgXNShyP
+          wzFiUnmt9RQFFWmDKspaUlrWlLCSg4ZPueYkUGaqIdQlLM0VzdIcYYwVyscIM0lcfZmpSqRSg05V
+          mYp4zLkpU0z9UtYtwH0ypvJJFau330Eprg3pS+REFWZxePsf0FaOUf/BKBhMW6WUptFfWlSASpty
+          lhY0H3EEWApF4XaWR+mHHAF+EF5g9pAs57Cictguign4AWZBoseYXKInp8R67EU/FcmFtg7N8krG
+          fEZn5SL6hDX1WqsiGyogT6iy9sN0gloWM07TPYsC2nqsxKEfmdqsvU3SWy2NjVMW5+JCD0SptabT
+          DXWhlDPFUO9gBVUkC112PmztQBsUu0zZj7phbF1Z6kWns4ILATw8zPEDgUTun1ayHQrLz4xjFYaA
+          cbAdqiKbTjlkcSZhkqadp9AgEQMTXUDrYQCPZQHPuPvI1Ng8vf1WKQTHjm6/G5LPQLC2nMeOZUSu
+          r1YhXm5kEz0qKgKpg98U86qfsr5ZMUrD9iCPfdoemO0wVciGA2ajfAuAC16/pkWgGgHbYbzL5prZ
+          Hgr4XOxq7ynFXNgxBBkWZhVFKrKdxdZZjP8sx9plN8QEInuJ1dibsS/nbu0scO+W7M3WT7M3W3fZ
+          SQDSqHZEOw3pDIXOqLTNKFHpgxeH/fir3xjX0ybTA/eOTg4wsjIZY9ar/LpxuNN5cmN1YQKrhPuW
+          UzPE1uamIWpsUaXsG4oB4ZZxh4LebBq6whUzxp1OwxAIZlYENp4WegixIGyn0zY0BburWmwVTKil
+          qoPUTTsVEHek7RgigGaVp5BFyL+q2CG1Y81ti4qVxYlulkMV5cyMt9k6MERVg1YJhfl09TkT+uO3
+          /6QJhDUrDM1OwaDrviqpWMESYS7o2Gy1TI8Cm1e5Dwtuwr6Vefe2C3ugiqoo+Nu/K+ebV2zerPeK
+          FQfOrLYXmhvoXhH1z39fzBXIubIUrUY5dF5pbzdapY9E0cIke51CX1OhVFR4Uqx4iWIrxE7h41TM
+          LvrKYaG8wt4VFQ8bs/VAnV6VV1Coiltcia3CyYoyrGLwp6UzoyyftW892Syd/I6Czd5hyWTK/Qrn
+          fuFlpmSsaNkotFTF2OK0G4UtUUrOmHq9wo6qUCmZNjbUPmM2LyBDtXWZrQ/7i6TznvHtd0EeAQ1U
+          dy1z/mP6zk1MJxAVdtgLqkGv/V1R+qIaJK3GTkkBEJSTPF2M1oZaT2RgON2Vi+w5GfE4qwrfqnYI
+          ZDUiGu27tPmk16h28HlVcL1zP61Zr9KQsvrh4pK06ttL+5RpaKYbj11/FJrV/vF3/10ai1eD5sff
+          /m1BQN6oesbMiGNJKZoY9O6FzacXDYEjU7MJpajhQsAFrhaZMGzKF4/uqzvQyxdHr//6xfMedqHT
+          0ncM0uzqY3kBMYAS1iDiecax8ylgq+5UfA3eDnPUkGLjOEeeAR4ikMJnjiiwAbIkH2qAPmUJz6gF
+          wGIM2FZT+Bs+NwMrCoWhiouVA8tUbkxuvzkHgi1lgtQb5pAmqZBEEa0p17T9dpllKjrUwADVYz7p
+          glIkniKk1YFQJZOVyZKOK6rtRb5RBxWWw27YzSzKSshNtvqHP1ItYyWCCiYYe0RmkVAB6ItOXRM+
+          DjN+V9XOclXLfUAfTumhiftsdw53kJFS2UdBrW67TJRP1QXM7TdYKVhYmapElUB/fY7tzKk4wi++
+          eHbSOyIwUo6vYoDgGZyNJosZ/juZ3uolCdjhFk1GeZ9uizRROQp8j4RbBh5tsFMFxh/tTWgHPetS
+          H2yqqmaqQswZqlQ+pIWVl0i6KoE0XRmWTmPOBFStZgSB1udJoh0pDrFAzH7Y2nK8Yq7k8MeYqqVP
+          C2oPJwnqoOwExqnpS40xrQgz330ZpaY9Le7j8N2vfJ8gt5nuWlYNWNHEtfbGQSiioFaeNaTm1kM3
+          z1vIKoHp4RcHRxSalj7cSP0khOg0myLXG/hJ3cB9Ac/bQ/l0DvTpvRXT1CZs6XiwCzKbXSXolXYc
+          NUoR/95AJgfcH1Wg/BWh4FK0/rJM3pUHv4U4dqNFLrIMwggwtiIYyxdWELbpps4+Xgzstw6dK7CQ
+          5GkLeqlMsgo/r7F+hb/vRSIeZiPmMm6+lrqQdY4IYtNxy5EYHryb2JZNON6MCtWrmjkFFjey33rq
+          1tUX9sap92j9o7/52fWN7Xx9+urs1auzjSFliVc/+7mlB7txvHMZxrb1NWKVqoT/+a9ff4Swtoa5
+          OZ+rlDh0CPJU2GJM6SGQ5cBYB2aT2iG0ru/i48PZIhWzC9fXSwZdbBVdTsMzmtOpGJ+xn/9cifaA
+          C1PE0eLvOR5kI6eo0dgSYbt6sJs565CLqZG+/prR0ZS2wsJEdd2Z2Cr1lFrTDMlHVKsHtcSXPFKF
+          IFGPDjwERPZMHYeRGXQzTfQD0DLSPi31Xc1EIyHgElGORjfecfYcY1a6DBI+RI9A+urwxSMsiBUy
+          Pw9BpU+b7rajjMQjXRv2yxGd49n2GM1QQrwTPmlXWSEaQBB5fNooTKlb1VnYnsm+ypYfMcti3ap/
+          KO2d3epyazaECZndUdkvjEvz6T5jHVLsMWnsqAl6qHqwC+9D4cBemCplP7KJnXppBDBsgwtz1EIc
+          5+74lfmZ9ZzcNeBBJJTdLDqVsWZCGHp7Kus9B0KmFKeOaubpqch6WZZgQ8sEbczIeoimcDxcFDTf
+          kcpuN+LYmtBdjBf7Uvb0ZgfVzwhqQAGaUqXnHXOlk5mgm+KL9oXC0utY3/pZEaVzEUNGU52xZvUF
+          xy1oH7LU8P55qzVbJOUxRerS/CSwpgPAWRqntGUiTc9FqD4ZqiwqdttkemzOOHpRZKut1KnEUSQA
+          DIjngw+Wc9lWcUaPrhldPlDhsruQ/a509ruCUZQSZeq7mkt91PXyrtedoD75ikdvMR/FfXp1VmNk
+          rkO1F3nHn7746vXJwV+d1HQAzYVkFEI/wsPgiUtKEeQxKJdeXJh/Lsz1UsaVBKNybuX3XC5e0m6r
+          Hd9ZEtEa90bAO+GVAjnazlTeAVgLOtpUSQFIZwdJSoFCQkbhkPpO9eG4uTuZ19dI+lM1teavWqzl
+          Sitjeqj7Rna8JH6W7XaaZW6rK/YQRcKu5FSD62YGhChc6CSPR6lWovRuoDJUCoCbMwenuRPD7GjS
+          sJsTSepTHGImAgZNsx7VyCQP+wGyFrY9ZJ6TcCxknjnzp6DzupTRVSITpTqhks9RVBGXPvpGn1JV
+          x5O6bRb8xReTVmtUR+R9Ksc1Uq8xn6L9M9hp1kCnL/D6pzzjBZ53zAWfUUpb0Mz1ZU+dy14bctd8
+          1pR/dfWZJVWfNw5xLrkWU3+rt2BFg7nfCsSg4zcGntfvbNf7fmfZq8KSpXrbVTbS5Vaj1a5tsXX6
+          6ND1VhEjcBWZ6jP7CSqzWD/jY1Z7x53kdHuJUj8ac6tm2rfq7oijdJepNavr6C7MXDVEZW2tbrbM
+          Pdv8xaW6e+CVizNTkFp37ueKYdUYTchLEopQuh9BPYxgRhmXwgtSKtukCuML1C90VVa9YotY7+Vf
+          0l1EIWz2opLZ6iGPYlXH/n06/KnRdCZ04UPvdFB1D5Qt0hrdMFE5zrPk9pvi0SNJ/FLVX7ffRxl8
+          niaoUkqeIlqGdA+g0o4u0dWTQmRHEev6L/X1UyB0m/eP9FK7hfos3pjyeqvdCjxvs9XeEqI17w26
+          p3YC/Z3WfqtZ22br6i9+wrjIU4e944PW689fPP3is4PjvVOax1pryx3lgRvSHVG6Vltrbbtyogt2
+          AIQpopYaOy6/4PSkVHXZMd1dyrSuTo5ob9ddFZgilXCgZMjX1EqutRvuSCTSHUayL6nfpqt9woXE
+          c5Fp5qarljeFI0RSD9RuuWE8hFMorrY7zunMpZC65XJTZCdE3nbJGWnF6FfHFcW5A/2cd2y0zFwa
+          4lyIW/bydo1cdO2OgxL70t507MAeGGO/PDrY7+1/evD6+KR3crB3jbSc5Wl3LQwiaBhAs269lkkw
+          4nPAsXUG3dOzm4V0QTg+1VHt0hl1c9ubXaDfTywcp9Gq+/2+523zgRj0m/OOs4Jde9OKDuopcmdH
+          PUXGx2aLvEwVHWvmrvyHPzC67VEnYF0W8yCkd7/9iOtLXD8KJ+o2L6VjDThLzKbl/S1ZEFmd1plf
+          chgCiQrIyJ5gN/UiifIaIGmN3gK39ZPfNcfxMvlEfBmmYT8SlHV/mrd4X8yqj4orj5C10E8x8X2g
+          4MzW4v4cOZ6vBBD41BvLg/VFWyGddotTmmXpU6Rz2VOdmM2eG5S3+GvYg9Jp7DP7WmmK4djeY72f
+          G3PEFDGflm6rDGOOJZTjKqkHBOJsKnmJXc1ZXKD8BHK0y2aDEjTb1b0gWPWv1qdXZRm9Ri5C+JOt
+          oTRAv92qSCocTj3Pu7oLqtcerTlnxbmJLZQ6whuK7AkVLMga+xHlgiNaecdT71VQ5dWdAlV5g4hn
+          n/NJwUvDALgRMiAIl85kx4oeqwL8ZDrRNWXTUcciJZGKhn21cigx9BHH2loxZzNXOwNP5o/sjVeT
+          64N36BuI4PXLEFMCmJmMQv9mY5g7BJlOzxaE3NRYaUS9jLyfhMlfkG+oBayxNQ8wh46cTtVVN92q
+          7FmpDysAeZ6tUQd1+CYv8L3hqONK9fZ17okFDWACxriL9gZ7rXKi56UjeVmEXKnjHNt8lCzy6mdE
+          lbhQkj5RhUlyMuLxi+Tglzl8s/1+U9ZnhkgjgZknfql51vU8f/jjL/Lb32OOIuYfrZyiORQvtSyO
+          Je/M9j6VVA7Yr2jSmbO40WTC09vvfkKTzoImnXs0oQuE+f+JgZJF8cJfvew3SWMW48mAyvnZSs1i
+          Wzk04mhfjid5JoJjOguw7wnstbl36aTZwqHBnGckA9J8X7+Ds9fITbvqFmPjUvQnajY3i3A5kzJK
+          NyjzbRwd9J5+fuCNA9qZljS/13uxnf6W2Gw0lr4XWyq0+khsW70Re8hmHSmTv1GAMXk9TMLAm0zf
+          FE+9lzwjfw4X1E+nBD1SOQ/p2J4uJgjborJ4sK4udejaAR3Mw5uvRP8lPKMv+mGAn+rVkArxL46e
+          Ubf942Nmv+kmUmbXrvshFn0QnsvHLr0w79JbSKQ25+aNo94fuaw3TPKJQqvqaRPhf+xF5BfinX67
+          kslAAVv9f6HE+tkQ/AutkMy7xWOvYi7F9OjpHEdRSg2UTojDwa4u6W6GeAmiqw+PFHlzcHxy9Gz/
+          5MVe4w3LU7KXMZ3a5Ywl9Dsjod/kSagjgCfoeRvzc04V+4hPSZlEpjzQho1mL7W6bBCZqxORiCt6
+          dCUSwvZjbXxC81CF3oKpV3dD/awMSsYoE95QTZ++qel7F/xg9piOjf6vcattTiIJwt/zK7ZypcxK
+          ZwkkoKJjFRiNWCgW6Hl3hNJdXmTMwgJLEtDS/3Of7yf4x+55ZhYSqVh3ZcodZrp7enp6+mWnFx1M
+          MnyumFcvXF0YX38WQNfzJXFlT1ko4667lshZWVMGpJA1YHZL3qVJFVOtl+NkeuT9rEzei9bLWjCb
+          fvKeN5q1jve01ex4ZlAUMygJ9pVR5vPGy5bXqTUbJzWvWTtpea9qf9T/fPus43Ut/72PnKWJvXVZ
+          D4TB3E1twoltxMG9YvaSjsNSueLuxljNRc6vksU56zSYzOzlmdxgd4aLH/8glzIshTCh/QoMp5Zk
+          gPSxHyMfGxaypMyEB9c1j5v4P+kvWfiIcwYeGccgf1jTtAS/tAI78ol+Pfa/7MFgEA3Lo/J/2YMd
+          yjeMwnHJGoWs9Dhds+AM+hUhsKsci/c5TaZ8gzYBryyim+3lR4tk4r1pNL0MxxpKcQ/38i2DgfMG
+          VgaFoIYAND8XVJgdOXTaT7126/1WQ1KFww0NzfTjw++1ttd69/ak0b5dR/byoCCkIKQgjZOOAFeA
+          I0QQImgsL8AhuewWe2LguLe/Sz3/544jdGx/HPeQN8QG8a7kbnSXe9ftyg7B+7sEH/QQu72ptZG4
+          4rxt+/0nDyl8baUXJDMMYSH2Uo9V2yrXPq3Ds3jv5YU2k4CV2Hv5UE9nAYIdpI9rZSY+2ktEdgoT
+          ArQtp1LXISNCOeyJaxQ3jVJvu9m0gufDtVaq/eQ0D/3y76o6WseHvs9AN0mD4fTSLJIpA1O1v7F3
+          +7Ducco3pW0H7dAe4Nl+8hDIe/n+xTLVXUyVRJ91tvVBBKO0WH/gIhHgqu+YW1gJ20d4OeSSmO0q
+          dSRHPmncgorTEH8YJzHAMAqYT4vZLszAxPZlGyFuI18qS6lsJ4jDSKZbdHuboEAQIqSY0+1IejGx
+          xAi/CJHQq6JM80WSWCYzzavL4UDdHBGKNUY+D7NrqrZ+Pu2ag2LP71apo/eoo9yI6SixYuJLUuMZ
+          VpDOqjTBOIerlExf0eYoTK21AWfEyC4NlDICLZoMw6nyAZ21yJaFsleqNxhZVqkgagnlL6gXBfLh
+          +7Kk7vsZB9JfS39FPkjBMjLRWPrdDQN3v+8qS8XuN+LJeDYOMzXm6XfKqSb3SuXyVkFzF+DgAeOs
+          LDu5YTSCV2bqWurodoDT8CJNTTitxxcLdRhU3MRw0zGPRj+Zrfnylb8DhH6WIWX/z3q1Heovkpnr
+          plZHUbJSGSHo7Ea0hKQcR549slXP+23rOxHI/Pjbd44ROHCD7qsG27/1l4wgdt2l+/4z22mnL4dC
+          a8CpfSn5VZdwTRKJQs3OrumJe+aLvSy1vJL+WE/ClZokLjEEsGv4knW7rxrY71pZ2jgYjnhvpFab
+          iUAt2zL4GmtrajlRdgZfwJv9x3v/PgLlFOH1ShSGD1bZfIVCCaD4mU0jK8Bu7vwzdndXocnBJPGF
+          zyjMVO9cKHLK5YuZKVpvKxPL55WM3dbxHOFwahr0ApeKkZ/2Fp4AINA6jBXFhvHq6l7qO8Fsesbs
+          8cUtvFl7/fSvVsdKKE5kbCRC4KBLh/LwUF7DZFgO7M1QnDzWY5OJbq5VnOTHhjJ45EXaJEF9jUC0
+          0doqYRpeDlUkuffP6m9ywnzQLNd6LpMhQqWBrvjbVwoREvA4Vv5jTTdV9SwLai4RVZSpDW+hWJWl
+          5/miw6IFrnpjo+cHtmcuA0008FI51s59B2giXuEl1sAPBkPbAp2m7mKka6omf7/Su10lAeDL/Ypv
+          tc76pVHuK7zpt8LX82/8Hgm+EDl0cLUw0IvcJny/k+LPRu37O/nRoyykuJOenZ3xnvjb2TR3R9FJ
+          n8u+7XPvDJr+9cF2MhzlkBRcHnBihJJ0h7MFTZlTGqsWkptDxJbzAdD/Bb0US1UzQQAA
+          B64
+          base64 -d /tmp/p.b64 | gunzip > /tmp/p.patch
+          git apply --index /tmp/p.patch
+          test "$(git hash-object fase4/63-ajuste-horizontal/spec.css)" = a6961358186cd302d9dcb9143d6603e5a6ed17d9
+          test "$(git hash-object fase4/64-arte-contenido/spec.css)" = 425325f6903a4d8b134369ef16b1c3951d89854f
+          test "$(git hash-object fase4/64-arte-contenido/spec.js)" = ec710a23dbc477a2a66de85eca0671f181ab04ed
+          test "$(git hash-object fase4/fase4.js)" = b870bc8b3c9ba98b03e3251fe6cb3f03b7b08239
+          test "$(git hash-object sw.js)" = 2456ee41940d69f9263f6ef2550ac76265f0b23f
+          test "$(git hash-object tests/fase4-wave37.spec.js)" = 7afefb374a0c2ca4dcc5548b18497a76a8a3ccee
+          test "$(git hash-object tools/arte/README.md)" = 9b6e2112256cf83a5e1f95772cc97789dc51c112
+          test "$(git hash-object tools/arte/cortar_grid.py)" = ddbe5f5c1418774b66f820ff59a68d3bf89ea974
+          mkdir -p /tmp/hojas && cd /tmp/hojas
+          bajar() { curl -sSfL -A 'Mozilla/5.0' -o "$1" "$2"; echo "$3  $1" | sha256sum -c -; }
+          bajar A.png https://imgen.x.ai/xai-imgen/xai-tmp-imgen-f2da002c-88a7-91b2-a089-36f965b93dbf-9673f744.png 86ea2f4796849e2dc3ff4ecd4a573835cf83c9000e3f96aa1bdce47ab93c47c1
+          bajar B.png https://imgen.x.ai/xai-imgen/xai-tmp-imgen-4455e71b-0256-98e1-846e-17148fb5a0b6-ba7b5a48.png deeaa0c77f4e5cc4f7be8213eec26654a88d9a92ed7eaf8078275964d5fd1cbf
+          bajar C.png https://imgen.x.ai/xai-imgen/xai-tmp-imgen-af40fdf6-5069-9483-a5be-8962823029a7-82bc41cb.png e85d6c884c4fbfbcf834eff1d38e4dbdd0b6dd7c57976bb99043b2f62521666c
+          bajar D.png https://imgen.x.ai/xai-imgen/xai-tmp-imgen-838e10d3-fa8d-996a-9101-fcc06c736467-7981dffa.png 72b94d42f52f7c664d03df5f7d2c9810696421913ebfcf4b07773dfa2aff24af
+          O=$GITHUB_WORKSPACE/fase4/64-arte-contenido/img; mkdir -p "$O"
+          C=$GITHUB_WORKSPACE/tools/arte/cortar_grid.py
+          export ESTRICTO=1
+          python3 $C A.png 3 4 butterfly,turtle,dolphin,whale,lion,bee,eagle,bird,crab,owl,duck,clownfish pa64 "$O" 170 9000
+          python3 $C B.png 3 4 apple,banana,star,blossom,sunflower,mushroom,sprig,drop,cloud,wave,rainbow,storm pa64 "$O" 170 9000
+          python3 $C C.png 3 4 drum,flute,bell,maracas,xylophone,cake,teddy,blocks,gift,icecream,book,bike pa64 "$O" 170 9000
+          python3 $C D.png 2 4 boardgame,hammock,night,hug,table,roar,sleep,garden pa64 "$O" 170 9000
+          cd "$GITHUB_WORKSPACE"
+          test "$(ls fase4/64-arte-contenido/img/*.css | wc -l)" = 44
+          cat > /tmp/esperado.txt <<'SHA'
+          b35f1023555612adc2ca163258a57f93aec50720 fase4/64-arte-contenido/img/apple.css
+          3b832d43c3601dc3c5c8411a68bdb37999995e12 fase4/64-arte-contenido/img/banana.css
+          c9fdfdc1734f069f582cc15a7516e9ff20265199 fase4/64-arte-contenido/img/bee.css
+          296fdc59d50c4210479514cc58394a6667e1fca7 fase4/64-arte-contenido/img/bell.css
+          e02faa0f325ab65d4e69b9f6700c24d07503e953 fase4/64-arte-contenido/img/bike.css
+          d3eb409f1d31b1941fa37baf5e78e790eb278138 fase4/64-arte-contenido/img/bird.css
+          855f5d83a81562478ba0d22b038a226a670be892 fase4/64-arte-contenido/img/blocks.css
+          8b08bf24d2ee9764e53068dd3f34fb2ab8ff52b2 fase4/64-arte-contenido/img/blossom.css
+          7a987151257e9afc4d3d81024042f43d2464ce0c fase4/64-arte-contenido/img/boardgame.css
+          2253c23864ade32da15067ff2ce3cd02a4c802c6 fase4/64-arte-contenido/img/book.css
+          00fa8ece70a1ba3c1cc63459f5514b1d4b6fd912 fase4/64-arte-contenido/img/butterfly.css
+          f28c060fff62f6a3af6d4c7be5911a5dc060a250 fase4/64-arte-contenido/img/cake.css
+          d8859a51ac9eca155d664039a0988b268a02e04a fase4/64-arte-contenido/img/cloud.css
+          5e2b27417f486c7d62f3ebb95f5b282ef1fe1d17 fase4/64-arte-contenido/img/clownfish.css
+          207653d60f317a53f11a3cd6175a1a24b6964b94 fase4/64-arte-contenido/img/crab.css
+          54aef94850dff70b73801cf6b5a7bf1e3881adbc fase4/64-arte-contenido/img/dolphin.css
+          242c3272e7efaf196c8f8e985fff868aa8297e1c fase4/64-arte-contenido/img/drop.css
+          29b87e4aec2386b789231f31fdd6598bc8ae0115 fase4/64-arte-contenido/img/drum.css
+          7a4d0898ad6c53ef88c3e926672ea88c8a4db10d fase4/64-arte-contenido/img/duck.css
+          f97546374dccfde0f69df5409cec255f374f81fc fase4/64-arte-contenido/img/eagle.css
+          8bae3693a4deb8492bdea055c8444bbca9e77f1b fase4/64-arte-contenido/img/flute.css
+          037221c21159c09a69249aff25422beca1549252 fase4/64-arte-contenido/img/garden.css
+          0756158391477ad1da1f9c48b9b837c24ea38f5b fase4/64-arte-contenido/img/gift.css
+          3e32fe8afb5f4af66ee0a8e8c450f89435fcc74d fase4/64-arte-contenido/img/hammock.css
+          7bffa62a9d79396a0d3c631987c47215ee6b742a fase4/64-arte-contenido/img/hug.css
+          b6d49f1104fb3994fe4d8334bbd8d01da14087c3 fase4/64-arte-contenido/img/icecream.css
+          f9a9b69bb5a7a4e5f6e452985525127aa4bdff15 fase4/64-arte-contenido/img/lion.css
+          a3da02d525c5270382835caff88dcde15cfb4ef5 fase4/64-arte-contenido/img/maracas.css
+          0db557fda7617090d227e71f4fe607361f4b2d74 fase4/64-arte-contenido/img/mushroom.css
+          6e398ad03cd48f674ed5f656806c46536cf1d477 fase4/64-arte-contenido/img/night.css
+          66e0d81374f697608f4e59598b4808dda42de8dc fase4/64-arte-contenido/img/owl.css
+          8250f4b04b6b4c318167f9d7199e719d9d75e50d fase4/64-arte-contenido/img/rainbow.css
+          edfb77582887326f3f33f7785fb1c72a233c7ddb fase4/64-arte-contenido/img/roar.css
+          3c9a2fbc2876b9d0d06aabf89058802743c13e67 fase4/64-arte-contenido/img/sleep.css
+          145f4245561478a67262d93f202cdcbb50af3c68 fase4/64-arte-contenido/img/sprig.css
+          81ed0c9b8d7fdbe03dcca870632da26673f32987 fase4/64-arte-contenido/img/star.css
+          842b34fd9856d4e584b1813cd8aec5effaaa39e3 fase4/64-arte-contenido/img/storm.css
+          d518b00b887119e1eb013d111acf2ed82e2012ff fase4/64-arte-contenido/img/sunflower.css
+          d69bd8687f8917cc0786c2936888ea5d219cae8c fase4/64-arte-contenido/img/table.css
+          53af60eeeec0413f135c3368bb576519b56e792d fase4/64-arte-contenido/img/teddy.css
+          3cd9f6bd9158176bc091cef3c991f9e27acf306f fase4/64-arte-contenido/img/turtle.css
+          52e7986746798eb7314abcb4d3470871cfc0aca5 fase4/64-arte-contenido/img/wave.css
+          9676c283f0ffeae821490fada1c737d0c77134a6 fase4/64-arte-contenido/img/whale.css
+          9e55e92c640fa3685c159fa19a5757b22f69ab65 fase4/64-arte-contenido/img/xylophone.css
+          SHA
+          dif=0; while read s f; do [ "$(git hash-object $f)" = "$s" ] || { echo "distinto: $f"; dif=$((dif+1)); }; done < /tmp/esperado.txt; echo "piezas con bytes distintos a los locales: $dif"
+          git add fase4/64-arte-contenido/img
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git commit -m "feat(#64): el contenido de los juegos pasa de emoji a arte de Grok" -m "44 piezas nuevas de cuatro hojas de Grok (animales, naturaleza, juguetes e instrumentos, escenas) generadas aquí desde las hojas originales verificadas por sha256; mismo animal = mismo dibujo en todos los juegos (reusa #49 y #34). Celebración única con Rufo de Grok. Estrella del marcador de Grok." -m "Co-Authored-By: Claude Opus 5.5 <noreply@anthropic.com>" -m "Claude-Session: https://claude.ai/code/session_01CcL93ChWyzDyLmNz98PKDx"
+          git push origin HEAD:fix/porton-carga
