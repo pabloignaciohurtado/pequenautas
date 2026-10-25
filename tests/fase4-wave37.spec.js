@@ -226,3 +226,46 @@ test('Fase 4 · coherencia: Mamá y bebé y Grandes y chicos usan arte de Grok, 
   expect(s.length).toBeGreaterThanOrEqual(3);
   expect(new Set(s).size).toBe(s.length); // cada animal a su escala: se VE quién es más grande
 });
+
+test('Fase 4 · coherencia: un solo marco — los juegos de #34 tienen banda con progreso y repetir; el clásico, solo ×', async ({ page }) => {
+  await entrarHorizontal(page);
+  await abrirJuego(page, '.subject[data-game="reading"]', '.pa34-ov', 2); // Mayúscula y minúscula (match)
+  const antes = await page.evaluate(() => {
+    const s = document.querySelector('.pa34-mplay.show');
+    return { replay: !!s.querySelector('.pa63-pbot .pa63-replay'), dash: s.querySelectorAll('.pa63-prog i').length,
+      on: s.querySelectorAll('.pa63-prog i.on').length };
+  });
+  expect(antes.replay).toBe(true);
+  expect(antes.dash).toBeGreaterThanOrEqual(3);
+  expect(antes.on).toBe(0);
+  // ninguna minúscula queda en la misma fila que su mayúscula
+  const alineadas = await page.evaluate(() => {
+    const L = [...document.querySelectorAll('#pa34mL .pa34-mcard')].map((b) => b.dataset.pid);
+    const R = [...document.querySelectorAll('#pa34mR .pa34-mcard')].map((b) => b.dataset.pid);
+    return L.filter((p, i) => R[i] === p).length;
+  });
+  expect(alineadas).toBe(0);
+  // resolver una pareja enciende un tramo de la barra
+  await page.evaluate(() => {
+    const l = document.querySelector('#pa34mL .pa34-mcard');
+    l.click();
+    document.querySelector('#pa34mR .pa34-mcard[data-pid="' + l.dataset.pid + '"]').click();
+  });
+  await page.waitForTimeout(400);
+  expect(await page.locator('.pa34-mplay.show .pa63-prog i.on').count()).toBe(1);
+
+  // juego clásico (Cuántos ves): sin flecha, perfil ni idioma
+  await page.goto('file://' + path.resolve(__dirname, '../index.html'));
+  await page.waitForTimeout(3300);
+  await page.evaluate(() => document.querySelector('.subject[data-game="math"]').click());
+  await page.waitForTimeout(600);
+  await page.evaluate(() => document.querySelectorAll('.pa34-ov .pa34-game')[1].click());
+  await page.waitForTimeout(1200);
+  if (!(await page.locator('#game.active').count())) {
+    await page.evaluate(() => { const b = document.querySelector('.pa34-ov .pa34-lvl.cur'); if (b) b.click(); });
+    await page.waitForTimeout(1200);
+  }
+  await expect(page.locator('#game.active')).toHaveCount(1);
+  for (const id of ['#backBtn', '#profileChip', '#langBtn']) await expect(page.locator(id)).toBeHidden();
+  await expect(page.locator('#homeBtn')).toBeVisible();
+});

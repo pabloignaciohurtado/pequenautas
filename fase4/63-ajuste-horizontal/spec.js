@@ -80,11 +80,56 @@
     setTimeout(sincronizar, 120);
   });
 
+  /* ---- Un solo marco de juego (ver §11 en spec.css) ----
+     Los juegos de #34 no tenían banda inferior: se agrega con la barra de
+     progreso (calculada del propio tablero: fichas .done / .placed) y el
+     botón "repetir", que vuelve a decir el enunciado. El de las bellotas ya
+     tenía barra; solo se le suma "repetir". */
+  var SUPERFICIES = ".pa34-play,.pa34-mplay,.pa34-splay,.pa34-cplay,.pa34-tplay";
+  function decir(t) {
+    try { if (typeof window.speak === "function") window.speak(t, { lang: document.documentElement.lang === "en" ? "en" : "es" }); } catch (e) {}
+  }
+  function marco(s) {
+    if (!s.__pa63) {
+      s.__pa63 = true;
+      var bot = s.querySelector(".pa34-pbot");
+      if (!bot) {
+        bot = document.createElement("div");
+        bot.className = "pa63-pbot";
+        bot.innerHTML = '<div class="pa63-prog"></div>';
+        s.insertBefore(bot, s.querySelector(".pa34-win"));
+      }
+      var rp = document.createElement("button");
+      rp.className = "pa63-replay";
+      rp.setAttribute("aria-label", document.documentElement.lang === "en" ? "Hear again" : "Escuchar otra vez");
+      rp.addEventListener("click", function () {
+        var p = s.querySelector(".pa34-prompt");
+        if (p) decir(p.textContent.trim());
+      });
+      bot.appendChild(rp);
+    }
+    var pr = s.querySelector(".pa63-prog");
+    if (!pr) return;
+    var tot = s.querySelectorAll(".pa34-mcard,.pa34-scard,.pa34-citem").length;
+    var hechas = s.querySelectorAll(".pa34-mcard.done,.pa34-scard.done,.pa34-citem.placed").length;
+    if (s.classList.contains("pa34-mplay")) { tot = tot / 2; hechas = hechas / 2; }
+    if (!tot) { tot = 1; hechas = 0; }
+    var clave = hechas + "/" + tot;
+    if (pr.getAttribute("data-k") === clave) return;
+    pr.setAttribute("data-k", clave);
+    pr.innerHTML = "";
+    for (var i = 0; i < tot; i++) { var d = document.createElement("i"); if (i < hechas) d.className = "on"; pr.appendChild(d); }
+  }
+  function marcos() {
+    var ss = document.querySelectorAll(SUPERFICIES);
+    for (var i = 0; i < ss.length; i++) marco(ss[i]);
+  }
+
   var pendiente = false;
   new MutationObserver(function () {
     if (pendiente) return;
     pendiente = true;
-    setTimeout(function () { pendiente = false; sincronizar(); }, 80);
+    setTimeout(function () { pendiente = false; sincronizar(); marcos(); }, 80);
   }).observe(document.documentElement, { subtree: true, childList: true, attributes: true, attributeFilter: ["class", "style", "hidden"] });
 
   /* ---- Fondo de bosque también en los juegos de las materias nuevas ----
@@ -139,5 +184,5 @@
     try { localStorage.setItem(CLAVE_IDIOMA, document.documentElement.lang); } catch (e) {}
   }).observe(document.documentElement, { attributes: true, attributeFilter: ["lang"] });
 
-  window.PA63 = { capaArriba: capaArriba, sincronizar: sincronizar };
+  window.PA63 = { capaArriba: capaArriba, sincronizar: sincronizar, marcos: marcos };
 })();

@@ -95,7 +95,9 @@ button,input,select,textarea{font-family:inherit;}
   #stage .choices > .choice > .cnum{font-size:44px;}
   #stage .lettertile{width:104px !important;height:104px !important;font-size:64px !important;}
   #stage .animalBig{font-size:80px !important;height:auto !important;line-height:1.1;}
-  #stage .choices.habitats > .choice{min-height:84px !important;}
+  #stage .choices.habitats > .choice{min-height:84px !important;padding:6px 10px !important;gap:2px !important;}
+  #stage .choices.habitats .cface{font-size:44px !important;}
+  #stage .animalBig{font-size:64px !important;}
 
   /* Inicio: que la barra Inicio/Mapa/Mochila no tape la última fila */
   #home{padding-bottom:96px !important;}
@@ -145,4 +147,55 @@ button,input,select,textarea{font-family:inherit;}
 @media (orientation:landscape) and (max-height:520px){
   .pa34-field .pa34-basket{bottom:auto;top:34px;width:124px;height:100px;}
   .pa34-field .pa34-hint{bottom:4px;}
+}
+
+/* 11 · Un solo marco de juego. Había tres: el clásico de app.js (casa,
+   flecha, perfil e idioma arriba), el de Números/Letras/Animales (× y
+   píldoras flotantes, sin progreso ni "repetir") y el de las materias
+   nuevas (banda arriba con ×, enunciado y estrellas; banda abajo con
+   progreso y repetir). El niño cambiaba de reglas al cambiar de juego.
+   Queda el de las materias nuevas para todos. */
+.pa34-play .pa34-ptop,.pa34-mplay .pa34-ptop,.pa34-splay .pa34-ptop,
+.pa34-cplay .pa34-ptop,.pa34-tplay .pa34-ptop{
+  flex:0 0 auto;max-width:none !important;margin:0 !important;
+  padding:12px 14px !important;background:#FFFCF2;box-shadow:0 2px 10px rgba(46,59,44,.10);position:relative;z-index:6;}
+.pa34-ptop .pa34-prompt{background:transparent !important;box-shadow:none !important;padding:0 !important;
+  font-weight:800;font-size:17px;}
+.pa34-ptop .pa34-pstar{background:transparent !important;box-shadow:none !important;padding:0 !important;font-size:15px;white-space:nowrap;}
+.pa34-play .pa34-pbot,.pa63-pbot{
+  flex:0 0 auto;max-width:none !important;margin:0 !important;width:100%;
+  display:flex;align-items:center;gap:12px;position:relative;z-index:6;
+  padding:10px 16px calc(10px + env(safe-area-inset-bottom,0px)) !important;
+  background:#FFFCF2;box-shadow:0 -2px 10px rgba(46,59,44,.10);}
+.pa34-play .pa34-prog,.pa63-prog{flex:1 1 auto;display:flex;gap:7px;justify-content:flex-start;margin:0;}
+.pa34-play .pa34-leaf,.pa63-prog i{flex:0 0 auto;width:26px;height:8px;border-radius:5px;transform:none;
+  background:rgba(46,59,44,.16);transition:background .2s;}
+.pa34-play .pa34-leaf.on,.pa63-prog i.on{background:#57C596;}
+.pa34-play .pa34-pbot .pa34-cta{width:auto;flex:0 1 auto;padding:11px 20px;font-size:16px;}
+.pa63-replay{flex:0 0 auto;border:0;border-radius:16px;cursor:pointer;min-width:64px;min-height:48px;
+  background:#57C596 var(--pa63-ic-replay) center/auto 72% no-repeat;box-shadow:0 4px 0 #369468;}
+.pa63-replay:active{transform:translateY(2px);box-shadow:0 2px 0 #369468;}
+/* el juego clásico: la casa pasa a ser la ×; flecha, perfil e idioma no
+   están en ningún otro juego y se ocultan mientras se juega */
+#app:has(#game.active) #backBtn,
+#app:has(#game.active) #profileChip,
+#app:has(#game.active) #langBtn{display:none !important;}
+#app:has(#game.active) #homeBtn::before{content:"\00D7" !important;background-image:none !important;filter:none !important;
+  width:auto !important;height:auto !important;font-size:32px;font-weight:800;line-height:1;color:#2E3B2C;}
+
+/* 12 · La burbuja "¡Toca para jugar!" del primer juego tapaba las
+   respuestas en horizontal: en ~410 px de alto no hay franja libre donde
+   ponerla. El aviso ya es sin texto por diseño (anillo + mano sobre la
+   respuesta, y la voz dice la frase), así que en horizontal se omite la
+   burbuja y quedan el anillo y la mano. */
+@media (orientation:landscape) and (max-height:520px){
+  .coachBubble{display:none !important;}
+}
+/* la × del juego clásico con la misma letra que las demás */
+#app:has(#game.active) #homeBtn::before{font-family:'Fredoka',system-ui,sans-serif;}
+/* Cada uno a su casa: las tres casas en una fila en horizontal (la
+   tercera quedaba debajo de la banda inferior) */
+@media (orientation:landscape) and (max-height:520px){
+  .pa34-cplay .pa34-cbin{flex:1 1 28% !important;min-height:84px !important;min-width:0 !important;}
+  .pa34-cplay .pa34-cbins{flex-wrap:nowrap !important;}
 }

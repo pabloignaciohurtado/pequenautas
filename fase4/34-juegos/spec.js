@@ -471,7 +471,12 @@
     mEls.L.innerHTML=""; mEls.R.innerHTML="";
     say(promptTxt);
     // left in order, right shuffled; tag each with the same pairId
-    var rights=shuffle(pairs.map(function(p,idx){ return {tok:p.b, id:idx}; }));
+    /* Desordenada SIN que ninguna quede frente a su pareja: con 3 pares,
+       1 de cada 6 tableros salía con las tres parejas alineadas fila a
+       fila (C–c, M–m, L–l) y no había nada que buscar. */
+    var rights, intento=0;
+    do { rights=shuffle(pairs.map(function(p,idx){ return {tok:p.b, id:idx}; })); intento++; }
+    while(intento<50 && rights.some(function(r,i){ return r.id===i; }));
     pairs.forEach(function(p,idx){
       var lb=el("button","pa34-mcard", tokenHTML(p.a)); lb.setAttribute("data-pid",idx); lb.setAttribute("data-side","L");
       lb.addEventListener("click",function(){ onLeft(lb); }); mEls.L.appendChild(lb);
