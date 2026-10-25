@@ -204,3 +204,13 @@ button,input,select,textarea{font-family:inherit;}
    enunciado (el altavoz del juego clásico y "repetir" de las materias).
    El de Música se queda: ahí repite el SONIDO que hay que reconocer. */
 #replayBtn,#pa53replay,#pa54replay,#pa58replay,#pa60replay,.pa63-replay{display:none !important;}
+
+/* 14 · Una sola celebración. Al ganar un nivel aparecían seis "mascotas"
+   distintas según el juego: un Rufo plano en SVG (#34), una estrella (#53),
+   una hoja (#54), y emoji 🎶 💚 🪥 (#55, #58, #60); el juego clásico, un
+   trofeo 🏆. Ahora siempre celebra Rufo alegre, el mismo papercraft de
+   Grok de Emociones (#58). */
+.pa34-win .rf,.pa53-win .rf,.pa54-win .rf,.pa55-win .rf,.pa58-win .rf,.pa60-win .rf,#trophyEmoji{
+  font-size:0 !important;width:120px !important;height:104px !important;margin:0 auto 6px !important;
+  background:var(--pa58-rf-happy) center/contain no-repeat !important;}
+.pa34-win .rf > *,.pa53-win .rf > *,.pa54-win .rf > *,.pa55-win .rf > *,.pa58-win .rf > *,.pa60-win .rf > *{display:none !important;}

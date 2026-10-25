@@ -289,3 +289,24 @@ test('Fase 4 · sin voces: nadie habla, los clips no se cargan y Música conserv
   await expect(page.locator('#pa55replay')).toBeVisible();
   await expect(page.locator('#pa53replay, #pa58replay, #replayBtn')).toHaveCount(await page.locator('#pa53replay, #pa58replay, #replayBtn').count());
 });
+
+test('Fase 4 · #64: el contenido de los juegos es arte de Grok, no emoji del teléfono', async ({ page }) => {
+  await entrarHorizontal(page);
+  const emojiEn = (sel) => page.evaluate((sel) => {
+    const z = document.querySelector(sel);
+    if (!z) return 'sin zona ' + sel;
+    const t = [...z.querySelectorAll('*')].filter((e) => e.getBoundingClientRect().width > 0)
+      .flatMap((e) => [...e.childNodes].filter((n) => n.nodeType === 3).map((n) => n.textContent)).join('');
+    return (t.match(/\p{Extended_Pictographic}/gu) || []).join('');
+  }, sel);
+  await abrirJuego(page, '.subject[data-game="science"]', '.pa34-ov', 1); // Cada uno a su casa
+  expect(await emojiEn('.pa34-cplay.show')).toBe('');
+  expect(await page.locator('.pa34-cplay.show .pa64').count()).toBeGreaterThanOrEqual(5);
+  await abrirJuego(page, '.subject.pa55-card', '.pa55-ov', 0); // ¿Qué suena?
+  expect(await emojiEn('.pa55-play.show .pa55-field')).toBe('');
+  await abrirJuego(page, '#pa58Card', '.pa58-ov', 1); // ¿Qué pasó?
+  expect(await emojiEn('.pa58-play.show .pa58-field')).toBe('');
+  // la celebración es siempre Rufo de Grok
+  const rf = await page.evaluate(() => getComputedStyle(document.querySelector('.pa58-win .rf')).backgroundImage);
+  expect(rf).toContain('data:image/webp');
+});

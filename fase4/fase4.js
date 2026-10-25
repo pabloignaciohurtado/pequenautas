@@ -145,6 +145,8 @@
     // ambos ya exponen.
     "59-puente-calma",
     "60-habitos",
+    // #64 cambia los emoji de contenido de los juegos por arte de Grok.
+    "64-arte-contenido",
     // #63 corrige de forma transversal lo que vio la auditoría del APK en
     // horizontal (hojas que no cabían, campo cortado, fuentes, botón atrás).
     // Va la última porque sus reglas tienen que ganarle en la cascada a las

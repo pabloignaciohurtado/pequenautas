@@ -1,0 +1,53 @@
+/* ===== Fase 4 #64 · Arte de Grok en lugar de emoji del sistema =====
+   Ver spec.js. Cada pieza sale de una hoja de Grok (cuatro hojas, mismo
+   estilo papercraft que el resto de la app) recortada a img/<id>.css. */
+@import url("img/apple.css");
+@import url("img/banana.css");
+@import url("img/bee.css");
+@import url("img/bell.css");
+@import url("img/bike.css");
+@import url("img/bird.css");
+@import url("img/blocks.css");
+@import url("img/blossom.css");
+@import url("img/boardgame.css");
+@import url("img/book.css");
+@import url("img/butterfly.css");
+@import url("img/cake.css");
+@import url("img/cloud.css");
+@import url("img/clownfish.css");
+@import url("img/crab.css");
+@import url("img/dolphin.css");
+@import url("img/drop.css");
+@import url("img/drum.css");
+@import url("img/duck.css");
+@import url("img/eagle.css");
+@import url("img/flute.css");
+@import url("img/garden.css");
+@import url("img/gift.css");
+@import url("img/hammock.css");
+@import url("img/hug.css");
+@import url("img/icecream.css");
+@import url("img/lion.css");
+@import url("img/maracas.css");
+@import url("img/mushroom.css");
+@import url("img/night.css");
+@import url("img/owl.css");
+@import url("img/rainbow.css");
+@import url("img/roar.css");
+@import url("img/sleep.css");
+@import url("img/sprig.css");
+@import url("img/star.css");
+@import url("img/storm.css");
+@import url("img/sunflower.css");
+@import url("img/table.css");
+@import url("img/teddy.css");
+@import url("img/turtle.css");
+@import url("img/wave.css");
+@import url("img/whale.css");
+@import url("img/xylophone.css");
+
+.pa64{display:inline-block;width:1.3em;height:1.3em;vertical-align:-.25em;
+  background-position:center;background-size:contain;background-repeat:no-repeat;}
+/* fichas grandes de los juegos: el dibujo manda, un poco más que el emoji */
+#stage .obj .pa64,#stage .choice .pa64{width:1.15em;height:1.15em;}
+.pa55-pad .pa64{width:2em;height:2em;}
