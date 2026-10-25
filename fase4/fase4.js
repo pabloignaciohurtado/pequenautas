@@ -90,16 +90,8 @@
     // refreshHome/passGate/startGame; PIN off por defecto).
     "17-accesibilidad",
     "18-dislexia",
-    // #61 trae los clips locutados de Rufo y va JUSTO ANTES de #16 a
-    // propósito: las dos envuelven speak(), y la que envuelve después queda
-    // por fuera. Así #16 sigue siendo la capa externa —la que reconoce la
-    // frase, estampa opts.key y mueve la boca de la mascota— y #61 se limita
-    // a poner el sonido por debajo. Al revés, Rufo hablaría con boca quieta.
-    "61-voz-rufo",
-    // #62 va después de #61 y antes de #16: por fuera de Rufo, para poder
-    // dejarle sus dieciocho frases intactas antes de decidir nada; por dentro
-    // de #16, que sigue moviendo la boca de la mascota.
-    "62-voz-narradora",
+    // #61 (voz de Rufo) y #62 (narradora) se retiraron en oct-2026: la app
+    // pasa a ser SIN VOCES por decisión de producto (ver #63 §13).
     "16-voces-mascota",
     "20-animaciones-personaje",
     "30-controles-parentales",
@@ -152,7 +144,14 @@
     // respiración guiada), porque lo único que hace es engancharse a lo que
     // ambos ya exponen.
     "59-puente-calma",
-    "60-habitos"
+    "60-habitos",
+    // #64 cambia los emoji de contenido de los juegos por arte de Grok.
+    "64-arte-contenido",
+    // #63 corrige de forma transversal lo que vio la auditoría del APK en
+    // horizontal (hojas que no cabían, campo cortado, fuentes, botón atrás).
+    // Va la última porque sus reglas tienen que ganarle en la cascada a las
+    // de todas las materias anteriores.
+    "63-ajuste-horizontal"
   ];
 
   var injected = Object.create(null);

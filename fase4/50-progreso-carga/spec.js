@@ -38,7 +38,7 @@
   "use strict";
   if (window.__pa50) return; window.__pa50 = true;
 
-  var PA_DONE_KEY = 'pa_precache_done_v7'; // v7 = coincide con CACHE de sw.js
+  var PA_DONE_KEY = 'pa_precache_done_v9'; // v9 = coincide con CACHE de sw.js
 
   var elWrap, elBar, elPct, elTxt;
   var watchdogTimer = null;
@@ -46,7 +46,8 @@
   var dismissed = false;
   var gotAnyMessage = false;
 
-  var CONTROLLER_TIMEOUT_MS = 8000;  // sin ni un solo mensaje del SW -> fail-open
+  var CONTROLLER_TIMEOUT_MS = 8000;  // SW ya activo pero mudo -> fail-open
+  var REGISTER_TIMEOUT_MS = 30000;   // el SW ni siquiera llega a activarse -> fail-open
   var STALL_TIMEOUT_MS = 20000;      // progreso empezó pero se detuvo -> fail-open
   var HARD_CAP_MS = 90000;           // tope absoluto de seguridad
 
@@ -120,6 +121,13 @@
   }
 
   function update(pct) {
+    // Una vez retirado, el portón no vuelve. Antes, si el temporizador lo
+    // retiraba (fail-open) y DESPUÉS empezaba a llegar progreso del SW, este
+    // build() lo reconstruía, y como dismissed ya era true ningún mensaje
+    // posterior —ni 'precache-complete'— podía volver a quitarlo: el peque
+    // quedaba atrapado en "Descargando recursos… 100%" para siempre. Es
+    // exactamente lo que pasaba en teléfonos lentos (ver más abajo).
+    if (dismissed) return;
     build();
     armStallTimeout();
     armHardCap();
@@ -151,6 +159,9 @@
       var pct = Math.round((d.done / d.total) * 100);
       update(pct);
     } else if (d.type === 'precache-complete') {
+      // Si el portón ya se había retirado por tiempo, igual se marca como
+      // completo: la próxima vez se entra directo, sin portón.
+      if (dismissed) { markDone(); return; }
       update(100);
       dismiss(true);
     }
@@ -166,10 +177,23 @@
     if (!isSecureRegistrableContext()) return;         // el SW ni se registrará: sin portón
 
     build();
-    armControllerTimeout();
     armHardCap();
 
     navigator.serviceWorker.addEventListener('message', onMessage);
+
+    // app.js registra el SW recién en window 'load', que en un teléfono con
+    // todo el arte embebido llega a los 10 s o más. El temporizador de 8 s
+    // corría desde el arranque, así que vencía ANTES de que el SW existiera:
+    // retiraba el portón y, al llegar el progreso, lo reconstruía (el bug de
+    // arriba). Ahora: (1) se registra aquí mismo, sin esperar a 'load'
+    // —register() es idempotente con la misma URL—, lo que además adelanta
+    // la descarga; y (2) los 8 s sin mensajes cuentan desde que el SW está
+    // activo, con un tope aparte por si nunca llega a activarse.
+    try { navigator.serviceWorker.register('./sw.js').catch(function () {}); } catch (e) {}
+    watchdogTimer = setTimeout(function () { dismiss(false); }, REGISTER_TIMEOUT_MS);
+    navigator.serviceWorker.ready.then(function () {
+      if (!dismissed && !gotAnyMessage) armControllerTimeout();
+    }).catch(function () {});
 
     function queryStatus() {
       try {

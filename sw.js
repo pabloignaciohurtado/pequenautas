@@ -33,8 +33,17 @@
    activate() purgue y runPrecache() los baje de una vez, con el portón de #50
    en pantalla, en lugar de que la narradora estrene voz a trozos según qué
    frase toque primero. */
-const CACHE='pequenautas-v7';
-const SHELL=['./','./index.html','./app.js','./manifest.webmanifest'];
+/* v8: las fuentes pasan a servirse desde el propio dominio (fonts/) y se
+   precachean con el shell, de modo que la app instalada desde Play no hace
+   ninguna petición a terceros y tiene tipografía sin red desde el primer
+   arranque. Las rutas de FONT_HOSTS quedan solo para cachés viejas. */
+/* v9: la app queda sin voces (se retiran #61 y #62, ~8 MB de clips) y entran
+   los ajustes de coherencia de #63; la versión nueva purga los clips de las
+   cachés instaladas. */
+const CACHE='pequenautas-v9';
+const SHELL=['./','./index.html','./app.js','./manifest.webmanifest',
+  './fonts/fonts.css','./fonts/fredoka-latin.woff2','./fonts/fredoka-latin-ext.woff2',
+  './fonts/baloo2-latin.woff2','./fonts/baloo2-latin-ext.woff2'];
 const FONT_HOSTS=['fonts.googleapis.com','fonts.gstatic.com'];
 
 // Mismo listado (y mismo orden de referencia) que fase4/fase4.js. El orden no
@@ -45,7 +54,7 @@ const FASE4_MODULES=[
   '01-eval-pre-post','02-ab-testing','03-repaso-espaciado','04-indice-dominio','05-deteccion-frustracion',
   '11-materias-nuevas','12-mates-avanzadas','13-lectura-avanzada','14-ciencias-avanzada','15-cms-json',
   '07-secuenciacion','06-motor-adaptativo','08-zdp-dinamica','09-recomendador',
-  '17-accesibilidad','18-dislexia','61-voz-rufo','62-voz-narradora','16-voces-mascota','20-animaciones-personaje','30-controles-parentales',
+  '17-accesibilidad','18-dislexia','16-voces-mascota','20-animaciones-personaje','30-controles-parentales',
   '19-album-logros','21-reporte-semanal','22-metas-semanales','23-modo-aula',
   '28-pwa-tiendas',
   '31-identidad-visual','32-pantallas-bosque','33-hero-diorama','34-juegos','35-cajas3d',
@@ -53,7 +62,8 @@ const FASE4_MODULES=[
   '41-fondo-juego','42-pantallas-fondo',
   '46-hud-iconos','47-opciones-layout','48-avatares','49-iconos-quiz-letras','50-progreso-carga',
   '51-hero-globo','52-juegos-tarjetas','53-formas-colores','54-ingenio','55-musica',
-  '56-arrastrar','57-ambiente','58-emociones','59-puente-calma','60-habitos'
+  '56-arrastrar','57-ambiente','58-emociones','59-puente-calma','60-habitos',
+  '64-arte-contenido','63-ajuste-horizontal'
 ];
 
 const PRECACHE_STATE={status:'idle',done:0,total:0,failed:[]};

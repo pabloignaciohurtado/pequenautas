@@ -28,7 +28,7 @@ const UI={
     celTitle:'¡Lo lograste!', celSub:'¡Ganaste una estrella!', celHome:'Inicio', celAgain:'Otra vez',
     gateTitle:'Solo para grandes', gateSub:'Toca y mantén presionado el botón para entrar.', hold:'Mantén presionado', holdNum:'Mantén presionado 👇',
     tabProg:'Progreso', tabSet:'Ajustes', progTitle:'Progreso', progSub:'Cómo va tu peque.',
-    setSoundN:'Voz y sonidos', setSoundD:'Narración y efectos', setAnimN:'Animaciones extra', setAnimD:'Confeti y celebraciones',
+    setSoundN:'Sonidos', setSoundD:'Efectos y ambiente del bosque', setAnimN:'Animaciones extra', setAnimD:'Confeti y celebraciones',
     setGuideN:'Pistas guiadas', setGuideD:'Ayuda progresiva al fallar',
     tip:'💡 AAP: acompaña a tu peque, sesiones de 10–15 min. El aprendizaje es mayor con un adulto al lado.',
     close:'Listo', switch:'Cambiar de niño', pTitle:'¿Quién juega?', pSub:'Elige tu perfil',
@@ -38,7 +38,7 @@ const UI={
     celTitle:'You did it!', celSub:'You earned a star!', celHome:'Home', celAgain:'Again',
     gateTitle:'Grown-ups only', gateSub:'Tap and hold the button to enter.', hold:'Press and hold', holdNum:'Press and hold 👇',
     tabProg:'Progress', tabSet:'Settings', progTitle:'Progress', progSub:'How your child is doing.',
-    setSoundN:'Voice & sounds', setSoundD:'Narration and effects', setAnimN:'Extra animations', setAnimD:'Confetti & celebrations',
+    setSoundN:'Sounds', setSoundD:'Effects and forest ambience', setAnimN:'Extra animations', setAnimD:'Confetti & celebrations',
     setGuideN:'Guided hints', setGuideD:'Progressive help on mistakes',
     tip:'💡 AAP: co-play with your child, 10–15 min sessions. Learning is greater with a grown-up alongside.',
     close:'Done', switch:'Switch child', pTitle:'Who is playing?', pSub:'Choose your profile',
@@ -64,8 +64,11 @@ let voices=[];
 function loadVoices(){ voices=window.speechSynthesis?speechSynthesis.getVoices():[]; }
 if(window.speechSynthesis){ loadVoices(); speechSynthesis.onvoiceschanged=loadVoices; }
 function pickVoice(lang){ const pref=lang==='es'?['es-ES','es-MX','es-US','es']:['en-US','en-GB','en']; for(const p of pref){ const v=voices.find(v=>v.lang&&v.lang.toLowerCase().startsWith(p.toLowerCase())); if(v) return v; } return null; }
-function speak(text,opts){ opts=opts||{}; if(!S.sound||!window.speechSynthesis||!text) return; const lang=opts.lang||S.lang; try{ speechSynthesis.cancel(); const u=new SpeechSynthesisUtterance(text); u.lang=lang==='es'?'es-ES':'en-US'; const v=pickVoice(lang); if(v)u.voice=v; u.rate=opts.rate||0.92; u.pitch=opts.pitch||1.12; speechSynthesis.speak(u); }catch(e){} }
-function speakSeq(parts){ if(!S.sound||!window.speechSynthesis) return; speechSynthesis.cancel(); parts.forEach(p=>{ if(!p||!p.t) return; const u=new SpeechSynthesisUtterance(p.t); const lang=p.lang||S.lang; u.lang=lang==='es'?'es-ES':'en-US'; const v=pickVoice(lang); if(v)u.voice=v; u.rate=p.rate||0.9; u.pitch=p.pitch||1.12; speechSynthesis.speak(u); }); }
+/* App SIN VOCES (oct-2026): speak/speakSeq se conservan como funciones para
+   no romper a quien las llama, pero no hablan. Ver fase4/63 §13. */
+const VOCES=false;
+function speak(text,opts){ if(!VOCES) return; opts=opts||{}; if(!S.sound||!window.speechSynthesis||!text) return; const lang=opts.lang||S.lang; try{ speechSynthesis.cancel(); const u=new SpeechSynthesisUtterance(text); u.lang=lang==='es'?'es-ES':'en-US'; const v=pickVoice(lang); if(v)u.voice=v; u.rate=opts.rate||0.92; u.pitch=opts.pitch||1.12; speechSynthesis.speak(u); }catch(e){} }
+function speakSeq(parts){ if(!VOCES) return; if(!S.sound||!window.speechSynthesis) return; speechSynthesis.cancel(); parts.forEach(p=>{ if(!p||!p.t) return; const u=new SpeechSynthesisUtterance(p.t); const lang=p.lang||S.lang; u.lang=lang==='es'?'es-ES':'en-US'; const v=pickVoice(lang); if(v)u.voice=v; u.rate=p.rate||0.9; u.pitch=p.pitch||1.12; speechSynthesis.speak(u); }); }
 
 /* ---------- helpers ---------- */
 const $=id=>document.getElementById(id);

@@ -25,7 +25,7 @@
     var l = d.createElement("link");
     l.rel = "stylesheet";
     l.setAttribute("data-pa52font", "1");
-    l.href = "https://fonts.googleapis.com/css2?family=Baloo+2:wght@600;800&display=swap";
+    l.href = "fonts/fonts.css";
     (d.head || root).appendChild(l);
   }
 
