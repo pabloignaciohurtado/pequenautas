@@ -33,8 +33,14 @@
    activate() purgue y runPrecache() los baje de una vez, con el portón de #50
    en pantalla, en lugar de que la narradora estrene voz a trozos según qué
    frase toque primero. */
-const CACHE='pequenautas-v7';
-const SHELL=['./','./index.html','./app.js','./manifest.webmanifest'];
+/* v8: las fuentes pasan a servirse desde el propio dominio (fonts/) y se
+   precachean con el shell, de modo que la app instalada desde Play no hace
+   ninguna petición a terceros y tiene tipografía sin red desde el primer
+   arranque. Las rutas de FONT_HOSTS quedan solo para cachés viejas. */
+const CACHE='pequenautas-v8';
+const SHELL=['./','./index.html','./app.js','./manifest.webmanifest',
+  './fonts/fonts.css','./fonts/fredoka-latin.woff2','./fonts/fredoka-latin-ext.woff2',
+  './fonts/baloo2-latin.woff2','./fonts/baloo2-latin-ext.woff2'];
 const FONT_HOSTS=['fonts.googleapis.com','fonts.gstatic.com'];
 
 // Mismo listado (y mismo orden de referencia) que fase4/fase4.js. El orden no

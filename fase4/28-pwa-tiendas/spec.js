@@ -113,9 +113,46 @@
     window.startGame(g);
   }
 
+  /* ---- Enlace a la política de privacidad dentro de la app. Google Play
+     pide que la política esté enlazada en la ficha Y dentro de la propia app;
+     va en Ajustes, que solo se abre tras el gate de adultos, así que el niño
+     no tropieza con él. Se abre en pestaña aparte (en la TWA, una Custom Tab)
+     para no sacar la app de su pantalla. El texto sigue al idioma de la app:
+     se repinta al pulsar #langBtn, sin tocar app.js. */
+  var PRIV = { es: 'Política de privacidad', en: 'Privacy policy' };
+  function appLang() {
+    try { return (typeof S !== 'undefined' && S.lang === 'en') ? 'en' : 'es'; } catch (e) { return 'es'; }
+  }
+  function paintPrivacy() {
+    var a = document.getElementById('pa28Privacy');
+    if (!a) {
+      var set = document.getElementById('setView');
+      if (!set) return;
+      a = document.createElement('a');
+      a.id = 'pa28Privacy';
+      a.target = '_blank';
+      a.rel = 'noopener';
+      a.style.cssText = 'display:block;text-align:center;margin-top:12px;font-size:13.5px;color:#6C6685;text-decoration:underline;';
+      set.appendChild(a);
+    }
+    a.textContent = PRIV[appLang()];
+    a.hreflang = appLang();
+    a.href = 'privacy.html#' + appLang();
+  }
+  function wirePrivacy() {
+    paintPrivacy();
+    var lb = document.getElementById('langBtn');
+    if (lb && !lb._pa28priv) {
+      lb._pa28priv = true;
+      lb.addEventListener('click', function () { setTimeout(paintPrivacy, 0); });
+    }
+  }
+
   if (document.readyState === 'complete' || document.readyState === 'interactive') {
     tryLaunchShortcut();
+    wirePrivacy();
   } else {
     document.addEventListener('DOMContentLoaded', tryLaunchShortcut);
+    document.addEventListener('DOMContentLoaded', wirePrivacy);
   }
 })();

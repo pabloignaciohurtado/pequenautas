@@ -1,7 +1,7 @@
 {
   "name": "Aventuras en el Bosque",
   "short_name": "Bosque",
-  "description": "Aprende jugando · Learn by playing",
+  "description": "Juegos para aprender en el bosque: números, letras, formas, música, emociones y hábitos. Para niños de 3 a 5 años · Learn by playing.",
   "lang": "es",
   "dir": "ltr",
   "start_url": "./index.html",
@@ -11,8 +11,72 @@
   "orientation": "landscape",
   "background_color": "#FDF6EC",
   "theme_color": "#FDF6EC",
+  "categories": [
+    "education",
+    "kids",
+    "games"
+  ],
   "icons": [
-    { "src": "data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSI1MTIiIGhlaWdodD0iNTEyIiB2aWV3Qm94PSIwIDAgNTEyIDUxMiI+CjxyZWN0IHdpZHRoPSI1MTIiIGhlaWdodD0iNTEyIiByeD0iMTEyIiBmaWxsPSIjRjRFRkUwIi8+Cjxwb2x5Z29uIHBvaW50cz0iMTUwLDE5NSAyMDgsNzggMjUyLDIwOCIgZmlsbD0iI0U4ODQzQSIvPgo8cG9seWdvbiBwb2ludHM9IjM2MiwxOTUgMzA0LDc4IDI2MCwyMDgiIGZpbGw9IiNFODg0M0EiLz4KPHBvbHlnb24gcG9pbnRzPSIxNjgsMTc4IDIwNCwxMTYgMjI2LDE5NiIgZmlsbD0iIzNEMkExRSIvPgo8cG9seWdvbiBwb2ludHM9IjM0NCwxNzggMzA4LDExNiAyODYsMTk2IiBmaWxsPSIjM0QyQTFFIi8+CjxlbGxpcHNlIGN4PSIyNTYiIGN5PSIyOTIiIHJ4PSIxNTIiIHJ5PSIxMzIiIGZpbGw9IiNFODg0M0EiLz4KPGVsbGlwc2UgY3g9IjI1NiIgY3k9IjMzMiIgcng9Ijg2IiByeT0iNzAiIGZpbGw9IiNGRkZGRkYiLz4KPGVsbGlwc2UgY3g9IjIwOSIgY3k9IjI3MiIgcng9IjE1IiByeT0iMTkiIGZpbGw9IiMyRTNCMkMiLz4KPGVsbGlwc2UgY3g9IjMwMyIgY3k9IjI3MiIgcng9IjE1IiByeT0iMTkiIGZpbGw9IiMyRTNCMkMiLz4KPGNpcmNsZSBjeD0iMjA5IiBjeT0iMjY2IiByPSI0IiBmaWxsPSIjRkZGRkZGIi8+CjxjaXJjbGUgY3g9IjMwMyIgY3k9IjI2NiIgcj0iNCIgZmlsbD0iI0ZGRkZGRiIvPgo8cG9seWdvbiBwb2ludHM9IjI1NiwzMTIgMjM2LDMzOCAyNzYsMzM4IiBmaWxsPSIjMkUzQjJDIi8+CjxwYXRoIGQ9Ik0yNTYgMzM4IFEyNTYgMzU4IDI1NiAzNTgiIHN0cm9rZT0iIzJFM0IyQyIgc3Ryb2tlLXdpZHRoPSI0IiBmaWxsPSJub25lIi8+CjxjaXJjbGUgY3g9IjE4NCIgY3k9IjMyMiIgcj0iMTUiIGZpbGw9IiNGMjc0OEMiIG9wYWNpdHk9IjAuNTUiLz4KPGNpcmNsZSBjeD0iMzI4IiBjeT0iMzIyIiByPSIxNSIgZmlsbD0iI0YyNzQ4QyIgb3BhY2l0eT0iMC41NSIvPgo8cGF0aCBkPSJNMzY2IDEyMiBDNDA4IDEwMCA0MzIgMTMyIDQxMiAxNjYgQzM5MCAxNDggMzY4IDE0NiAzNjYgMTIyIFoiIGZpbGw9IiM1N0M1OTYiLz4KPHBhdGggZD0iTTM4MiAxNDAgQzM4MiAxNDAgMzk2IDEyOCA0MDQgMTMyIiBzdHJva2U9IiMzRDdBNEEiIHN0cm9rZS13aWR0aD0iNCIgZmlsbD0ibm9uZSIgc3Ryb2tlLWxpbmVjYXA9InJvdW5kIi8+Cjwvc3ZnPgo=", "sizes": "192x192", "type": "image/svg+xml", "purpose": "any" },
-    { "src": "data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSI1MTIiIGhlaWdodD0iNTEyIiB2aWV3Qm94PSIwIDAgNTEyIDUxMiI+CjxyZWN0IHdpZHRoPSI1MTIiIGhlaWdodD0iNTEyIiByeD0iMTEyIiBmaWxsPSIjRjRFRkUwIi8+Cjxwb2x5Z29uIHBvaW50cz0iMTUwLDE5NSAyMDgsNzggMjUyLDIwOCIgZmlsbD0iI0U4ODQzQSIvPgo8cG9seWdvbiBwb2ludHM9IjM2MiwxOTUgMzA0LDc4IDI2MCwyMDgiIGZpbGw9IiNFODg0M0EiLz4KPHBvbHlnb24gcG9pbnRzPSIxNjgsMTc4IDIwNCwxMTYgMjI2LDE5NiIgZmlsbD0iIzNEMkExRSIvPgo8cG9seWdvbiBwb2ludHM9IjM0NCwxNzggMzA4LDExNiAyODYsMTk2IiBmaWxsPSIjM0QyQTFFIi8+CjxlbGxpcHNlIGN4PSIyNTYiIGN5PSIyOTIiIHJ4PSIxNTIiIHJ5PSIxMzIiIGZpbGw9IiNFODg0M0EiLz4KPGVsbGlwc2UgY3g9IjI1NiIgY3k9IjMzMiIgcng9Ijg2IiByeT0iNzAiIGZpbGw9IiNGRkZGRkYiLz4KPGVsbGlwc2UgY3g9IjIwOSIgY3k9IjI3MiIgcng9IjE1IiByeT0iMTkiIGZpbGw9IiMyRTNCMkMiLz4KPGVsbGlwc2UgY3g9IjMwMyIgY3k9IjI3MiIgcng9IjE1IiByeT0iMTkiIGZpbGw9IiMyRTNCMkMiLz4KPGNpcmNsZSBjeD0iMjA5IiBjeT0iMjY2IiByPSI0IiBmaWxsPSIjRkZGRkZGIi8+CjxjaXJjbGUgY3g9IjMwMyIgY3k9IjI2NiIgcj0iNCIgZmlsbD0iI0ZGRkZGRiIvPgo8cG9seWdvbiBwb2ludHM9IjI1NiwzMTIgMjM2LDMzOCAyNzYsMzM4IiBmaWxsPSIjMkUzQjJDIi8+CjxwYXRoIGQ9Ik0yNTYgMzM4IFEyNTYgMzU4IDI1NiAzNTgiIHN0cm9rZT0iIzJFM0IyQyIgc3Ryb2tlLXdpZHRoPSI0IiBmaWxsPSJub25lIi8+CjxjaXJjbGUgY3g9IjE4NCIgY3k9IjMyMiIgcj0iMTUiIGZpbGw9IiNGMjc0OEMiIG9wYWNpdHk9IjAuNTUiLz4KPGNpcmNsZSBjeD0iMzI4IiBjeT0iMzIyIiByPSIxNSIgZmlsbD0iI0YyNzQ4QyIgb3BhY2l0eT0iMC41NSIvPgo8cGF0aCBkPSJNMzY2IDEyMiBDNDA4IDEwMCA0MzIgMTMyIDQxMiAxNjYgQzM5MCAxNDggMzY4IDE0NiAzNjYgMTIyIFoiIGZpbGw9IiM1N0M1OTYiLz4KPHBhdGggZD0iTTM4MiAxNDAgQzM4MiAxNDAgMzk2IDEyOCA0MDQgMTMyIiBzdHJva2U9IiMzRDdBNEEiIHN0cm9rZS13aWR0aD0iNCIgZmlsbD0ibm9uZSIgc3Ryb2tlLWxpbmVjYXA9InJvdW5kIi8+Cjwvc3ZnPgo=", "sizes": "512x512", "type": "image/svg+xml", "purpose": "any maskable" }
+    {
+      "src": "icons/icon-192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "icons/icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "icons/icon-maskable-192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "maskable"
+    },
+    {
+      "src": "icons/icon-maskable-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "maskable"
+    }
+  ],
+  "screenshots": [
+    {
+      "src": "screenshots/01-inicio.png",
+      "sizes": "1920x1080",
+      "type": "image/png",
+      "form_factor": "wide",
+      "label": "El bosque de inicio con todas las materias"
+    },
+    {
+      "src": "screenshots/02-numeros-juego.png",
+      "sizes": "1920x1080",
+      "type": "image/png",
+      "form_factor": "wide",
+      "label": "Contar con Rufo"
+    },
+    {
+      "src": "screenshots/03-formas.png",
+      "sizes": "1920x1080",
+      "type": "image/png",
+      "form_factor": "wide",
+      "label": "Formas y Colores: cuatro juegos"
+    },
+    {
+      "src": "screenshots/04-emociones-juego.png",
+      "sizes": "1920x1080",
+      "type": "image/png",
+      "form_factor": "wide",
+      "label": "¿Cómo se siente? Reconocer emociones"
+    },
+    {
+      "src": "screenshots/05-habitos.png",
+      "sizes": "1920x1080",
+      "type": "image/png",
+      "form_factor": "wide",
+      "label": "Hábitos y Autonomía"
+    }
   ]
 }
